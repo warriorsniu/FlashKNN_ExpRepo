@@ -1,0 +1,95 @@
+diff --git a/src/3rdparty/concurrent_unordered_map.cuh b/src/3rdparty/concurrent_unordered_map.cuh
+index ed8e1b2..2f5a1c7 100644
+--- a/src/3rdparty/concurrent_unordered_map.cuh
++++ b/src/3rdparty/concurrent_unordered_map.cuh
+@@ -17,7 +17,6 @@
+ #ifndef CONCURRENT_UNORDERED_MAP_CUH
+ #define CONCURRENT_UNORDERED_MAP_CUH
+ 
+-#include <cudf/detail/nvtx/ranges.hpp>
+ #include <hash/hash_allocator.cuh>
+ #include <hash/helper_functions.cuh>
+ #include <hash/managed.cuh>
+@@ -27,6 +26,7 @@
+ 
+ #include <thrust/pair.h>
+ #include <thrust/count.h>
++#include <thrust/execution_policy.h>
+ 
+ #include <functional>
+ #include <memory>
+@@ -36,6 +36,12 @@
+ #include <limits>
+ #include <type_traits>
+ 
++// CUDA 12 ships NVTX3 through CUB. MinkowskiEngine's vendored cuDF copy also
++// bundles an older NVTX3 header in the same namespace, which makes all CUB
++// NVTX types ambiguous. This range is profiling-only, so disable it rather
++// than mixing two incompatible NVTX header versions.
++#define CUDF_FUNC_RANGE()
++
+ namespace {
+ template <std::size_t N>
+ struct packed {
+diff --git a/src/convolution_kernel.cuh b/src/convolution_kernel.cuh
+index aed7227..9801340 100644
+--- a/src/convolution_kernel.cuh
++++ b/src/convolution_kernel.cuh
+@@ -33,6 +33,8 @@
+ #include "math_functions.cuh"
+ #include "types.hpp"
+ 
++#include <thrust/execution_policy.h>
++
+ namespace minkowski {
+ 
+ template <typename Dtype, typename Itype, typename ByteAllocator>
+diff --git a/src/coordinate_map_gpu.cu b/src/coordinate_map_gpu.cu
+index fb7325d..0609b54 100644
+--- a/src/coordinate_map_gpu.cu
++++ b/src/coordinate_map_gpu.cu
+@@ -37,6 +37,9 @@
+ #include <thrust/iterator/transform_iterator.h>
+ #include <thrust/sort.h>
+ 
++#include <thrust/unique.h>
++#include <thrust/remove.h>
++
+ namespace minkowski {
+ 
+ namespace detail {
+diff --git a/src/coordinate_map_gpu.cuh b/src/coordinate_map_gpu.cuh
+index 15228c4..33bd558 100644
+--- a/src/coordinate_map_gpu.cuh
++++ b/src/coordinate_map_gpu.cuh
+@@ -136,9 +136,14 @@ public:
+       LOG_DEBUG("Reserve map of",
+                 compute_hash_table_size(size, m_hashtable_occupancy),
+                 "for concurrent_unordered_map of size", size);
+-      m_map = map_type::create(
++      auto new_map = map_type::create(
+           compute_hash_table_size(size, m_hashtable_occupancy),
+           m_unused_element, m_unused_key, m_hasher, m_equal, m_map_allocator);
++      // CUDA 12's cuda::std and libstdc++ both expose __to_address. The
++      // unique_ptr-to-shared_ptr assignment becomes ambiguous for this
++      // Thrust allocator, so construct from pointer and deleter explicitly.
++      auto deleter = new_map.get_deleter();
++      m_map = std::shared_ptr<map_type>(new_map.release(), std::move(deleter));
+       LOG_DEBUG("Done concurrent_unordered_map creation");
+       CUDA_TRY(cudaStreamSynchronize(0));
+       m_capacity = size;
+diff --git a/src/spmm.cu b/src/spmm.cu
+index 8891a56..4b6d146 100644
+--- a/src/spmm.cu
++++ b/src/spmm.cu
+@@ -36,6 +36,10 @@
+ #include <torch/extension.h>
+ #include <torch/script.h>
+ 
++#include <thrust/execution_policy.h>
++#include <thrust/reduce.h>
++#include <thrust/sort.h>
++
+ namespace minkowski {
+ 
+ #define BLOCK_SIZE 128

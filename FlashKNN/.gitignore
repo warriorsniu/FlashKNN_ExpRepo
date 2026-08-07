@@ -1,0 +1,16 @@
+.vscode
+build
+FlashKNN.egg-info
+paper
+
+# Large data files
+test_data/*.npy
+
+# Build artifacts
+*.so
+*.o
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
