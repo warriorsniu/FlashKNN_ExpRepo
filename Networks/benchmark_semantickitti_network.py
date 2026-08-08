@@ -105,9 +105,44 @@ def main() -> None:
         load_checkpoint(args.checkpoint, model)
     manifest = json.loads((args.data_dir / "manifest.json").read_text(encoding="utf-8"))
     entries = stratified_entries(manifest["samples"], args.max_samples)
+    metadata = {
+        "model": args.model, "variant": args.variant, "alpha": args.alpha,
+        "checkpoint": str(args.checkpoint) if args.checkpoint else None,
+        "weights_note": "Random weights if checkpoint is null; operation shapes and latency are unchanged.",
+        "timing_boundary": "CUDA-ready voxelized scan; hierarchy/downsampling/KNN + network forward; excludes disk I/O, voxelization and H2D",
+        "warmups": args.warmups, "repeats": args.repeats,
+        "gpu": gpu_metadata(torch, args.gpu), "torch": torch.__version__,
+        "torch_cuda": torch.version.cuda, "python": platform.python_version(),
+        "manifest": manifest,
+    }
     records = []
+    if args.output.is_file():
+        previous = json.loads(args.output.read_text(encoding="utf-8"))
+        old = previous.get("metadata", {})
+        fields = ("model", "variant", "alpha", "checkpoint", "warmups", "repeats",
+                  "torch", "torch_cuda", "manifest")
+        changed = {field: (old.get(field), metadata.get(field))
+                   for field in fields if old.get(field) != metadata.get(field)}
+        if old.get("gpu", {}).get("uuid") != metadata["gpu"].get("uuid"):
+            changed["gpu.uuid"] = (old.get("gpu", {}).get("uuid"), metadata["gpu"].get("uuid"))
+        if changed:
+            raise SystemExit(f"Refusing to resume incompatible output {args.output}: {changed}")
+        records = previous.get("samples", [])
+    completed = {record["sample"] for record in records if "end_to_end" in record}
+
+    def result_payload() -> dict:
+        aggregate = {
+            key: summary([record[key]["mean_ms"] for record in records])
+            for key in ("hierarchy", "model", "end_to_end")
+        }
+        aggregate["single_sample_throughput_hz"] = 1000.0 / aggregate["end_to_end"]["mean_ms"]
+        return {"metadata": metadata, "samples": records, "aggregate": aggregate}
+
     with torch.inference_mode():
         for number, entry in enumerate(entries, 1):
+            if entry["file"] in completed:
+                print(f"[{number}/{len(entries)}] skip completed {entry['file']}", flush=True)
+                continue
             archive = np.load(args.data_dir / entry["file"])
             metric_xyz = torch.from_numpy(archive["support_xyz"]).to(device).contiguous()
             remission = torch.from_numpy(archive["support_intensity"][:, None]).to(device)
@@ -146,30 +181,12 @@ def main() -> None:
                     0, torch.cuda.max_memory_allocated() - baseline_memory
                 ),
             })
+            completed.add(entry["file"])
+            atomic_json(args.output, result_payload())
             print(f"[{number}/{len(entries)}] {entry['file']} N={len(metric_xyz)} "
                   f"e2e={records[-1]['end_to_end']['mean_ms']:.3f} ms", flush=True)
 
-    payload = {
-        "metadata": {
-            "model": args.model, "variant": args.variant, "alpha": args.alpha,
-            "checkpoint": str(args.checkpoint) if args.checkpoint else None,
-            "weights_note": "Random weights if checkpoint is null; operation shapes and latency are unchanged.",
-            "timing_boundary": "CUDA-ready voxelized scan; hierarchy/downsampling/KNN + network forward; excludes disk I/O, voxelization and H2D",
-            "warmups": args.warmups, "repeats": args.repeats,
-            "gpu": gpu_metadata(torch, args.gpu), "torch": torch.__version__,
-            "torch_cuda": torch.version.cuda, "python": platform.python_version(),
-            "manifest": manifest,
-        },
-        "samples": records,
-        "aggregate": {
-            key: summary([record[key]["mean_ms"] for record in records])
-            for key in ("hierarchy", "model", "end_to_end")
-        },
-    }
-    payload["aggregate"]["single_sample_throughput_hz"] = (
-        1000.0 / payload["aggregate"]["end_to_end"]["mean_ms"]
-    )
-    atomic_json(args.output, payload)
+    atomic_json(args.output, result_payload())
 
 
 if __name__ == "__main__":

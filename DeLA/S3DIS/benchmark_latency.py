@@ -127,11 +127,41 @@ def main():
         paths = paths[:args.max_samples]
     if not paths:
         raise SystemExit(f"No Pointcept PTH/per-field-NPY S3DIS rooms found below {args.data_root}")
+    metadata = {
+        "dataset": "S3DIS", "split": "Area_5", "model": "DeLA",
+        "weights": "random initialization",
+        "flashknn_alpha": 4,
+        "voxel_sizes_m": s3dis_args.grid_size, "k": s3dis_args.k,
+        "timing_boundary": "preprocessing plus network; excludes disk I/O and H2D",
+        "warmups": args.warmups, "repeats": args.repeats,
+        "gpu": gpu_info(torch, args.gpu), "torch": torch.__version__,
+        "torch_cuda": torch.version.cuda, "python": platform.python_version(),
+    }
     records = []
+    if args.output.is_file():
+        previous = json.loads(args.output.read_text(encoding="utf-8"))
+        old = previous.get("metadata", {})
+        fields = ("dataset", "split", "model", "warmups", "repeats", "torch", "torch_cuda")
+        changed = {field: (old.get(field), metadata.get(field))
+                   for field in fields if old.get(field) != metadata.get(field)}
+        if old.get("gpu", {}).get("uuid") != metadata["gpu"].get("uuid"):
+            changed["gpu.uuid"] = (old.get("gpu", {}).get("uuid"), metadata["gpu"].get("uuid"))
+        if changed:
+            raise SystemExit(f"Refusing to resume incompatible output {args.output}: {changed}")
+        records = previous.get("records", [])
+    completed = {
+        record["room"] for record in records
+        if set(record.get("backends", {})) == {"cpu_kdtree", "flashknn"}
+    }
+    payload = {"metadata": metadata, "records": records}
     with torch.inference_mode():
         for room_path in paths:
+            relative_room = room_path.relative_to(args.data_root).as_posix()
+            if relative_room in completed:
+                print(f"skip completed {relative_room}", flush=True)
+                continue
             full_cpu, color_cpu = load_room(torch, room_path)
-            room_record = {"room": room_path.relative_to(args.data_root).as_posix(),
+            room_record = {"room": relative_room,
                            "num_full": len(full_cpu), "backends": {}}
             for backend in ("cpu_kdtree", "flashknn"):
                 prep_ms, forward_ms, total_ms, down_counts = [], [], [], []
@@ -190,23 +220,12 @@ def main():
                     "end_to_end": summarize(total_ms),
                 }
             records.append(room_record)
-            save(args.output, {"records": records})
+            completed.add(relative_room)
+            save(args.output, payload)
             print(room_record["room"], {
                 k: round(v["end_to_end"]["mean_ms"], 3)
                 for k, v in room_record["backends"].items()
             }, flush=True)
-    payload = {
-        "metadata": {
-            "dataset": "S3DIS", "split": "Area_5", "model": "DeLA",
-            "weights": "random initialization",
-            "flashknn_alpha": 4,
-            "voxel_sizes_m": s3dis_args.grid_size, "k": s3dis_args.k,
-            "timing_boundary": "preprocessing plus network; excludes disk I/O and H2D",
-            "warmups": args.warmups, "repeats": args.repeats,
-            "gpu": gpu_info(torch, args.gpu), "torch": torch.__version__,
-            "torch_cuda": torch.version.cuda, "python": platform.python_version(),
-        }, "records": records,
-    }
     save(args.output, payload)
 
 

@@ -140,10 +140,9 @@ python scripts/prepare_data.py --s3dis-existing /path/to/s3dis \
 bash run_all.sh
 ```
 
-该入口自动选择当前显存占用最低的 GPU，执行依赖/数据 preflight，统一生成一个 run ID，
-并在当前 PyTorch 2.7.1+cu128 环境中依次完成 query、network latency 和 Excel/绘图分析。
-最终路径会打印在终端，不需要设置 GPU、环境名或输出目录。快速端到端验收使用
-`SMOKE=1 bash run_all.sh`。
+该入口自动选择当前显存占用最低的 GPU，执行依赖/数据 preflight，统一生成一个 run ID，并在当前 PyTorch 2.7.1+cu128 环境中依次完成 query、ball query、network latency 和 Excel/绘图分析。Python 选择顺序为显式 `PYTHON_BIN`、已激活的 uv/venv、已激活的 Conda、仓库 `.venv`、最后才是 `PATH`，因此原始 Conda 安装与本机 `uv pip` 环境使用同一个入口；所有子脚本继承同一解释器，不会混用系统 Python。最终路径会打印在终端，不需要设置 GPU、环境名或输出目录。快速端到端验收使用 `SMOKE=1 bash run_all.sh`。
+
+已有同一 GPU、PyTorch/CUDA、数据 manifest 和 warmup/repeat 配置的历史结果时，可用冒号分隔的 `REUSE_RUN_DIRS` 合并后断点续跑，例如 `REUSE_RUN_DIRS=results/l20_full_20260806 RUN_ID=l20_complete GPU=0 bash run_all.sh`。`scripts/merge_run_results.py` 保留原有 JSON 顶层结构和记录字段；元数据不同的文件会被拒绝或跳过，smoke 结果不会混入正式结果。
 
 先确认机器空闲并指定从 **0 开始编号**的物理 GPU：
 
@@ -164,11 +163,11 @@ EXPREPO_S3DIS_QUERY=/path/to/s3disfull/raw GPU=0 RUN_ID=l20_01 bash run_query.sh
 `run_query.sh` 分两份运行：
 
 - `sample_part`: 250,000 个 support 点，k=8/16/24/32/48/64，pre/post；
-- `full`: 完整房间，固定 k=32，pre/post；
+- `full`: 先按 0.02 m 体素化、随后不作 250,000 点裁块的完整房间，固定 k=32，仅运行论文点数缩放图所需的 pre-query；
 - 若已准备 LiDAR pack，追加 SemanticKITTI query。
+- Pointcept ball query：S3DIS `sample_part`、pre/post、`nsample=k=24/32/48`，分别使用全局 exact 第 k 邻居距离的 90% 分位半径，并保存 coverage、truncation 和 recall。
 
-S3DIS 和 SemanticKITTI query 均对比 FlashKNN、精确 cudaKDTree、FLANN-CUDA、
-CPU nanoflann、FAISS GPU Flat 和 matched-recall IVF-Flat。IVF 以 FlashKNN `alpha=8`
+S3DIS `sample_part` 和 SemanticKITTI query 均对比 FlashKNN、精确 cudaKDTree、FLANN-CUDA、CPU nanoflann、FAISS GPU Flat 和 matched-recall IVF-Flat；S3DIS `full` 点数缩放实验按论文方法只运行 FlashKNN、cudaKDTree、FLANN-CUDA 和 nanoflann，避免在百万点完整查询上运行复杂度近似二次的 exact FAISS Flat。IVF 以 FlashKNN `alpha=8`
 的 recall 为目标，在实用范围 `nprobe=1...64` 中选择第一个达到目标的设置；
 若因等距候选的 ID tie-breaking 始终不能精确达到，则选择 recall 最接近的设置，
 并保存完整校准轨迹。限制实用范围可避免因等距候选的 ID tie-breaking 无法精确达到目标时，
@@ -201,6 +200,8 @@ SMOKE=1 GPU=0 RUN_ID=smoke bash run_network_latency.sh
 
 同一台 GPU 上的所有方法应单卡串行运行；不要同时启动训练。正式测试建议先记录空载
 `nvidia-smi`，并在结果中检查 GPU UUID，防止设备编号变化。
+
+同一个 JSON 文件内的全部方法和样本必须来自同一物理 GPU。若主机有多张型号、显存和 driver 完全相同的 L20，不同且互不直接求加速比的 JSON 文件可以分配到不同物理卡并行补跑；覆盖检查比较 GPU platform signature，而每个文件继续保存实际 UUID。不能在同一张论文对比表内部混用不同 UUID 的记录，也不能混合不同型号或 driver。
 
 ### Ball-query 与 Arkade RT-core 补充基线
 

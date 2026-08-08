@@ -312,6 +312,9 @@ def main() -> None:
                             "nprobe": faiss_result["faiss_ivf_nprobe"],
                             "target_recall": faiss_result["faiss_ivf_target_recall"],
                             "calibration": faiss_result["faiss_ivf_calibration"],
+                            "calibration_queries": faiss_result[
+                                "faiss_ivf_calibration_queries"
+                            ],
                             "recall_vs_faiss_flat": faiss_result["faiss_ivf_mean_recall"],
                         }
                     record = {

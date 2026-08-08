@@ -63,11 +63,12 @@ fi
 # A uv/venv installation may keep native dependencies such as OpenBLAS and
 # LZ4 inside the Python prefix. Preserve those libraries at runtime without
 # requiring a Conda-specific activation hook.
-if [[ -n "${VIRTUAL_ENV:-}" && -d "$VIRTUAL_ENV/lib" ]]; then
-  export LD_LIBRARY_PATH="$VIRTUAL_ENV/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+PYTHON_PREFIX="${EXPREPO_PYTHON_PREFIX:-${VIRTUAL_ENV:-${CONDA_PREFIX:-}}}"
+if [[ -n "$PYTHON_PREFIX" && -d "$PYTHON_PREFIX/lib" ]]; then
+  export LD_LIBRARY_PATH="$PYTHON_PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 fi
 unset CLEAN_LD_LIBRARY_PATH LD_ENTRIES entry CURRENT_RELEASE CURRENT_MAJOR \
-  PREFERRED_RELEASE DEFAULT_MAJOR
+  PREFERRED_RELEASE DEFAULT_MAJOR PYTHON_PREFIX
 
 RUNTIME_ENV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/.runtime"
 if [[ -f "$RUNTIME_ENV_DIR/cuda_arch.env" ]]; then
