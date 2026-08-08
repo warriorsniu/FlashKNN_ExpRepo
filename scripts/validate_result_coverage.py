@@ -49,6 +49,37 @@ def require_unified_environment(path: Path, payload: dict) -> tuple[str, str, in
     return name, driver, memory_mib
 
 
+def expected_method_repeats(
+    metadata: dict,
+    record: dict,
+    method: str,
+    default_repeats: int,
+) -> int:
+    """Resolve a method's repeat count when a documented timing batch overrides it.
+
+    Args:
+        metadata: Top-level result metadata containing optional timing overrides.
+        record: Query record whose mode and k identify the measured configuration.
+        method: Backend name stored under the record's ``methods`` mapping.
+        default_repeats: Repeat count declared by the base result file.
+
+    Returns:
+        The override repeat count for a matching batch, otherwise the base count.
+    """
+    matches = [
+        override for override in metadata.get("timing_overrides", [])
+        if method in override.get("methods", [])
+        and record.get("mode") in override.get("modes", [])
+        and int(record.get("k", -1)) in {int(k) for k in override.get("k", [])}
+    ]
+    if len(matches) > 1:
+        raise SystemExit(
+            f"Multiple timing overrides match {record.get('room')} "
+            f"{record.get('mode')} k={record.get('k')} {method}"
+        )
+    return int(matches[0]["repeats"]) if matches else default_repeats
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-dir", type=Path, required=True)
@@ -81,6 +112,17 @@ def main() -> None:
         path = query_dir / filename
         payload = load(path)
         gpu_platforms.add(require_unified_environment(path, payload))
+        metadata = payload.get("metadata", {})
+        for override in metadata.get("timing_overrides", []):
+            gpu = override.get("gpu", {})
+            platform = (
+                str(gpu.get("name", "")),
+                str(gpu.get("driver", "")),
+                int(gpu.get("memory_mib", 0)),
+            )
+            if not all(platform):
+                raise SystemExit(f"{filename} has incomplete timing override GPU metadata")
+            gpu_platforms.add(platform)
         records = payload.get("records", [])
         if not records:
             raise SystemExit(f"No records in {filename}")
@@ -102,10 +144,13 @@ def main() -> None:
                 raise SystemExit(f"{filename} {record.get('room')} misses methods: {sorted(missing)}")
             for method in methods:
                 timings = record["methods"][method].get("timings", [])
-                if len(timings) != expected_repeats:
+                method_repeats = expected_method_repeats(
+                    metadata, record, method, expected_repeats
+                )
+                if len(timings) != method_repeats:
                     raise SystemExit(
                         f"{filename} {record.get('room')} {method} expected "
-                        f"{expected_repeats} timings, found {len(timings)}"
+                        f"{method_repeats} timings, found {len(timings)}"
                     )
         if {record["mode"] for record in required_records} != modes:
             raise SystemExit(f"{filename} does not cover modes {sorted(modes)}")
