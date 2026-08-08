@@ -30,6 +30,15 @@ if [[ -n "${EXPREPO_SEMANTICKITTI:-}" ]]; then
     PYTHONPATH="$REPO_DIR/FlashKNN:$REPO_DIR/Networks" "$PYTHON_BIN" "$REPO_DIR/Networks/benchmark_semantickitti_network.py" \
       --model "$MODEL" --repo "$REPO_ARG" --variant 24 --data-dir "$EXPREPO_SEMANTICKITTI" \
       --gpu "$GPU" --warmups "$WARMUPS" --repeats "$REPEATS" --max-samples "$LIDAR_SAMPLES" \
+      --output "$OUT/${MODEL}_semantickitti_backends.json"
+  done
+  LIDAR_NETWORK_MODELS="${LIDAR_NETWORK_MODELS:-ptv3 octformer spunet minkunet34c}"
+  for MODEL in $LIDAR_NETWORK_MODELS; do
+    PYTHONPATH="$REPO_DIR/Pointcept:$REPO_DIR/Networks" "$PYTHON_BIN" \
+      "$REPO_DIR/Networks/benchmark_semantickitti_pointcept.py" \
+      --model "$MODEL" --pointcept-root "$REPO_DIR/Pointcept" \
+      --data-dir "$EXPREPO_SEMANTICKITTI" --gpu "$GPU" \
+      --warmups "$WARMUPS" --repeats "$REPEATS" --max-samples "$LIDAR_SAMPLES" \
       --output "$OUT/${MODEL}_semantickitti.json"
   done
 fi

@@ -3,8 +3,21 @@
 from __future__ import annotations
 
 import math
+from typing import Callable, Protocol
 
 import torch
+
+
+class KDTreeProtocol(Protocol):
+    """Minimal CPU KD-tree interface required by hierarchy construction."""
+
+    def knn(
+        self,
+        query: torch.Tensor,
+        k: int = 1,
+        ordered: bool = False,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Return neighbour indices and squared distances for CPU queries."""
 
 
 def _voxel_first_cuda(xyz: torch.Tensor, size: float) -> torch.Tensor:
@@ -81,4 +94,49 @@ def build_flash_hierarchy(
             batch_idx=full_batch,
         )
         backward.append(back)
+    return forward + backward
+
+
+def build_cpu_hierarchy(
+    metric_xyz: torch.Tensor,
+    voxel_sizes: tuple[float, ...],
+    ks: tuple[int, ...],
+    grid_subsampling: Callable[[torch.Tensor, float], torch.Tensor],
+    kdtree_factory: Callable[[torch.Tensor], KDTreeProtocol],
+) -> list[torch.Tensor]:
+    """Build the DeLA hierarchy with the original CPU grid/KD-tree operators.
+
+    Args:
+        metric_xyz: CPU float tensor containing the already voxelized scan.
+        voxel_sizes: Metric voxel sizes used at each hierarchy level.
+        ks: Neighbour count at each hierarchy level.
+        grid_subsampling: CPU operator returning representative point indices.
+        kdtree_factory: Constructor for the original CPU KD-tree wrapper.
+
+    Returns:
+        Forward KNN/downsampling and backward interpolation indices in the same
+        order as :func:`build_flash_hierarchy`.
+    """
+    if metric_xyz.is_cuda:
+        raise ValueError("CPU hierarchy input must reside on the CPU")
+    if len(voxel_sizes) != len(ks):
+        raise ValueError("voxel_sizes and ks must have equal length")
+
+    full_xyz = metric_xyz
+    current_xyz = metric_xyz
+    forward: list[torch.Tensor] = []
+    levels: list[torch.Tensor] = []
+    for level, (size, k) in enumerate(zip(voxel_sizes, ks)):
+        if level:
+            local = grid_subsampling(current_xyz, size)
+            current_xyz = current_xyz[local].contiguous()
+            forward.append(local)
+            levels.append(current_xyz)
+        neighbours = kdtree_factory(current_xyz).knn(current_xyz, k, False)[0]
+        forward.append(neighbours)
+
+    backward = [
+        kdtree_factory(level_xyz).knn(full_xyz, 1, False)[0].squeeze(-1)
+        for level_xyz in reversed(levels)
+    ]
     return forward + backward

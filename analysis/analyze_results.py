@@ -105,17 +105,21 @@ def network_rows(path, payload):
                     "network_ms": value["network"]["mean_ms"], "end_to_end_ms": value["end_to_end"]["mean_ms"]})
         else:
             rows.append({"file": str(path), "gpu": gpu, "dataset": meta["dataset"], "model": meta["model"],
-                "backend": "native", "sample": record["room"], "num_full": record["num_full"],
-                "num_down": record["num_down"], "preprocessing_ms": 0.0,
+                "backend": "native", "sample": record.get("room", record.get("sample")),
+                "num_full": record.get("num_full", record.get("points")),
+                "num_down": record.get("num_down", record.get("points")), "preprocessing_ms": 0.0,
                 "network_ms": record["network"]["mean_ms"],
                 "end_to_end_ms": record["network"]["mean_ms"]})
     for record in payload.get("samples", []):
-        rows.append({"file": str(path), "gpu": gpu, "dataset": meta["manifest"]["dataset"],
-            "model": meta["model"], "backend": "flashknn", "sample": record["sample"],
-            "num_full": record["points"], "num_down": record["points"],
-            "preprocessing_ms": record["hierarchy"]["mean_ms"],
-            "network_ms": record["model"]["mean_ms"],
-            "end_to_end_ms": record["end_to_end"]["mean_ms"]})
+        values = record.get("backends", {"flashknn": record})
+        for backend, value in values.items():
+            rows.append({"file": str(path), "gpu": gpu,
+                "dataset": meta.get("dataset", meta.get("manifest", {}).get("dataset", "unknown")),
+                "model": meta["model"], "backend": backend, "sample": record["sample"],
+                "num_full": record["points"], "num_down": record["points"],
+                "preprocessing_ms": value["hierarchy"]["mean_ms"],
+                "network_ms": value["model"]["mean_ms"],
+                "end_to_end_ms": value["end_to_end"]["mean_ms"]})
     return rows
 
 
@@ -225,16 +229,17 @@ def main():
                 return "DeLA + FlashKNN" if row["backend"] == "flashknn" else "DeLA"
             return {"ptv3": "PTv3", "octformer": "OctFormer", "spunet": "SPUNet",
                     "minkunet34c": "MinkUNet"}.get(str(row["model"]).lower(), str(row["model"]))
-        plt.figure(figsize=(7.2, 4.4))
         network_efficiency = ndf[ndf.dataset == "S3DIS"].copy()
-        network_efficiency["paper_label"] = network_efficiency.apply(paper_network_label, axis=1)
-        for (gpu_name, label), subset in network_efficiency.groupby(["gpu", "paper_label"]):
-            subset = subset.sort_values("num_down")
-            plt.plot(subset.num_down, subset.end_to_end_ms / 1000.0, marker="o",
-                     markersize=3, linewidth=1, label=f"{label} ({gpu_name})")
-        plt.xlabel("Voxelized point number"); plt.ylabel("Time cost (s)")
-        plt.legend(fontsize=7); plt.tight_layout()
-        plt.savefig(args.output_dir / "network_efficiency_comparison.png", dpi=220); plt.close()
+        if not network_efficiency.empty:
+            plt.figure(figsize=(7.2, 4.4))
+            network_efficiency["paper_label"] = network_efficiency.apply(paper_network_label, axis=1)
+            for (gpu_name, label), subset in network_efficiency.groupby(["gpu", "paper_label"]):
+                subset = subset.sort_values("num_down")
+                plt.plot(subset.num_down, subset.end_to_end_ms / 1000.0, marker="o",
+                         markersize=3, linewidth=1, label=f"{label} ({gpu_name})")
+            plt.xlabel("Voxelized point number"); plt.ylabel("Time cost (s)")
+            plt.legend(fontsize=7); plt.tight_layout()
+            plt.savefig(args.output_dir / "network_efficiency_comparison.png", dpi=220); plt.close()
     workbook = args.output_dir / "benchmark_results.xlsx"
     with pd.ExcelWriter(workbook, engine="openpyxl") as writer:
         if not main_table.empty: main_table.to_excel(writer, sheet_name="query_main_table", index=False)

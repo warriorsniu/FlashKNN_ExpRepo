@@ -18,7 +18,9 @@ LIDAR_FIELDS = {
 NETWORK_FILES = {
     "dela_s3dis.json", "ptv3_s3dis.json", "octformer_s3dis.json",
     "spunet_s3dis.json", "minkunet34c_s3dis.json",
-    "dela_semantickitti.json", "deepla_semantickitti.json",
+    "dela_semantickitti_backends.json", "deepla_semantickitti_backends.json",
+    "ptv3_semantickitti.json", "octformer_semantickitti.json",
+    "spunet_semantickitti.json", "minkunet34c_semantickitti.json",
 }
 
 
@@ -224,9 +226,17 @@ def main() -> None:
                        for record in dela):
         raise SystemExit("DeLA result must contain both CPU nanoflann and FlashKNN backends")
     for model in ("dela", "deepla"):
-        payload = load(network_dir / f"{model}_semantickitti.json")
+        payload = load(network_dir / f"{model}_semantickitti_backends.json")
         if int(payload.get("metadata", {}).get("alpha", -1)) != 8:
             raise SystemExit(f"{model} SemanticKITTI must use the selected alpha=8 operating point")
+        samples = payload.get("samples", [])
+        if not samples or any(
+            set(sample.get("backends", {})) != {"cpu_kdtree", "flashknn"}
+            for sample in samples
+        ):
+            raise SystemExit(
+                f"{model} SemanticKITTI must contain paired CPU-KDTree and FlashKNN backends"
+            )
     if len(gpu_platforms) != 1:
         raise SystemExit(f"A run mixes GPU platforms: {sorted(gpu_platforms)}")
     print("Coverage OK: paper query table, point-scaling curves, and network figure are complete")
