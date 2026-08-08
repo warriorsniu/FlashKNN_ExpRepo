@@ -29,6 +29,7 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--repeats", type=int, default=10)
     parser.add_argument("--max-samples", type=int)
     parser.add_argument("--calibration-points", type=int, default=8192)
+    parser.add_argument("--resume", action="store_true")
     parser.add_argument("--seed", type=int, default=47)
     return parser.parse_args()
 
@@ -165,7 +166,7 @@ def main() -> None:
             for percentile in args.percentile:
                 radii[(mode, k, percentile)] = float(torch.quantile(samples, percentile))
 
-    payload: dict[str, Any] = {
+    new_payload: dict[str, Any] = {
         "metadata": {
             "dataset": "S3DIS",
             "operator": "Pointcept pointops.ball_query",
@@ -186,7 +187,27 @@ def main() -> None:
         ],
         "records": [],
     }
-    atomic_json(args.output, payload)
+    if args.resume and args.output.is_file():
+        payload = json.loads(args.output.read_text(encoding="utf-8"))
+        old = payload.get("metadata", {})
+        current = new_payload["metadata"]
+        fields = ("dataset", "operator", "torch", "torch_cuda", "voxel_size_m",
+                  "crop_points", "warmups", "repeats", "seed", "eligible_rooms")
+        changed = {field: (old.get(field), current.get(field))
+                   for field in fields if old.get(field) != current.get(field)}
+        if old.get("gpu", {}).get("uuid") != current["gpu"].get("uuid"):
+            changed["gpu.uuid"] = (old.get("gpu", {}).get("uuid"), current["gpu"].get("uuid"))
+        if payload.get("radii") != new_payload["radii"]:
+            changed["radii"] = (payload.get("radii"), new_payload["radii"])
+        if changed:
+            raise SystemExit(f"Refusing to resume incompatible output {args.output}: {changed}")
+    else:
+        payload = new_payload
+        atomic_json(args.output, payload)
+    completed = {
+        (record["room"], record["mode"], int(record["k"]), float(record["percentile"]))
+        for record in payload["records"]
+    }
 
     for path in eligible_paths:
         coord = load_xyz(torch, path)
@@ -208,6 +229,9 @@ def main() -> None:
                 kth_distance = torch.sqrt(squared_distances[:, k - 1])
                 next_distance = torch.sqrt(squared_distances[:, k])
                 for percentile in args.percentile:
+                    record_key = (relative, mode, k, percentile)
+                    if record_key in completed:
+                        continue
                     radius = radii[(mode, k, percentile)]
                     predicted, timings = timed_ball_query(
                         torch, ball_query, support, query, k, radius,
@@ -224,6 +248,7 @@ def main() -> None:
                         "recall_vs_cukd": set_recall(torch, exact, predicted),
                     }
                     payload["records"].append(record)
+                    completed.add(record_key)
                     atomic_json(args.output, payload)
                     print(
                         f"{relative} {mode} k={k} p={percentile:g} "

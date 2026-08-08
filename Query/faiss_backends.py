@@ -8,6 +8,7 @@ same Chinese-key schema as the historical EdgeAggr JSON files.
 from __future__ import annotations
 
 import time
+import math
 from typing import Any
 
 import torch
@@ -38,12 +39,16 @@ def _ivf_index(faiss: Any, resources: Any, nlist: int, seed: int) -> Any:
     return index
 
 
-def _search(index: Any, query: torch.Tensor, k: int) -> tuple[float, torch.Tensor]:
+def _search(index: Any, query: torch.Tensor, k: int,
+            max_queries_per_launch: int = 131_072) -> tuple[float, torch.Tensor]:
+    """Search every query while bounding FAISS temporary GPU memory."""
     distances = torch.empty((len(query), k), dtype=torch.float32, device="cuda")
     indices = torch.empty((len(query), k), dtype=torch.int64, device="cuda")
     torch.cuda.synchronize()
     start = time.perf_counter()
-    index.search(query, k, distances, indices)
+    for begin in range(0, len(query), max_queries_per_launch):
+        end = min(len(query), begin + max_queries_per_launch)
+        index.search(query[begin:end], k, distances[begin:end], indices[begin:end])
     torch.cuda.synchronize()
     return time.perf_counter() - start, indices
 
@@ -106,18 +111,26 @@ def benchmark_faiss_methods(
     training_seconds = time.perf_counter() - start
     ivf.reserveMemory(len(support))
     calibration = []
+    calibration_queries = 0
     if nprobe is None and target_recall is not None:
         ivf.add(support)
         # Searching every inverted list can require tens of GiB of temporary
         # storage for full-room queries. IVF is an approximate baseline, so
         # calibrate over the practical range and select the closest recall.
+        calibration_limit = min(len(query), 65_536)
+        calibration_stride = max(1, math.ceil(len(query) / calibration_limit))
+        calibration_query = query[::calibration_stride][:calibration_limit].contiguous()
+        calibration_exact = exact_indices[::calibration_stride][:calibration_limit].contiguous()
+        calibration_queries = len(calibration_query)
         candidates = tuple(range(1, 17)) + (24, 32, 48, 64)
         for candidate in candidates:
             if candidate > nlist:
                 break
             ivf.nprobe = candidate
-            _, candidate_indices = _search(ivf, query, k)
-            candidate_mean, candidate_min = _recall(candidate_indices, exact_indices, k)
+            _, candidate_indices = _search(ivf, calibration_query, k)
+            candidate_mean, candidate_min = _recall(
+                candidate_indices, calibration_exact, k
+            )
             calibration.append({"nprobe": candidate, "mean_recall": candidate_mean,
                                 "min_recall": candidate_min})
             if candidate_mean >= target_recall:
@@ -158,6 +171,7 @@ def benchmark_faiss_methods(
         "faiss_ivf_nprobe": nprobe,
         "faiss_ivf_target_recall": target_recall,
         "faiss_ivf_calibration": calibration,
+        "faiss_ivf_calibration_queries": calibration_queries,
         "faiss_ivf_mean_recall": mean_recall,
         "faiss_ivf_min_recall": min_recall,
     }

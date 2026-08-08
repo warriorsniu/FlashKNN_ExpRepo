@@ -20,10 +20,18 @@ the paper. `run_all.sh` is not successful unless
 ## Speedups under different number of point
 
 - Dataset: every Pointcept-format S3DIS room, `full`, pre-downsampling, k=32.
+- Each room is voxelized at 0.02 m before querying; `full` means no subsequent 250,000-point crop, not the raw unvoxelized cloud.
 - Baseline denominator: CPU nanoflann for both query and construction speedup.
-- Curves: FlashKNN, cudaKDTree, FLANN-CUDA, nanoflann, FAISS Flat, and
-  matched-recall FAISS IVF-Flat.
+- Curves: FlashKNN, cudaKDTree, FLANN-CUDA, and nanoflann, matching the paper.
+- FAISS Flat/IVF-Flat are evaluated in the fixed-size 250,000-point table; exact Flat is intentionally not extended to the million-point scaling sweep.
 - Output figures preserve per-room voxelized point counts on the x-axis.
+
+## Radius/ball-query operator
+
+- Dataset: the same 81 S3DIS `sample_part` crops used by the kNN table.
+- Modes: pre/post; `nsample=k=24,32,48`.
+- Radius: one global 90th-percentile exact kth-neighbor distance for each mode and k.
+- Output: query latency, valid-neighbor ratio, insufficient-query ratio, truncation ratio, and set recall against cudaKDTree.
 
 ## Network efficiency comparison
 

@@ -64,11 +64,47 @@ def main():
     torch.manual_seed(47); torch.cuda.manual_seed_all(47)
     model = build_model(cfg.model).cuda().eval()
     dataset = build_dataset(cfg.data.test)
+    gpu = {"name": torch.cuda.get_device_name(0)}
+    try:
+        line = subprocess.check_output([
+            "nvidia-smi", "-i", str(args.gpu),
+            "--query-gpu=uuid,driver_version,memory.total", "--format=csv,noheader,nounits",
+        ], text=True).strip().splitlines()[0]
+        uuid, driver, memory = (x.strip() for x in line.split(","))
+        gpu.update(uuid=uuid, driver=driver, memory_mib=int(memory))
+    except Exception:
+        pass
+    metadata = {
+        "dataset": "S3DIS", "split": "Area_5", "model": args.model,
+        "weights": "random initialization",
+        "config": CONFIGS[args.model], "grid_size_m": args.grid_size,
+        "timing_boundary": "CUDA-ready voxelized fragment; network forward only",
+        "warmups": args.warmups, "repeats": args.repeats, "gpu": gpu,
+        "torch": torch.__version__, "torch_cuda": torch.version.cuda,
+        "python": platform.python_version(),
+    }
     records = []
+    if args.output.is_file():
+        previous = json.loads(args.output.read_text(encoding="utf-8"))
+        old = previous.get("metadata", {})
+        fields = ("dataset", "split", "model", "config", "grid_size_m", "warmups",
+                  "repeats", "torch", "torch_cuda")
+        changed = {field: (old.get(field), metadata.get(field))
+                   for field in fields if old.get(field) != metadata.get(field)}
+        if old.get("gpu", {}).get("uuid") != metadata["gpu"].get("uuid"):
+            changed["gpu.uuid"] = (old.get("gpu", {}).get("uuid"), metadata["gpu"].get("uuid"))
+        if changed:
+            raise SystemExit(f"Refusing to resume incompatible output {args.output}: {changed}")
+        records = previous.get("records", [])
+    completed = {record["room"] for record in records if "network" in record}
+    payload = {"metadata": metadata, "records": records}
     with torch.inference_mode():
         sample_count = len(dataset) if args.max_samples is None else min(len(dataset), args.max_samples)
         for index in range(sample_count):
             sample = dataset[index]
+            if sample["name"] in completed:
+                print(f"skip completed {sample['name']}", flush=True)
+                continue
             full_points = int(sample["segment"].shape[0])
             fragment = sample["fragment_list"][0]
             down_points = int(fragment["coord"].shape[0])
@@ -85,27 +121,10 @@ def main():
                     timings.append(float(start.elapsed_time(end)))
             records.append({"room": sample["name"], "num_full": full_points,
                             "num_down": down_points, "network": summary(timings)})
+            completed.add(sample["name"])
             print(f"{sample['name']} N={down_points} {statistics.mean(timings):.3f} ms", flush=True)
-            atomic_json(args.output, {"records": records})
-    gpu = {"name": torch.cuda.get_device_name(0)}
-    try:
-        line = subprocess.check_output([
-            "nvidia-smi", "-i", str(args.gpu),
-            "--query-gpu=uuid,driver_version,memory.total", "--format=csv,noheader,nounits",
-        ], text=True).strip().splitlines()[0]
-        uuid, driver, memory = (x.strip() for x in line.split(","))
-        gpu.update(uuid=uuid, driver=driver, memory_mib=int(memory))
-    except Exception:
-        pass
-    atomic_json(args.output, {"metadata": {
-        "dataset": "S3DIS", "split": "Area_5", "model": args.model,
-        "weights": "random initialization",
-        "config": CONFIGS[args.model], "grid_size_m": args.grid_size,
-        "timing_boundary": "CUDA-ready voxelized fragment; network forward only",
-        "warmups": args.warmups, "repeats": args.repeats, "gpu": gpu,
-        "torch": torch.__version__, "torch_cuda": torch.version.cuda,
-        "python": platform.python_version(),
-    }, "records": records})
+            atomic_json(args.output, payload)
+    atomic_json(args.output, payload)
 
 
 if __name__ == "__main__":
