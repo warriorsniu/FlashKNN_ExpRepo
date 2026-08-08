@@ -142,7 +142,7 @@ bash run_all.sh
 
 该入口自动选择当前显存占用最低的 GPU，执行依赖/数据 preflight，统一生成一个 run ID，并在当前 PyTorch 2.7.1+cu128 环境中依次完成 query、ball query、network latency 和 Excel/绘图分析。Python 选择顺序为显式 `PYTHON_BIN`、已激活的 uv/venv、已激活的 Conda、仓库 `.venv`、最后才是 `PATH`，因此原始 Conda 安装与本机 `uv pip` 环境使用同一个入口；所有子脚本继承同一解释器，不会混用系统 Python。最终路径会打印在终端，不需要设置 GPU、环境名或输出目录。快速端到端验收使用 `SMOKE=1 bash run_all.sh`。
 
-已有同一 GPU、PyTorch/CUDA、数据 manifest 和 warmup/repeat 配置的历史结果时，可用冒号分隔的 `REUSE_RUN_DIRS` 合并后断点续跑，例如 `REUSE_RUN_DIRS=results/l20_full_20260806 RUN_ID=l20_complete GPU=0 bash run_all.sh`。`scripts/merge_run_results.py` 保留原有 JSON 顶层结构和记录字段；元数据不同的文件会被拒绝或跳过，smoke 结果不会混入正式结果。
+已有同一 GPU、PyTorch/CUDA、数据 manifest 和 warmup/repeat 配置的历史结果时，可用冒号分隔的 `REUSE_RUN_DIRS` 合并后断点续跑，例如 `REUSE_RUN_DIRS=results/L20/l20_full_20260806 RUN_ID=l20_complete GPU=0 bash run_all.sh`。`scripts/merge_run_results.py` 保留原有 JSON 顶层结构和记录字段；元数据不同的文件会被拒绝或跳过，smoke 结果不会混入正式结果。L20 运行默认写入 `results/L20/<RUN_ID>`，也可以用 `RESULTS_ROOT` 显式覆盖结果根目录。
 
 先确认机器空闲并指定从 **0 开始编号**的物理 GPU：
 
@@ -216,7 +216,7 @@ GPU=0 RUN_ID=l20_related bash run_related_baselines.sh
 
 正式设置使用 250,000 点、\(k=24/32/48\)、pre/post、3 次 warm-up 和 10 次记录。`Query/benchmark_ball_query.py` 与 `Query/benchmark_arkade.py` 也可以分别运行，并用 `--max-samples 1 --crop-points 10000 --warmups 1 --repeats 1` 进行功能检查。Arkade 驱动默认允许有限次子进程重试，并可用 `--resume` 从原子保存的记录继续，以应对公开 OptiX 示例偶发的进程级故障；失败尝试不会进入计时样本。OptiX context/pipeline 创建、文件 I/O、体素化、裁块和 H2D 不计入算法 latency；Arkade 的 BVH build 和查询过程中发生的 radius refit 分别保留在 construction/query 边界中。
 
-正式 L20 结果保存在 `results/l20_ball_query_20260807/`、`results/l20_arkade_20260807/`，论文侧汇总表为 `analysis/l20_related_baselines.md`。该表可用 `analysis/analyze_related_baselines.py --knn <matched-knn.json> --ball <ball.json> --ball-sweep <optional-sweep.json> --arkade <arkade.json> --output <summary.md>` 重新生成。
+正式 L20 结果保存在 `results/L20/l20_ball_query_20260807/`、`results/L20/l20_arkade_20260807/`，论文侧汇总表为 `analysis/l20_related_baselines.md`。该表可用 `analysis/analyze_related_baselines.py --knn <matched-knn.json> --ball <ball.json> --ball-sweep <optional-sweep.json> --arkade <arkade.json> --output <summary.md>` 重新生成。所有 L20 目录的来源、目的和覆盖关系见 `results/L20/README.md`。
 
 ## 5. 汇总论文结果
 

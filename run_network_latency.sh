@@ -6,7 +6,8 @@ source "$REPO_DIR/scripts/runtime_env.sh"
 source "$REPO_DIR/data/paths.env"
 GPU="${GPU:-0}"
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
-OUT="$REPO_DIR/results/$RUN_ID/network"
+RESULTS_ROOT="${RESULTS_ROOT:-$REPO_DIR/results/L20}"
+OUT="$RESULTS_ROOT/$RUN_ID/network"
 mkdir -p "$OUT"
 WARMUPS=10; REPEATS=30; SAMPLES=68; LIDAR_SAMPLES=22
 if [[ "${SMOKE:-0}" == "1" ]]; then WARMUPS=1; REPEATS=1; SAMPLES=1; LIDAR_SAMPLES=1; fi

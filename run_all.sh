@@ -9,7 +9,9 @@ if [[ -z "${GPU+x}" ]]; then
 fi
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
 export GPU RUN_ID
-RUN_DIR="$REPO_DIR/results/$RUN_ID"
+RESULTS_ROOT="${RESULTS_ROOT:-$REPO_DIR/results/L20}"
+export RESULTS_ROOT
+RUN_DIR="$RESULTS_ROOT/$RUN_ID"
 
 echo "Run ID: $RUN_ID"
 echo "Physical GPU: $GPU"
@@ -29,5 +31,5 @@ if [[ "${SMOKE:-0}" == "1" ]]; then VALIDATE_ARGS+=(--smoke); fi
 "$PYTHON_BIN" "$REPO_DIR/analysis/analyze_results.py" \
   --results "$RUN_DIR" \
   --output-dir "$REPO_DIR/analysis/output/$RUN_ID"
-echo "All outputs: $REPO_DIR/results/$RUN_ID"
+echo "All outputs: $RUN_DIR"
 echo "Analysis: $REPO_DIR/analysis/output/$RUN_ID"

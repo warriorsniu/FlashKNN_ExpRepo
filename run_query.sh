@@ -7,7 +7,8 @@ source "$REPO_DIR/data/paths.env"
 GPU="${GPU:-0}"
 S3DIS_QUERY_ROOT="${EXPREPO_S3DIS_QUERY:-$EXPREPO_S3DIS}"
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
-OUT="$REPO_DIR/results/$RUN_ID/query"
+RESULTS_ROOT="${RESULTS_ROOT:-$REPO_DIR/results/L20}"
+OUT="$RESULTS_ROOT/$RUN_ID/query"
 mkdir -p "$OUT"
 S3DIS_EXTRA=()
 LIDAR_EXTRA=()
@@ -20,7 +21,7 @@ if [[ "${SMOKE:-0}" == "1" ]]; then
   BALL_EXTRA=(--warmups 1 --repeats 1 --max-samples 1 --crop-points 1000)
 fi
 
-"$PYTHON_BIN" "$REPO_DIR/scripts/collect_system_info.py" "$REPO_DIR/results/$RUN_ID/system.json"
+"$PYTHON_BIN" "$REPO_DIR/scripts/collect_system_info.py" "$RESULTS_ROOT/$RUN_ID/system.json"
 PYTHONPATH="$REPO_DIR/Query:$REPO_DIR/FlashKNN" "$PYTHON_BIN" "$REPO_DIR/Query/benchmark_s3dis.py" \
   --data-root "$S3DIS_QUERY_ROOT" --output "$OUT/s3dis_sample_part.json" --gpu "$GPU" \
   --scope sample_part --mode pre post --k 8 16 24 32 48 64 "${S3DIS_EXTRA[@]}"
