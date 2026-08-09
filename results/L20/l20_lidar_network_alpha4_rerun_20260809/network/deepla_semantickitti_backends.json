@@ -1,0 +1,260 @@
+{
+  "metadata": {
+    "dataset": "SemanticKITTI",
+    "model": "deepla",
+    "variant": "24",
+    "backends": [
+      "cpu_kdtree",
+      "flashknn"
+    ],
+    "alpha": 4,
+    "voxel_sizes_m": [
+      0.06,
+      0.12,
+      0.24,
+      0.48
+    ],
+    "k": [
+      24,
+      24,
+      24,
+      24
+    ],
+    "checkpoint": null,
+    "weights_note": "Random weights if checkpoint is null; operation shapes and latency are unchanged.",
+    "timing_boundary": "CUDA-ready voxelized scan; hierarchy/downsampling/KNN plus network forward; excludes disk I/O and voxelization. CPU backend excludes hierarchy H2D, matching the paper's CPU-KDTree timing convention.",
+    "warmups": 10,
+    "repeats": 30,
+    "gpu": {
+      "name": "NVIDIA L20",
+      "uuid": "GPU-78990023-5606-bb80-49bf-8ddfe8683461",
+      "driver": "580.159.03",
+      "memory_mib": 46068
+    },
+    "torch": "2.7.1+cu128",
+    "torch_cuda": "12.8",
+    "python": "3.10.12",
+    "manifest": {
+      "format_version": 2,
+      "dataset": "SemanticKITTI",
+      "sequences": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "source_frame_counts": {
+        "00": 4541,
+        "01": 1101,
+        "02": 4661,
+        "03": 801,
+        "04": 271,
+        "05": 2761,
+        "06": 1101,
+        "07": 1101,
+        "08": 4071,
+        "09": 1591,
+        "10": 1201,
+        "11": 921,
+        "12": 1061,
+        "13": 3281,
+        "14": 631,
+        "15": 1901,
+        "16": 1731,
+        "17": 491,
+        "18": 1801,
+        "19": 4981,
+        "20": 831,
+        "21": 2721
+      },
+      "voxel_size_m": 0.06,
+      "post_voxel_size_m": 0.12,
+      "clip_range_xy_m": null,
+      "selection": {
+        "strategy": "per_sequence_linspace",
+        "samples_per_sequence": 5
+      },
+      "voxel_representative": "first point in raw frame order",
+      "samples": [
+        {
+          "file": "03_000000.npz",
+          "sha256": "643b69c0da63020d1881098b40e06624bd1e479419fd39f05cf65c59cac4b956",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/03/velodyne/000000.bin",
+          "sequence": "03",
+          "frame": "000000",
+          "raw_points": 124929,
+          "clipped_points": 124929,
+          "support_points": 82134,
+          "post_query_points": 48283
+        },
+        {
+          "file": "09_000000.npz",
+          "sha256": "39eb557ed5b7221fec720ad3be471960b242368f4cd9e266a47e6376eb72fd56",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/09/velodyne/000000.bin",
+          "sequence": "09",
+          "frame": "000000",
+          "raw_points": 126997,
+          "clipped_points": 126997,
+          "support_points": 91186,
+          "post_query_points": 59104
+        }
+      ]
+    }
+  },
+  "samples": [
+    {
+      "sample": "03_000000.npz",
+      "points": 82134,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 514.8312366916798,
+            "median_ms": 513.0852445145138,
+            "p95_ms": 530.2201290614903,
+            "std_ms": 11.105846699934007
+          },
+          "model": {
+            "mean_ms": 25.9734494527181,
+            "median_ms": 25.580687522888184,
+            "p95_ms": 26.820608139038086,
+            "std_ms": 1.6148900614053219
+          },
+          "end_to_end": {
+            "mean_ms": 540.8046861443979,
+            "median_ms": 538.6823069630191,
+            "p95_ms": 556.3129616267979,
+            "std_ms": 11.377063540526846
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 15.988218688964844,
+            "median_ms": 15.96995210647583,
+            "p95_ms": 16.230304718017578,
+            "std_ms": 0.0859801707425472
+          },
+          "model": {
+            "mean_ms": 24.415831502278646,
+            "median_ms": 24.341008186340332,
+            "p95_ms": 25.39027214050293,
+            "std_ms": 0.314779474371888
+          },
+          "end_to_end": {
+            "mean_ms": 40.40405019124349,
+            "median_ms": 40.31692886352539,
+            "p95_ms": 41.3568000793457,
+            "std_ms": 0.37687324731542676
+          }
+        }
+      }
+    },
+    {
+      "sample": "09_000000.npz",
+      "points": 91186,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 618.3023301612897,
+            "median_ms": 614.56293403171,
+            "p95_ms": 627.3616339312866,
+            "std_ms": 8.189457479139069
+          },
+          "model": {
+            "mean_ms": 25.74106559753418,
+            "median_ms": 25.556496620178223,
+            "p95_ms": 27.109376907348633,
+            "std_ms": 0.5973881620748561
+          },
+          "end_to_end": {
+            "mean_ms": 644.0433957588237,
+            "median_ms": 640.2535573150963,
+            "p95_ms": 653.1911947755143,
+            "std_ms": 8.473201547393995
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.235266176859536,
+            "median_ms": 16.215903282165527,
+            "p95_ms": 16.424768447875977,
+            "std_ms": 0.07133238487422705
+          },
+          "model": {
+            "mean_ms": 24.467539342244468,
+            "median_ms": 24.317440032958984,
+            "p95_ms": 25.72979164123535,
+            "std_ms": 0.44910632499200187
+          },
+          "end_to_end": {
+            "mean_ms": 40.702805519104004,
+            "median_ms": 40.56371212005615,
+            "p95_ms": 41.935808181762695,
+            "std_ms": 0.44873097965192443
+          }
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "cpu_kdtree": {
+      "hierarchy": {
+        "mean_ms": 566.5667834264848,
+        "median_ms": 566.5667834264848,
+        "p95_ms": 618.3023301612897,
+        "std_ms": 51.73554673480493
+      },
+      "model": {
+        "mean_ms": 25.85725752512614,
+        "median_ms": 25.85725752512614,
+        "p95_ms": 25.9734494527181,
+        "std_ms": 0.1161919275919594
+      },
+      "end_to_end": {
+        "mean_ms": 592.4240409516108,
+        "median_ms": 592.4240409516108,
+        "p95_ms": 644.0433957588237,
+        "std_ms": 51.619354807212915
+      },
+      "single_sample_throughput_hz": 1.6879801136930566
+    },
+    "flashknn": {
+      "hierarchy": {
+        "mean_ms": 16.11174243291219,
+        "median_ms": 16.11174243291219,
+        "p95_ms": 16.235266176859536,
+        "std_ms": 0.123523743947346
+      },
+      "model": {
+        "mean_ms": 24.441685422261557,
+        "median_ms": 24.441685422261557,
+        "p95_ms": 24.467539342244468,
+        "std_ms": 0.025853919982910867
+      },
+      "end_to_end": {
+        "mean_ms": 40.55342785517375,
+        "median_ms": 40.55342785517375,
+        "p95_ms": 40.702805519104004,
+        "std_ms": 0.14937766393025598
+      },
+      "single_sample_throughput_hz": 24.658827943503212
+    }
+  }
+}

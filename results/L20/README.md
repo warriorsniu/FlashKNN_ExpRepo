@@ -10,10 +10,12 @@
 
 | 目录 | 结果来源与实验目的 | 覆盖关系与使用状态 |
 | --- | --- | --- |
-| `l20_complete_20260807/` | 最终正式汇总。S3DIS fixed-size query 包含81个房间、pre/post、k=8/16/24/32/48/64，共972条；所有 k 的 FlashKNN 与 cudaKDTree 均来自最终 generated-bitonic build 的配对验证，其余方法保留第一轮正式计时。S3DIS full 使用0.02 m体素化后的272个完整房间、pre、k=32，共272条；ball query 共486条；SemanticKITTI 使用22个 sequence 各5帧、pre/post、k=16/24/32，共660条；网络结果包含5个 S3DIS 模型各68个 Area 5 房间，以及 SemanticKITTI 上 DeLA/DeepLA 的 CPU KDTree/FlashKNN 成对层次构建和4个 Pointcept 网络，各22帧。`system.json` 保存统一环境。 | **论文主结果与推荐下载目录。** 已覆盖正式 query、ball query、LiDAR 和网络延迟矩阵，并通过 coverage validation。S3DIS fixed-size 的两批配对计时来源见 JSON metadata；它不替代 NCU、Arkade、单房间 radius sweep 和特定 kernel revision 的定向消融。 |
+| `l20_complete_20260807/` | 最终正式汇总。S3DIS fixed-size query 包含81个房间、pre/post、k=8/16/24/32/48/64，共972条；所有 k 的 FlashKNN 与 cudaKDTree 均来自最终 generated-bitonic build 的配对验证，其余方法保留第一轮正式计时。S3DIS full 使用0.02 m体素化后的272个完整房间、pre、k=32，共272条；ball query 共486条；SemanticKITTI 使用22个 sequence 各5帧、pre/post、k=16/24/32，共660条；网络结果包含5个 S3DIS 模型各68个 Area 5 房间，以及 SemanticKITTI 上 DeLA/DeepLA 的 CPU KDTree/`alpha=4` FlashKNN 成对层次构建和4个 Pointcept 网络，各22帧。`system.json` 保存统一环境。 | **论文主结果与推荐下载目录。** 已覆盖正式 query、ball query、LiDAR 和网络延迟矩阵，并通过 coverage validation。S3DIS fixed-size 的两批配对计时来源见 JSON metadata；它不替代 NCU、Arkade、单房间 radius sweep 和特定 kernel revision 的定向消融。 |
 | `l20_full_20260806/` | 第一轮正式 S3DIS 运行。`s3dis_sample_part.json` 已完成972条；当时的 `s3dis_full_k32.json` 仅有92条 pre/post 记录，是旧版 full 定义下的部分运行。 | **已被后续全量覆盖。** sample_part 的 FLANN-CUDA、nanoflann 和 FAISS 记录仍构成最终汇总中这些未变更基线的数据；全部 FlashKNN/cudaKDTree 记录均已被最终 build 的配对结果替换。92条旧 full 记录被最终272房间、仅 pre、正确0.02 m体素化的 full 实验取代。仅用于追溯历史。 |
 | `l20_supplement_gpu1_20260807/` | 第二张 L20 上补齐 SemanticKITTI query、S3DIS 网络结果和早期仅 FlashKNN hierarchy 的 DeLA/DeepLA LiDAR 网络结果，随后由 merge 脚本汇入最终目录。`semantickitti.concurrent-invalid.json` 是早期与 CPU nanoflann 并发运行时保存的424条中间记录。 | SemanticKITTI query 和5个 S3DIS 网络 JSON 已汇入最终目录；早期2个 LiDAR 网络 JSON 已被 `l20_lidar_network_matrix_20260808/` 的成对 CPU/Flash 结果取代。`concurrent-invalid` 明确无效，绝不可用于论文数字。保留该目录只为记录来源。 |
-| `l20_lidar_network_matrix_20260808/` | 在第二张 L20 上补齐22个分层 SemanticKITTI 帧的完整网络矩阵：DeLA/DeepLA 分别比较 CPU KDTree 与 FlashKNN 四层 hierarchy，并补充 PTv3、OctFormer、SPUNet、MinkUNet34C 网络 forward；正式参数为10次 warmup、30次记录。 | **已汇入最终全量目录。** 这是最终 LiDAR 网络 latency 的直接来源；原始目录保留逐文件 provenance。 |
+| `l20_lidar_network_matrix_20260808/` | 22个分层 SemanticKITTI 帧的完整网络矩阵：PTv3、OctFormer、SPUNet、MinkUNet34C 网络 forward 保留原始正式结果；DeLA/DeepLA 文件已用2026-08-09的 `alpha=4` 正式结果更新。 | **已汇入最终全量目录。** 四个 Pointcept 文件是其最终直接来源，DeLA/DeepLA 的直接来源和异常点复测 provenance 分别见后两行。 |
+| `l20_lidar_network_alpha4_20260809/` | 在同型号、同驱动、同显存的另一张 L20 上以论文默认 `alpha=4` 重跑 DeLA/DeepLA 的22帧正式 CPU KDTree/FlashKNN 配对实验，参数为10次 warmup、30次记录；`co_tenant_audit.txt` 保存物理卡、驻留但无 SM 活动的服务及进程级采样。 | **已替换原 `alpha=8` 结果并汇入最终目录。** 两个 JSON 的 `metadata.timing_overrides` 指向定向复测来源。 |
+| `l20_lidar_network_alpha4_rerun_20260809/` | 对正式批次逐帧审查后，使用相同 GPU 和10/30参数定向复测 `03_000000` 与 `09_000000`。 | DeLA 仅采用 `09_000000`、DeepLA 仅采用 `03_000000` 覆盖明确的 model-latency 异常；其他复测记录仅作诊断，不进入最终均值。 |
 | `l20_network_matrix_smoke_20260808/` | 新增 LiDAR CPU KNN 与四个 Pointcept 网络入口后的单样本、1次 warmup、1次记录连通性检查。 | **已被正式矩阵完全覆盖。** 只能用于环境与调用链回归，不能用于性能结论。 |
 | `l20_ball_query_20260807/` | 审稿补充的 Pointcept `pointops.ball_query` 对比。正式文件使用81个250k S3DIS crop、pre/post、k=24/32/48和全局 exact 第k邻居距离的90%分位半径；另有一个房间上的多 percentile radius sweep。 | 正式486条 ball-query 文件已被最终汇总逐字节覆盖；`s3dis_radius_sweep_one_room.json` 没有被全量目录替代，仍用于说明半径、coverage、truncation、recall 与延迟之间的关系。 |
 | `l20_arkade_20260807/` | 审稿补充的 Arkade/TrueKNN OptiX 8.1 RT-core 基线，覆盖81个250k S3DIS crop、pre/post、k=24/32/48，并分别记录 BVH construction、TrueKNN radius-refit query、轮数和相对 cudaKDTree recall。 | **未被最终全量目录覆盖。** 这是独立硬件路径的补充对比；公开实现较慢且正式运行观察到两次可恢复的子进程故障，因此应与稳定性说明和 recall 一起引用，不作为主基线。 |
@@ -46,14 +48,23 @@
 
 | 模型 | 邻域/后端 | Hierarchy / preprocessing (ms) | Network (ms) | End-to-end (ms) | 同模型端到端加速 |
 | --- | --- | ---: | ---: | ---: | ---: |
-| DeLA | CPU KDTree | 550.389 | 17.710 | 568.099 | 1.00× |
-| DeLA | FlashKNN | 18.019 | 17.257 | 35.276 | 16.10× |
-| DeepLA | CPU KDTree | 549.939 | 25.268 | 575.207 | 1.00× |
-| DeepLA | FlashKNN | 18.192 | 24.608 | 42.800 | 13.44× |
+| DeLA | CPU KDTree | 550.583 | 18.015 | 568.598 | 1.00× |
+| DeLA | FlashKNN (`alpha=4`) | 16.464 | 17.555 | 34.019 | 16.71× |
+| DeepLA | CPU KDTree | 548.357 | 25.095 | 573.453 | 1.00× |
+| DeepLA | FlashKNN (`alpha=4`) | 16.423 | 24.704 | 41.128 | 13.94× |
 | SPUNet | Native forward | — | 44.727 | 44.727 | — |
 | MinkUNet34C | Native forward | — | 102.656 | 102.656 | — |
 | OctFormer | Native forward | — | 113.929 | 113.929 | — |
 | PTv3 | Native forward | — | 137.299 | 137.299 | — |
+
+将相同22帧的旧 `alpha=8` 结果与更新后的 `alpha=4` 结果对照，DeLA/DeepLA 的 Flash hierarchy 分别下降8.6%和9.7%，端到端分别下降3.6%和3.9%。`alpha` 只改变 FlashKNN 候选规模；network forward 的小幅批次差异属于计时波动，因此论文应优先引用 hierarchy 和 end-to-end 变化。
+
+| 模型 | Alpha | Flash hierarchy (ms) | Flash end-to-end (ms) | 对 CPU 端到端加速 |
+| --- | ---: | ---: | ---: | ---: |
+| DeLA | 8（旧） | 18.019 | 35.276 | 16.10× |
+| DeLA | 4（最终） | 16.464 | 34.019 | 16.71× |
+| DeepLA | 8（旧） | 18.192 | 42.800 | 13.44× |
+| DeepLA | 4（最终） | 16.423 | 41.128 | 13.94× |
 
 ## 重建汇总
 

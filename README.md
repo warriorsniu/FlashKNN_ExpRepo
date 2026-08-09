@@ -201,7 +201,7 @@ SMOKE=1 GPU=0 RUN_ID=smoke bash run_network_latency.sh
 同一台 GPU 上的所有方法应单卡串行运行；不要同时启动训练。正式测试建议先记录空载
 `nvidia-smi`，并在结果中检查 GPU UUID，防止设备编号变化。
 
-LiDAR 网络实验统一使用 pack 中已经按 0.06 m 体素化的 XYZ 与 remission。DeLA/DeepLA 的 CPU 层次计时沿用论文口径，不计 CPU→GPU 传输；FlashKNN 层次在 GPU 上计时，两者的 model forward 均使用 CUDA event。四个 Pointcept 模型采用随机初始化，仅比较执行形状与 latency：SPUNet/MinkUNet 使用 SemanticKITTI 配置，PTv3 使用 NuScenes backbone 并适配为4输入通道和19类，同时沿用 S3DIS 基线的 non-FlashAttention 128-point patch fallback；OctFormer 适配为4输入通道、19类和覆盖 LiDAR 空间范围的12层 octree，并因 efficiency pack 不含 normal 而输入零 normal。网络权重未经训练，因此这些结果不能解释精度。
+LiDAR 网络实验统一使用 pack 中已经按 0.06 m 体素化的 XYZ 与 remission。DeLA/DeepLA 的 CPU 层次计时沿用论文口径，不计 CPU→GPU 传输；FlashKNN 层次默认使用论文设置 `alpha=4` 并在 GPU 上计时，两者的 model forward 均使用 CUDA event。可用 `LIDAR_ALPHA` 显式覆盖探索性实验，但正式 coverage validator 只接受 `alpha=4`。四个 Pointcept 模型采用随机初始化，仅比较执行形状与 latency：SPUNet/MinkUNet 使用 SemanticKITTI 配置，PTv3 使用 NuScenes backbone 并适配为4输入通道和19类，同时沿用 S3DIS 基线的 non-FlashAttention 128-point patch fallback；OctFormer 适配为4输入通道、19类和覆盖 LiDAR 空间范围的12层 octree，并因 efficiency pack 不含 normal 而输入零 normal。网络权重未经训练，因此这些结果不能解释精度。
 
 同一个 JSON 文件内的全部方法和样本必须来自同一物理 GPU。若主机有多张型号、显存和 driver 完全相同的 L20，不同且互不直接求加速比的 JSON 文件可以分配到不同物理卡并行补跑；覆盖检查比较 GPU platform signature，而每个文件继续保存实际 UUID。不能在同一张论文对比表内部混用不同 UUID 的记录，也不能混合不同型号或 driver。
 

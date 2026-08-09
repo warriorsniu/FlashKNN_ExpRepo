@@ -227,8 +227,8 @@ def main() -> None:
         raise SystemExit("DeLA result must contain both CPU nanoflann and FlashKNN backends")
     for model in ("dela", "deepla"):
         payload = load(network_dir / f"{model}_semantickitti_backends.json")
-        if int(payload.get("metadata", {}).get("alpha", -1)) != 8:
-            raise SystemExit(f"{model} SemanticKITTI must use the selected alpha=8 operating point")
+        if int(payload.get("metadata", {}).get("alpha", -1)) != 4:
+            raise SystemExit(f"{model} SemanticKITTI must use the paper-default alpha=4 operating point")
         samples = payload.get("samples", [])
         if not samples or any(
             set(sample.get("backends", {})) != {"cpu_kdtree", "flashknn"}

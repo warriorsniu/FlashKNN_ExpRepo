@@ -10,6 +10,7 @@ RESULTS_ROOT="${RESULTS_ROOT:-$REPO_DIR/results/L20}"
 OUT="$RESULTS_ROOT/$RUN_ID/network"
 mkdir -p "$OUT"
 WARMUPS=10; REPEATS=30; SAMPLES=68; LIDAR_SAMPLES=22
+LIDAR_ALPHA="${LIDAR_ALPHA:-4}"
 if [[ "${SMOKE:-0}" == "1" ]]; then WARMUPS=1; REPEATS=1; SAMPLES=1; LIDAR_SAMPLES=1; fi
 
 PYTHONPATH="$REPO_DIR/FlashKNN" "$PYTHON_BIN" "$REPO_DIR/DeLA/S3DIS/benchmark_latency.py" \
@@ -29,7 +30,7 @@ if [[ -n "${EXPREPO_SEMANTICKITTI:-}" ]]; then
     REPO_ARG="$REPO_DIR/DeLA"; [[ "$MODEL" == deepla ]] && REPO_ARG="$REPO_DIR/DeepLA-Net"
     PYTHONPATH="$REPO_DIR/FlashKNN:$REPO_DIR/Networks" "$PYTHON_BIN" "$REPO_DIR/Networks/benchmark_semantickitti_network.py" \
       --model "$MODEL" --repo "$REPO_ARG" --variant 24 --data-dir "$EXPREPO_SEMANTICKITTI" \
-      --gpu "$GPU" --warmups "$WARMUPS" --repeats "$REPEATS" --max-samples "$LIDAR_SAMPLES" \
+      --gpu "$GPU" --alpha "$LIDAR_ALPHA" --warmups "$WARMUPS" --repeats "$REPEATS" --max-samples "$LIDAR_SAMPLES" \
       --output "$OUT/${MODEL}_semantickitti_backends.json"
   done
   LIDAR_NETWORK_MODELS="${LIDAR_NETWORK_MODELS:-ptv3 octformer spunet minkunet34c}"

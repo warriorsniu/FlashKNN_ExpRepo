@@ -31,7 +31,7 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--data-dir", type=Path, required=True)
     parser.add_argument("--checkpoint", type=Path)
     parser.add_argument("--gpu", type=int, default=0)
-    parser.add_argument("--alpha", type=int, default=8)
+    parser.add_argument("--alpha", type=int, default=4)
     parser.add_argument("--backend", nargs="+", choices=BACKENDS, default=BACKENDS)
     parser.add_argument("--warmups", type=int, default=10)
     parser.add_argument("--repeats", type=int, default=30)
