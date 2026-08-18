@@ -23,8 +23,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data-dir", type=Path, required=True)
     parser.add_argument("--gpu", type=int, default=0, help="Physical GPU id")
     parser.add_argument("--mode", choices=("pre", "post"), nargs="+", default=["pre", "post"])
-    parser.add_argument("--k", type=int, nargs="+", default=[16, 24, 32])
+    parser.add_argument("--k", type=int, nargs="+", default=[8, 16, 24, 32, 48, 64])
     parser.add_argument("--alpha", type=int, nargs="+", default=[4, 8, 16, 32])
+    parser.add_argument(
+        "--ivf-match-alpha",
+        type=int,
+        default=4,
+        help="FlashKNN alpha whose recall is the FAISS IVF calibration target",
+    )
     parser.add_argument("--warmups", type=int, default=3)
     parser.add_argument("--repeats", type=int, default=10)
     parser.add_argument("--max-samples", type=int, default=None)
@@ -92,6 +98,10 @@ def main() -> None:
         exponent = round(math.log2(alpha))
         if alpha < 2 or 2 ** exponent != alpha:
             raise SystemExit(f"alpha must be a power of two, got {alpha}")
+    if not args.skip_faiss and args.ivf_match_alpha not in args.alpha:
+        raise SystemExit(
+            f"--ivf-match-alpha={args.ivf_match_alpha} is absent from --alpha={args.alpha}"
+        )
     # Select the physical card before importing torch or CUDA extensions.
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
     import torch
@@ -132,6 +142,7 @@ def main() -> None:
             "torch": torch.__version__, "torch_cuda": torch.version.cuda,
             "exact_backend": exact_backend, "warmups": args.warmups,
             "repeats": args.repeats,
+            "faiss_ivf_match_alpha": args.ivf_match_alpha,
             "timing_boundary": "CUDA inputs ready; excludes file I/O, voxelization and H2D",
         },
         "samples": [],
@@ -142,7 +153,10 @@ def main() -> None:
             raise SystemExit(f"Existing output uses a different manifest: {args.output}")
         old = previous.get("metadata", {})
         current = payload["metadata"]
-        identity_fields = ("torch", "torch_cuda", "exact_backend", "warmups", "repeats")
+        identity_fields = (
+            "torch", "torch_cuda", "exact_backend", "warmups", "repeats",
+            "faiss_ivf_match_alpha",
+        )
         changed = {
             field: (old.get(field), current.get(field))
             for field in identity_fields if old.get(field) != current.get(field)
@@ -263,7 +277,10 @@ def main() -> None:
                     if faiss is None:
                         raise SystemExit("GPU FAISS is required unless --skip-faiss is set")
                     from faiss_backends import benchmark_faiss_methods
-                    target = min(record["flashknn"], key=lambda item: abs(item["alpha"] - 8))
+                    target = next(
+                        item for item in record["flashknn"]
+                        if int(item["alpha"]) == args.ivf_match_alpha
+                    )
                     faiss_result = benchmark_faiss_methods(
                         support, query, k, args.warmups, args.repeats,
                         target_recall=target["recall"]["mean"],

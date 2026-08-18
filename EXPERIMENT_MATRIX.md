@@ -50,5 +50,5 @@ the paper. `run_all.sh` is not successful unless
 - Modes: pre/post; k: 8, 16, 24, 32, 48, 64, matching the fixed-size S3DIS
   query sweep; FlashKNN alpha: 4, 8, 16, 32.
 - Baselines: cudaKDTree, FLANN-CUDA, CPU nanoflann, FAISS GPU Flat, and
-  matched-recall FAISS GPU IVF-Flat.
+  FAISS GPU IVF-Flat matched to the paper-default FlashKNN alpha=4 recall.
 - Network latency: 22 stratified frames, one per sequence. DeLA and DeepLA each compare the paper-compatible CPU KDTree hierarchy against FlashKNN with the paper-default alpha=4; PTv3, OctFormer, SPUNet, and MinkUNet34C measure CUDA-ready network forward latency on the same frames.
