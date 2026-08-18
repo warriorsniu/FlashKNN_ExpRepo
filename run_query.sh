@@ -38,6 +38,6 @@ PYTHONPATH="$REPO_DIR/Query:$REPO_DIR/FlashKNN:$REPO_DIR/Pointcept/libs/pointops
 if [[ -n "${EXPREPO_SEMANTICKITTI:-}" ]]; then
   PYTHONPATH="$REPO_DIR/FlashKNN" "$PYTHON_BIN" "$REPO_DIR/Query/benchmark_semantickitti.py" \
     --data-dir "$EXPREPO_SEMANTICKITTI" --output "$OUT/semantickitti.json" --gpu "$GPU" \
-    --mode pre post --k 16 24 32 --alpha 4 8 16 32 "${LIDAR_EXTRA[@]}"
+    --mode pre post --k 8 16 24 32 48 64 --alpha 4 8 16 32 "${LIDAR_EXTRA[@]}"
 fi
 echo "$OUT"

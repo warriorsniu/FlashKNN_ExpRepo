@@ -186,11 +186,21 @@ def main() -> None:
     lidar_payload = load(lidar_path)
     gpu_platforms.add(require_unified_environment(lidar_path, lidar_payload))
     lidar = lidar_payload.get("samples", [])
-    expected_lidar_records = 6 if args.smoke else 110 * 2 * 3
+    expected_lidar_records = 12 if args.smoke else 110 * 2 * 6
     if len(lidar) != expected_lidar_records:
         raise SystemExit(
             f"SemanticKITTI expected {expected_lidar_records} records, found {len(lidar)}"
         )
+    if {record.get("mode") for record in lidar} != {"pre", "post"}:
+        raise SystemExit("SemanticKITTI does not cover pre/post query modes")
+    if {int(record.get("k", -1)) for record in lidar} != {8, 16, 24, 32, 48, 64}:
+        raise SystemExit("SemanticKITTI does not cover k=8/16/24/32/48/64")
+    lidar_keys = {
+        (record.get("sample"), record.get("mode"), int(record.get("k", -1)))
+        for record in lidar
+    }
+    if len(lidar_keys) != expected_lidar_records:
+        raise SystemExit("SemanticKITTI contains duplicate sample/mode/k records")
     for record in lidar:
         missing = LIDAR_FIELDS - set(record)
         if missing:
