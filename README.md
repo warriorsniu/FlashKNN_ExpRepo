@@ -164,18 +164,10 @@ EXPREPO_S3DIS_QUERY=/path/to/s3disfull/raw GPU=0 RUN_ID=l20_01 bash run_query.sh
 
 - `sample_part`: 250,000 个 support 点，k=8/16/24/32/48/64，pre/post；
 - `full`: 先按 0.02 m 体素化、随后不作 250,000 点裁块的完整房间，固定 k=32，仅运行论文点数缩放图所需的 pre-query；
-- 若已准备 LiDAR pack，追加 SemanticKITTI query。
+- 若已准备 LiDAR pack，追加 SemanticKITTI pre/post query，k=8/16/24/32/48/64。
 - Pointcept ball query：S3DIS `sample_part`、pre/post、`nsample=k=24/32/48`，分别使用全局 exact 第 k 邻居距离的 90% 分位半径，并保存 coverage、truncation 和 recall。
 
-S3DIS `sample_part` 和 SemanticKITTI query 均对比 FlashKNN、精确 cudaKDTree、FLANN-CUDA、CPU nanoflann、FAISS GPU Flat 和 matched-recall IVF-Flat；S3DIS `full` 点数缩放实验按论文方法只运行 FlashKNN、cudaKDTree、FLANN-CUDA 和 nanoflann，避免在百万点完整查询上运行复杂度近似二次的 exact FAISS Flat。IVF 以 FlashKNN `alpha=8`
-的 recall 为目标，在实用范围 `nprobe=1...64` 中选择第一个达到目标的设置；
-若因等距候选的 ID tie-breaking 始终不能精确达到，则选择 recall 最接近的设置，
-并保存完整校准轨迹。限制实用范围可避免因等距候选的 ID tie-breaking 无法精确达到目标时，
-退化为扫描全部 IVF lists 并产生过大显存临时开销。所有 GPU
-方法的计时输入已在 GPU，排除文件 I/O、体素化、裁块与 CPU→GPU 传输；FAISS Flat
-的 `add` 与 search 分别计时，IVF 原始 JSON 分别保留 training、add 和 search，论文主表的
-construction/total 按 `training + add` 计算。nanoflann 严格复用原论文脚本口径：先把
-输入复制到 CPU，再开始计时，故其 GPU→CPU 传输不在表中。
+S3DIS `sample_part` 和 SemanticKITTI query 均对比 FlashKNN、精确 cudaKDTree、FLANN-CUDA、CPU nanoflann、FAISS GPU Flat 和 matched-recall IVF-Flat；S3DIS `full` 点数缩放实验按论文方法只运行 FlashKNN、cudaKDTree、FLANN-CUDA 和 nanoflann，避免在百万点完整查询上运行复杂度近似二次的 exact FAISS Flat。两套 fixed-size 实验都以论文默认 FlashKNN `alpha=4` recall 校准 IVF：S3DIS 的 `num_down=2` 即 `alpha=4`，SemanticKITTI 通过 `faiss_ivf_match_alpha=4` 显式记录。需要注意，canonical S3DIS 后续只用最终 build 覆盖了 FlashKNN/cudaKDTree timing 与 recall，未重跑未变更的 IVF，因此其 `target_recall` 保留首次正式 alpha=4 校准值，与覆盖后的 FlashKNN recall 可能存在极小差异；新的 SemanticKITTI 文件则逐条严格匹配当前 alpha=4 recall。IVF 在实用范围 `nprobe=1...64` 中选择第一个达到目标的设置；若因等距候选的 ID tie-breaking 始终不能精确达到，则选择 recall 最接近的设置，并保存完整校准轨迹。限制实用范围可避免因等距候选的 ID tie-breaking 无法精确达到目标时，退化为扫描全部 IVF lists 并产生过大显存临时开销。所有 GPU 方法的计时输入已在 GPU，排除文件 I/O、体素化、裁块与 CPU→GPU 传输；FAISS Flat 的 `add` 与 search 分别计时，IVF 原始 JSON 分别保留 training、add 和 search，论文主表的 construction/total 按 `training + add` 计算。nanoflann 严格复用原论文脚本口径：先把输入复制到 CPU，再开始计时，故其 GPU→CPU 传输不在表中。
 
 `run_network_latency.sh` 测试：
 
