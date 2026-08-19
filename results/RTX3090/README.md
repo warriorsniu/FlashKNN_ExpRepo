@@ -9,6 +9,7 @@
 - S3DIS 250k fixed-size：81 个房间、pre/post、k=8/16/24/32/48/64，共 972 条。包含 FlashKNN、cudaKDTree、FLANN-CUDA、nanoflann、FAISS Flat 和 matched-recall IVF-Flat。
 - S3DIS full-point：272 个 0.02 m 体素化完整房间、pre、k=32，共 272 条。只包含 FlashKNN、cudaKDTree、FLANN-CUDA 和 nanoflann；由于完整点云上 brute-force 复杂度和内存成本过高，该组明确跳过 FAISS Flat/IVF。
 - S3DIS ball query：81 个房间、pre/post、k=24/32/48，共 486 条。
+- S3DIS memory：与主表相同的81个250k crop、pre/post、k=32，共162条；比较FlashKNN、cudaKDTree、FAISS GPU Flat和逐房间matched-recall IVF。
 - SemanticKITTI query：canonical 文件已由2026-08-18正式结果替换，覆盖110帧、pre/post、k=8/16/24/32/48/64，共1320条，FlashKNN alpha=4/8/16/32，FAISS IVF逐条匹配alpha=4。
 - 网络：S3DIS Area 5 的 DeLA、PTv3、OctFormer、SPUNet、MinkUNet34C 各 68 个房间；SemanticKITTI 的 DeLA/DeepLA 分别比较 CPU KDTree 与 FlashKNN hierarchy，并包含 PTv3、OctFormer、SPUNet、MinkUNet34C，各 22 帧、10 次 warm-up、30 次记录。
 
@@ -25,6 +26,27 @@
 | SemanticKITTI, post, k=24, alpha=4 | 1.402 ms | 3.661 ms | 2.61x | 0.978889 |
 
 表中前三个 S3DIS 行来自2026-08-19最终 kernel 3/10补跑；后两个 SemanticKITTI 行来自最终六k文件，均可引用。
+
+## S3DIS fixed-250k 显存占用
+
+`rtx3090_s3dis_memory_k32_20260819/` 使用与主表相同的81个deterministic
+250k crop，在空闲物理GPU 1上测量pre/post、k=32。指标是CUDA-ready输入之上的
+method-owned peak incremental GPU allocation：包含construction/index、workspace和
+output，排除文件I/O、voxelization、crop、H2D及输入tensor。FAISS沿用latency实验的
+默认`StandardGpuResources` scratch policy，IVF逐房间复用canonical matched-recall
+`nlist/nprobe`。
+
+| Mode | FlashKNN | cudaKDTree | FAISS Flat | FAISS IVF |
+| --- | ---: | ---: | ---: | ---: |
+| Pre | 290.61 MiB | 82.56 MiB | 1632.32 MiB | 1635.11 MiB |
+| Post | 121.12 MiB | 37.73 MiB | 1564.22 MiB | 1566.99 MiB |
+
+表中是81个房间的均值；逐房间sample SD和Student-t 95% CI位于
+`rtx3090_s3dis_memory_k32_20260819/analysis/summary.md`。FlashKNN的显存footprint
+高于cudaKDTree，但仍低于300 MiB；其I/O优势指HBM traffic和访问模式，并不等价于
+比树方法使用更少的allocated memory。FAISS的约1.5--1.6 GiB主要包括默认GPU resource
+scratch。cudaKDTree的树由native `cudaMallocAsync`分配，因此通过instrumented memory
+resource统计，不能用PyTorch allocator单独估算。
 
 ## S3DIS DeLA 最终内核延迟
 

@@ -79,4 +79,15 @@ results/L20/l20_s3dis_memory_k32_20260819/
 
 RTX 3090 使用同一 runner 和同一 measurement boundary，正式结果目录为
 `results/RTX3090/rtx3090_s3dis_memory_k32_20260819/`。L20 结果不得与 RTX 3090
-求混合平均；只在同平台比较方法，并在正文分平台报告。
+混合平均；只在同平台比较方法，并在正文分平台报告。
+
+RTX 3090 的81房间均值如下，仅用于L20运行后的量级sanity check：
+
+| Mode | FlashKNN | cudaKDTree | FAISS Flat | matched IVF |
+| --- | ---: | ---: | ---: | ---: |
+| Pre | 290.61 MiB | 82.56 MiB | 1632.32 MiB | 1635.11 MiB |
+| Post | 121.12 MiB | 37.73 MiB | 1564.22 MiB | 1566.99 MiB |
+
+L20 只要求前两列。由于两平台的CUDA allocator/runtime不同，不要求逐字节相同；若差异
+明显，应先检查measurement boundary、输入点数、`k`、extension hash和FAISS/allocator
+配置，不得直接挑选更接近RTX 3090的重复批次。

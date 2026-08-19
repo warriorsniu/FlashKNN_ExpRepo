@@ -29,6 +29,7 @@ The administrator subsequently enabled performance-counter access and all three 
 | --- | --- | --- |
 | `RTX3090/rtx3090_complete_20260808/` | Final canonical | Main query/network pack. SemanticKITTI uses the six-k alpha=4-IVF result; S3DIS fixed/full and DeLA S3DIS use the production-kernel refresh. |
 | `RTX3090/rtx3090_s3dis_final_kernel_refresh_20260819/` | Final direct source | Paired 3/10 S3DIS fixed/full query refresh and 10/30 DeLA S3DIS refresh on the same idle physical GPU. |
+| `RTX3090/rtx3090_s3dis_memory_k32_20260819/` | Final memory result | Same 81 fixed-250k crops, pre/post, k=32; FlashKNN/cudaKDTree/FAISS Flat/matched IVF peak incremental allocation with room SD/95% CI. |
 | `RTX3090/rtx3090_semantickitti_unifiedk_alpha4ivf_20260818/` | Final | Direct source for the canonical SemanticKITTI replacement. |
 | `RTX3090/rtx3090_ablation_final_20260810/` | Final | SMPS/SMSS/GMPS and candidate-storage/skip ablation. |
 | `RTX3090/rtx3090_thread_grouping_balanced_final_v2_20260811/` | Final | Balanced Fixed-8/16/32 versus Adaptive thread grouping. |

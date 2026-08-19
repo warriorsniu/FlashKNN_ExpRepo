@@ -1,0 +1,90 @@
+{
+  "source": "results/RTX3090/rtx3090_s3dis_memory_k32_20260819/s3dis_memory_k32.json",
+  "measurement_boundary": "Peak incremental method-owned GPU allocation above CUDA-ready support/query/grid/batch tensors; includes construction/index, workspace and outputs; excludes file I/O, voxelization, crop, H2D and input tensors",
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 3090",
+    "uuid": "GPU-8998eefa-dc46-f1dc-5f7e-547fb11dd3c0",
+    "driver": "595.58.03",
+    "memory_mib": 24576
+  },
+  "k": 32,
+  "crop_points": 250000,
+  "modes": {
+    "post": {
+      "cuda_kdtree": {
+        "n": 81,
+        "mean_mib": 37.72884978777097,
+        "sample_sd_mib": 0.29988661071372125,
+        "ci95_low_mib": 37.66253941282593,
+        "ci95_high_mib": 37.79516016271601,
+        "min_mib": 36.920443534851074,
+        "max_mib": 38.827425956726074
+      },
+      "faiss_flat": {
+        "n": 81,
+        "mean_mib": 1564.21883439429,
+        "sample_sd_mib": 0.49127202825517763,
+        "ci95_low_mib": 1564.110205228366,
+        "ci95_high_mib": 1564.327463560214,
+        "min_mib": 1563.5224609375,
+        "max_mib": 1566.32373046875
+      },
+      "faiss_ivf": {
+        "n": 81,
+        "mean_mib": 1566.9877567997685,
+        "sample_sd_mib": 0.5342636169543221,
+        "ci95_low_mib": 1566.8696214129454,
+        "ci95_high_mib": 1567.1058921865915,
+        "min_mib": 1566.3427734375,
+        "max_mib": 1569.1884765625
+      },
+      "flashknn": {
+        "n": 81,
+        "mean_mib": 121.12402946566358,
+        "sample_sd_mib": 1.7805125140223097,
+        "ci95_low_mib": 120.73032581841451,
+        "ci95_high_mib": 121.51773311291265,
+        "min_mib": 117.85009765625,
+        "max_mib": 128.4755859375
+      }
+    },
+    "pre": {
+      "cuda_kdtree": {
+        "n": 81,
+        "mean_mib": 82.56189678333423,
+        "sample_sd_mib": 0.0005804390501360676,
+        "ci95_low_mib": 82.56176843772069,
+        "ci95_high_mib": 82.56202512894778,
+        "min_mib": 82.56180095672607,
+        "max_mib": 82.5661735534668
+      },
+      "faiss_flat": {
+        "n": 81,
+        "mean_mib": 1632.3198664158951,
+        "sample_sd_mib": 0.18260322064572979,
+        "ci95_low_mib": 1632.2794895281163,
+        "ci95_high_mib": 1632.360243303674,
+        "min_mib": 1631.36767578125,
+        "max_mib": 1633.2373046875
+      },
+      "faiss_ivf": {
+        "n": 81,
+        "mean_mib": 1635.1071264949846,
+        "sample_sd_mib": 0.20196937597491993,
+        "ci95_low_mib": 1635.0624673986133,
+        "ci95_high_mib": 1635.151785591356,
+        "min_mib": 1634.1279296875,
+        "max_mib": 1636.03759765625
+      },
+      "flashknn": {
+        "n": 81,
+        "mean_mib": 290.6065658757716,
+        "sample_sd_mib": 0.9538305564387086,
+        "ci95_low_mib": 290.3956566201668,
+        "ci95_high_mib": 290.8174751313764,
+        "min_mib": 287.5,
+        "max_mib": 292.5556640625
+      }
+    }
+  }
+}
