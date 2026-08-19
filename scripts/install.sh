@@ -10,22 +10,33 @@ export MAX_JOBS
 # and must not make a copied repository compile for the wrong GPU.
 REQUESTED_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST:-}"
 
-python -m pip install --upgrade pip setuptools wheel ninja
-python -m pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 \
-  --index-url https://download.pytorch.org/whl/cu128
 source "$REPO_DIR/scripts/runtime_env.sh"
 NVCC_RELEASE="$($CUDA_HOME/bin/nvcc --version | sed -n 's/.*release \([0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' | tail -1)"
-if [[ "$NVCC_RELEASE" != "12.8" ]]; then
-  echo "PyTorch 2.7.1+cu128 experiments require CUDA toolkit 12.8; CUDA_HOME=$CUDA_HOME provides nvcc $NVCC_RELEASE." >&2
-  echo "Install CUDA 12.8 (normally /usr/local/cuda-12.8) or set CUDA_HOME to it, then rerun." >&2
-  exit 2
-fi
+case "$NVCC_RELEASE" in
+  11.8)
+    TORCH_CUDA_TAG="cu118"
+    SPCONV_PACKAGE="spconv-cu118==2.3.6"
+    ;;
+  12.8)
+    TORCH_CUDA_TAG="cu128"
+    # spconv publishes its CUDA 12-compatible binary under the cu120 name.
+    SPCONV_PACKAGE="spconv-cu120==2.3.6"
+    ;;
+  *)
+    echo "Supported experiment toolkits are CUDA 11.8 (RTX 3090) and CUDA 12.8 (L20/H20); CUDA_HOME=$CUDA_HOME provides nvcc $NVCC_RELEASE." >&2
+    exit 2
+    ;;
+esac
+
+python -m pip install --upgrade pip setuptools wheel ninja
+python -m pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 \
+  --index-url "https://download.pytorch.org/whl/$TORCH_CUDA_TAG"
 python -m pip install 'numpy==1.26.4' scipy pandas openpyxl tabulate matplotlib tqdm pyyaml \
   huggingface_hub 'httpx[socks]' addict einops 'plyfile==1.1.3' termcolor timm tensorboardX yapf \
-  torch-geometric 'spconv-cu120==2.3.6' 'ocnn==2.2.6'
+  torch-geometric "$SPCONV_PACKAGE" 'ocnn==2.2.6'
 python -m pip install --no-build-isolation 'SharedArray==3.2.1'
 python -m pip install 'torch-scatter==2.1.2' \
-  -f https://data.pyg.org/whl/torch-2.7.0+cu128.html
+  -f "https://data.pyg.org/whl/torch-2.7.0+$TORCH_CUDA_TAG.html"
 
 # FLANN-CUDA uses the LZ4 C headers/library. Keep this inside the Conda
 # environment so no sudo/system-package step is required on the target host.
@@ -52,6 +63,7 @@ mkdir -p "$REPO_DIR/.runtime"
 printf 'export TORCH_CUDA_ARCH_LIST=%q\n' "$TORCH_CUDA_ARCH_LIST" \
   > "$REPO_DIR/.runtime/cuda_arch.env"
 echo "Detected CUDA capability: $DETECTED_CUDA_ARCH; native target: $TORCH_CUDA_ARCH_LIST"
+echo "Toolkit/runtime: CUDA $NVCC_RELEASE / PyTorch 2.7.1+$TORCH_CUDA_TAG"
 USE_BUNDLED_WHEELHOUSE=0
 if [[ -f "$REPO_DIR/wheelhouse/manifest.json" ]]; then
   BUNDLED_CUDA_ARCH="$(python -c \

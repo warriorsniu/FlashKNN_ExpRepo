@@ -322,7 +322,8 @@ __device__ __forceinline__ void Bitonic_Sort(
 }
 
 
-template <typename CoordDType, int ArrayLengthPerThread, int depth_K>
+template <typename CoordDType, int ArrayLengthPerThread, int depth_K,
+          bool CandidateInShared = false, bool EnableSkip = true>
 __global__ void FlashKNN_Query_dynamic_load_kernel(
     int* Indices_out,
     CoordDType* Dis_out,
@@ -341,6 +342,10 @@ __global__ void FlashKNN_Query_dynamic_load_kernel(
     SharedMemory<CoordDType> shared;
     CoordDType* buf = shared.getPointer();
     int* buf_index = (int*)(buf) + SM_index_offset;
+    int* candidate_idx_buffer = buf_index + max_point_num_loaded;
+    CoordDType* candidate_dis_buffer = reinterpret_cast<CoordDType*>(
+        candidate_idx_buffer
+        + blockDim.x * blockDim.y * ArrayLengthPerThread);
     // int* buf_thread_tree_depth_worker = (int*)(buf) + SM_thread_tree_depth_offset;
     // int* buf_warp_thread_nbr_idx = (int*)(buf) + SM_warp_thread_nbr_idx_offset;
     // int max_query_point_num_loaded_per_batch = max_point_num_loaded / 16;
@@ -399,8 +404,16 @@ __global__ void FlashKNN_Query_dynamic_load_kernel(
                 CoordDType center_x = GridCoord[child_idx_origin*3 + 0];
                 CoordDType center_y = GridCoord[child_idx_origin*3 + 1];
                 CoordDType center_z = GridCoord[child_idx_origin*3 + 2];
-                CoordDType best_dis[ArrayLengthPerThread];
-                int best_idx[ArrayLengthPerThread];
+                CoordDType register_best_dis[ArrayLengthPerThread];
+                int register_best_idx[ArrayLengthPerThread];
+                CoordDType* best_dis = register_best_dis;
+                int* best_idx = register_best_idx;
+                if constexpr (CandidateInShared) {
+                    const int candidate_offset =
+                        thread_idx_in_block * ArrayLengthPerThread;
+                    best_dis = candidate_dis_buffer + candidate_offset;
+                    best_idx = candidate_idx_buffer + candidate_offset;
+                }
                 int nbr_idx_start = 0;
                 for(int i = 0;i < ArrayLengthPerThread;i++){best_idx[i]=child_idx_origin;best_dis[i] = INFINITY;} //初始化结果
                 if(loaded_support_points_num != loaded_support_points_num_cur_batch){ //不是第一个循环，从已有结果中读取数据
@@ -425,35 +438,48 @@ __global__ void FlashKNN_Query_dynamic_load_kernel(
                 int S_points_num_traversed = 0;
                 while(S_points_num_traversed < loaded_support_points_num_cur_batch){
                     bool skip = true;
-                    CoordDType max_dis = best_dis[(K-1)>>depth_K];
-                    max_dis = WARP_SHFL(max_dis, (K-1)&(blockDim.x - 1), blockDim.x);
+                    CoordDType max_dis = INFINITY;
+                    if constexpr (EnableSkip) {
+                        max_dis = best_dis[(K-1)>>depth_K];
+                        max_dis = WARP_SHFL(
+                            max_dis, (K-1)&(blockDim.x - 1), blockDim.x);
+                    }
                     for(int batch_idx = 0;batch_idx < batch && offset < loaded_support_points_num_cur_batch;batch_idx++){
                         int child_nbr_idx_with_offset = ((nbr_idx_start + offset)%loaded_support_points_num_cur_batch);
                         CoordDType dis_x = buf[child_nbr_idx_with_offset*3 + 0] - center_x;
                         CoordDType dis_y = buf[child_nbr_idx_with_offset*3 + 1] - center_y;
                         CoordDType dis_z = buf[child_nbr_idx_with_offset*3 + 2] - center_z;
                         CoordDType dis = dis_x*dis_x + dis_y*dis_y + dis_z*dis_z;
-                        if(dis < max_dis && dis < cut_radiu2){
+                        if constexpr (EnableSkip) {
+                            if(dis < max_dis && dis < cut_radiu2){
+                                best_dis[batch_idx + batch] = dis;
+                                best_idx[batch_idx + batch] =
+                                    buf_index[child_nbr_idx_with_offset];
+                                skip = false;
+                            }
+                        } else if(dis < cut_radiu2) {
                             best_dis[batch_idx + batch] = dis;
-                            best_idx[batch_idx + batch] = buf_index[child_nbr_idx_with_offset];
-                            skip = false;
+                            best_idx[batch_idx + batch] =
+                                buf_index[child_nbr_idx_with_offset];
                         }
                         offset += blockDim.x;
                     }
                     
                     __syncwarp();
-                    for (int l = 0;  l < 5;  ++l) {
-                        int srcLaneB = (thread_idx_in_block^(1<<l))&31;
-                        bool skip_other = WARP_SHFL(skip, srcLaneB);
-                        skip = skip_other&skip;
-                    }
-                    skip = WARP_SHFL(skip, 0);
                     S_points_num_traversed += batch*blockDim.x;
                     // if(S_points_num_traversed >= (K<<1)){
                     //     batch = batch_for_prune;
                     // }
-                    if(skip){
-                        continue;
+                    if constexpr (EnableSkip) {
+                        for (int l = 0;  l < 5;  ++l) {
+                            int srcLaneB = (thread_idx_in_block^(1<<l))&31;
+                            bool skip_other = WARP_SHFL(skip, srcLaneB);
+                            skip = skip_other&skip;
+                        }
+                        skip = WARP_SHFL(skip, 0);
+                        if(skip){
+                            continue;
+                        }
                     }
                     //调用双调排序
                     Bitonic_Sort<CoordDType, ArrayLengthPerThread, depth_K>(best_dis, best_idx);
@@ -473,7 +499,8 @@ __global__ void FlashKNN_Query_dynamic_load_kernel(
     }//block循环
 }
 
-void FlashKNN_Query_Dynamic_Load(
+template <bool CandidateInShared, bool EnableSkip>
+void FlashKNN_Query_Dynamic_Load_Impl(
     const torch::Tensor &GridCoord,
     const torch::Tensor &Parent2Child,
     const torch::Tensor &ParentNeigh,
@@ -502,14 +529,22 @@ void FlashKNN_Query_Dynamic_Load(
     const dim3 threads(blockdimx,blockdimy,1);
     
     const dim3 blocks(grid_x, std::min((uint64_t)16, maxGridY), 1);
-    int MemoryCost = max_point_num_loaded*(3*dtypesize+4); // 27K  B
+    const int candidate_array_length = bit_len_K == 6 ? 4 : 2;
+    const int CandidateMemoryCost = CandidateInShared
+        ? blockdimx * blockdimy * candidate_array_length
+            * (dtypesize + sizeof(int))
+        : 0;
+    int MemoryCost = max_point_num_loaded*(3*dtypesize+4)
+        + CandidateMemoryCost;
     int MemoryOffset = (max_point_num_loaded*3*dtypesize) / sizeof(int);
     // std::cout<<"子节点数量"<<GridCoord.size(0)<<std::endl;
     // std::cout<<"父节点数量"<<ParentNeigh.size(0)<<std::endl;
     if(GridCoord.dtype() == torch::kFloat32){
         if(bit_len_K == 6){
             // const dim3 threads(32,4,1);
-            FlashKNN_Query_dynamic_load_kernel<float, 4, 5><<<blocks, threads, MemoryCost, stream>>>(
+            FlashKNN_Query_dynamic_load_kernel<
+                float, 4, 5, CandidateInShared, EnableSkip>
+                <<<blocks, threads, MemoryCost, stream>>>(
             (int*) Indices.data_ptr(),
             (float*) Dis.data_ptr(),
             (const float*) GridCoord.data_ptr(),
@@ -526,7 +561,9 @@ void FlashKNN_Query_Dynamic_Load(
         }
         else if(bit_len_K == 5){
             // const dim3 threads(32,4,1);
-            FlashKNN_Query_dynamic_load_kernel<float, 2, 5><<<blocks, threads, MemoryCost, stream>>>(
+            FlashKNN_Query_dynamic_load_kernel<
+                float, 2, 5, CandidateInShared, EnableSkip>
+                <<<blocks, threads, MemoryCost, stream>>>(
             (int*) Indices.data_ptr(),
             (float*) Dis.data_ptr(),
             (const float*) GridCoord.data_ptr(),
@@ -543,7 +580,9 @@ void FlashKNN_Query_Dynamic_Load(
         }
         else if(bit_len_K == 4){
             // const dim3 threads(16,8,1);
-            FlashKNN_Query_dynamic_load_kernel<float, 2, 4><<<blocks, threads, MemoryCost, stream>>>(
+            FlashKNN_Query_dynamic_load_kernel<
+                float, 2, 4, CandidateInShared, EnableSkip>
+                <<<blocks, threads, MemoryCost, stream>>>(
             (int*) Indices.data_ptr(),
             (float*) Dis.data_ptr(),
             (const float*) GridCoord.data_ptr(),
@@ -560,7 +599,9 @@ void FlashKNN_Query_Dynamic_Load(
         }
         else if (bit_len_K < 4){
             // const dim3 threads(8,16,1);
-            FlashKNN_Query_dynamic_load_kernel<float, 2, 3><<<blocks, threads, MemoryCost, stream>>>(
+            FlashKNN_Query_dynamic_load_kernel<
+                float, 2, 3, CandidateInShared, EnableSkip>
+                <<<blocks, threads, MemoryCost, stream>>>(
             (int*) Indices.data_ptr(),
             (float*) Dis.data_ptr(),
             (const float*) GridCoord.data_ptr(),
@@ -583,6 +624,173 @@ void FlashKNN_Query_Dynamic_Load(
         throw cudaErrorNotYetImplemented;
     }
     cudaDeviceSynchronize();
+}
+
+void FlashKNN_Query_Dynamic_Load(
+    const torch::Tensor &GridCoord,
+    const torch::Tensor &Parent2Child,
+    const torch::Tensor &ParentNeigh,
+    const torch::Tensor &CumCntInNeigh,
+    const int K,
+    torch::Tensor &Indices,
+    torch::Tensor &Dis,
+    int batch_for_prune,
+    float cut_radiu2
+){
+    FlashKNN_Query_Dynamic_Load_Impl<false, true>(
+        GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+        Indices, Dis, batch_for_prune, cut_radiu2);
+}
+
+void FlashKNN_Query_Dynamic_Load_Ablation(
+    const torch::Tensor &GridCoord,
+    const torch::Tensor &Parent2Child,
+    const torch::Tensor &ParentNeigh,
+    const torch::Tensor &CumCntInNeigh,
+    const int K,
+    torch::Tensor &Indices,
+    torch::Tensor &Dis,
+    int batch_for_prune,
+    float cut_radiu2,
+    bool candidate_in_shared,
+    bool enable_skip
+){
+    if (candidate_in_shared && enable_skip) {
+        FlashKNN_Query_Dynamic_Load_Impl<true, true>(
+            GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+            Indices, Dis, batch_for_prune, cut_radiu2);
+    } else if (candidate_in_shared) {
+        FlashKNN_Query_Dynamic_Load_Impl<true, false>(
+            GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+            Indices, Dis, batch_for_prune, cut_radiu2);
+    } else if (enable_skip) {
+        FlashKNN_Query_Dynamic_Load_Impl<false, true>(
+            GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+            Indices, Dis, batch_for_prune, cut_radiu2);
+    } else {
+        FlashKNN_Query_Dynamic_Load_Impl<false, false>(
+            GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+            Indices, Dis, batch_for_prune, cut_radiu2);
+    }
+}
+
+template <int ArrayLengthPerThread, int DepthK>
+void FlashKNN_Query_Thread_Group_Launch(
+    const torch::Tensor &GridCoord,
+    const torch::Tensor &Parent2Child,
+    const torch::Tensor &ParentNeigh,
+    const torch::Tensor &CumCntInNeigh,
+    const int K,
+    torch::Tensor &Indices,
+    torch::Tensor &Dis,
+    int batch_for_prune,
+    float cut_radiu2
+){
+    static_assert(ArrayLengthPerThread >= 2);
+    static_assert(
+        (ArrayLengthPerThread & (ArrayLengthPerThread - 1)) == 0);
+    constexpr int BlockDimX = 1 << DepthK;
+    constexpr int BlockDimY = 128 / BlockDimX;
+    constexpr int RetainedCapacity =
+        (ArrayLengthPerThread / 2) * BlockDimX;
+    TORCH_CHECK(
+        K <= RetainedCapacity,
+        "thread-group candidate capacity ", RetainedCapacity,
+        " is smaller than k=", K);
+
+    auto stream = at::cuda::getCurrentCUDAStream().stream();
+    const uint64_t maxGridY =
+        at::cuda::getCurrentDeviceProperties()->maxGridSize[1];
+    constexpr int MaxPointNumLoaded = 256;
+    constexpr int MemoryCost = MaxPointNumLoaded * (3 * sizeof(float) + sizeof(int));
+    constexpr int MemoryOffset =
+        (MaxPointNumLoaded * 3 * sizeof(float)) / sizeof(int);
+    const dim3 threads(BlockDimX, BlockDimY, 1);
+    const dim3 blocks(grid_x, std::min((uint64_t)16, maxGridY), 1);
+
+    FlashKNN_Query_dynamic_load_kernel<
+        float, ArrayLengthPerThread, DepthK, false, true>
+        <<<blocks, threads, MemoryCost, stream>>>(
+            (int*) Indices.data_ptr(),
+            (float*) Dis.data_ptr(),
+            (const float*) GridCoord.data_ptr(),
+            (const int*) Parent2Child.data_ptr(),
+            (const int*) ParentNeigh.data_ptr(),
+            (const int*) CumCntInNeigh.data_ptr(),
+            K,
+            ParentNeigh.size(0),
+            MemoryOffset,
+            MaxPointNumLoaded,
+            batch_for_prune,
+            cut_radiu2);
+    cudaDeviceSynchronize();
+}
+
+void FlashKNN_Query_Dynamic_Load_Thread_Group(
+    const torch::Tensor &GridCoord,
+    const torch::Tensor &Parent2Child,
+    const torch::Tensor &ParentNeigh,
+    const torch::Tensor &CumCntInNeigh,
+    const int K,
+    torch::Tensor &Indices,
+    torch::Tensor &Dis,
+    int batch_for_prune,
+    float cut_radiu2,
+    int thread_group_size
+){
+    TORCH_CHECK(
+        GridCoord.dtype() == torch::kFloat32,
+        "thread-group ablation currently supports float32 coordinates only");
+    TORCH_CHECK(K >= 2 && K <= 64, "thread-group ablation requires 2 <= k <= 64");
+    TORCH_CHECK(
+        thread_group_size == 8 || thread_group_size == 16
+            || thread_group_size == 32,
+        "thread_group_size must be 8, 16, or 32");
+    const int bit_len_K = 32 - __builtin_clz(K - 1);
+
+    if (thread_group_size == 8) {
+        if (bit_len_K <= 3) {
+            FlashKNN_Query_Thread_Group_Launch<2, 3>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        } else if (bit_len_K == 4) {
+            FlashKNN_Query_Thread_Group_Launch<4, 3>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        } else if (bit_len_K == 5) {
+            FlashKNN_Query_Thread_Group_Launch<8, 3>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        } else {
+            FlashKNN_Query_Thread_Group_Launch<16, 3>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        }
+    } else if (thread_group_size == 16) {
+        if (bit_len_K <= 4) {
+            FlashKNN_Query_Thread_Group_Launch<2, 4>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        } else if (bit_len_K == 5) {
+            FlashKNN_Query_Thread_Group_Launch<4, 4>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        } else {
+            FlashKNN_Query_Thread_Group_Launch<8, 4>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        }
+    } else {
+        if (bit_len_K <= 5) {
+            FlashKNN_Query_Thread_Group_Launch<2, 5>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        } else {
+            FlashKNN_Query_Thread_Group_Launch<4, 5>(
+                GridCoord, Parent2Child, ParentNeigh, CumCntInNeigh, K,
+                Indices, Dis, batch_for_prune, cut_radiu2);
+        }
+    }
 }
 
 

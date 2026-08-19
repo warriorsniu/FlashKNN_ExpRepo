@@ -26,12 +26,53 @@ the paper. `run_all.sh` is not successful unless
 - FAISS Flat/IVF-Flat are evaluated in the fixed-size 250,000-point table; exact Flat is intentionally not extended to the million-point scaling sweep.
 - Output figures preserve per-room voxelized point counts on the x-axis.
 
+## Final-kernel design ablations
+
+- Dataset: the same 81 S3DIS `sample_part`, pre-query, 250,000-point crops.
+- k: 8, 16, 24, 32, 40, 48, 56, 64, matching the historical ablation figures.
+- Memory/sorting variants: SMPS, SMSS, and GMPS.
+- Candidate/skip factorial: register/shared candidate storage with skip enabled/disabled.
+- Every PS variant uses the current generated bitonic top-P network; variants are selected in one build.
+- Formal protocol: 5 warmups and 20 recorded repetitions, single GPU, no co-tenant training.
+- Provenance: git/dirty state, source hashes, extension hash, GPU UUID, and co-tenant snapshots.
+
+## Thread-grouping ablation
+
+- Dataset: the same 81 S3DIS `sample_part`, pre-query, 250,000-point crops.
+- k: 8, 16, 24, 32, 48, 64.
+- Strategies: Fixed-8, Fixed-16, Fixed-32, and the production Adaptive rule.
+- Formal protocol: 5 warmups and 20 recorded repetitions, one GPU, with no co-tenant process.
+- Ordering: balanced cyclic order over the 81 eligible rooms; for every k, each strategy appears first 20 or 21 times.
+- Statistics: query mean/p95 over recorded timings; SD and 95% CI over per-room timing means.
+- Correctness: report index-set recall against CUKD and require per-query sorted neighbor-distance equivalence across all four strategies, allowing only equal-distance index tie-breaking.
+- Result: the balanced final v2 run completed 81 rooms and 486 room-k records; the formal runner remains locked for deliberate reproduction via `ALLOW_FORMAL_THREAD_GROUPING=1`.
+
+## Adaptive octree-neighborhood ablation
+
+- Dataset: the same 81 S3DIS `sample_part`, pre-query, 250,000-point crops.
+- k: 8, 16, 24, 32, 48, 64.
+- Strategies: fixed 3x3x3, adaptive multilevel 3x3x3 neighborhoods, and exact cudaKDTree measured in the same balanced run.
+- Selection: descend above 8k candidates; accept a child only at or above 2k; no geometric guard or post-query retry.
+- Kernel ABI: unchanged production `FlashKNN_Query_Dynamic_Load` inputs. Variable-level groups are flattened to compatible query/support descriptors and processed in one query-kernel call.
+- Timings: octree construction, level selection, compatible-input construction, query/output remapping, and their total are reported separately.
+- Diagnostics: CUKD set recall, distance/index consistency, per-level choice and candidate-band counts, compatible-coordinate expansion, incremental peak memory, and kernel-call count.
+- Formal protocol/result: 5 warmups and 20 recorded repetitions, one GPU, no co-tenant process; the final v2 run completed 81 rooms and 486 room-k records. Reproduction remains explicitly locked.
+
 ## Radius/ball-query operator
 
 - Dataset: the same 81 S3DIS `sample_part` crops used by the kNN table.
 - Modes: pre/post; `nsample=k=24,32,48`.
 - Radius: one global 90th-percentile exact kth-neighbor distance for each mode and k.
 - Output: query latency, valid-neighbor ratio, insufficient-query ratio, truncation ratio, and set recall against cudaKDTree.
+
+## Semantic-boundary accuracy analysis
+
+- Dataset: all 68 S3DIS Area 5 validation rooms; 5,327,301 evaluated points.
+- Definition: an exact k=24 neighborhood includes the query itself; a point is a semantic boundary when fewer than 50% of neighbors share its ground-truth class.
+- Coverage: 49,144 boundary points (0.922%) and 5,278,157 non-boundary points.
+- Comparison: the preselected performance-matched FlashKNN and exact-KNN checkpoints, with checkpoint and evaluation-script SHA256 recorded.
+- Result fields: sample count, accuracy, mean class accuracy, mIoU, per-class IoU and confusion matrix for all/boundary/non-boundary partitions.
+- Interpretation: this class-mixing partition complements, but does not replace, the sparse/low-recall candidate-count bins.
 
 ## Network efficiency comparison
 
@@ -51,4 +92,5 @@ the paper. `run_all.sh` is not successful unless
   query sweep; FlashKNN alpha: 4, 8, 16, 32.
 - Baselines: cudaKDTree, FLANN-CUDA, CPU nanoflann, FAISS GPU Flat, and
   FAISS GPU IVF-Flat matched to the paper-default FlashKNN alpha=4 recall.
+- Formal results: L20 and RTX 3090 each contain 1,320 unique sample-mode-k records (110 x 2 x 6), 3 warmups and 10 recorded repetitions; the L20 canonical file passed full coverage validation and the RTX 3090 directed result passed the same SemanticKITTI protocol checks.
 - Network latency: 22 stratified frames, one per sequence. DeLA and DeepLA each compare the paper-compatible CPU KDTree hierarchy against FlashKNN with the paper-default alpha=4; PTv3, OctFormer, SPUNet, and MinkUNet34C measure CUDA-ready network forward latency on the same frames.

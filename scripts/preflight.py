@@ -123,9 +123,10 @@ if not args.data_only:
     import PyTorchCudaFlann
     import PyTorchNanoFlann
     from FlashKNN import FlashKNN
-    if not torch.__version__.startswith("2.7.1+") or torch.version.cuda != "12.8":
+    if (not torch.__version__.startswith("2.7.1+") or
+            torch.version.cuda not in {"11.8", "12.8"}):
         raise SystemExit(
-            f"Expected unified PyTorch 2.7.1+cu128, got {torch.__version__} "
+            f"Expected PyTorch 2.7.1 with CUDA 11.8 or 12.8, got {torch.__version__} "
             f"with CUDA {torch.version.cuda}"
         )
     if not torch.cuda.is_available():

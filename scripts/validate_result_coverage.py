@@ -34,9 +34,9 @@ def require_unified_environment(path: Path, payload: dict) -> tuple[str, str, in
     metadata = payload.get("metadata", {})
     torch_version = str(metadata.get("torch", ""))
     torch_cuda = str(metadata.get("torch_cuda", ""))
-    if not torch_version.startswith("2.7.1+") or torch_cuda != "12.8":
+    if not torch_version.startswith("2.7.1+") or torch_cuda not in {"11.8", "12.8"}:
         raise SystemExit(
-            f"{path.name} was not produced by unified PyTorch 2.7.1+cu128: "
+            f"{path.name} was not produced by supported PyTorch 2.7.1+cu118/cu128: "
             f"torch={torch_version!r}, CUDA={torch_cuda!r}"
         )
     gpu = metadata.get("gpu", {})
@@ -92,9 +92,9 @@ def main() -> None:
     system = load(args.run_dir / "system.json")
     system_torch = system.get("torch", {})
     if not str(system_torch.get("version", "")).startswith("2.7.1+") or \
-            str(system_torch.get("cuda", "")) != "12.8":
+            str(system_torch.get("cuda", "")) not in {"11.8", "12.8"}:
         raise SystemExit(
-            "system.json does not record the unified PyTorch 2.7.1+cu128 environment"
+            "system.json does not record supported PyTorch 2.7.1+cu118/cu128"
         )
 
     expected_s3dis = {

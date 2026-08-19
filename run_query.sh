@@ -7,7 +7,7 @@ source "$REPO_DIR/data/paths.env"
 GPU="${GPU:-0}"
 S3DIS_QUERY_ROOT="${EXPREPO_S3DIS_QUERY:-$EXPREPO_S3DIS}"
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
-RESULTS_ROOT="${RESULTS_ROOT:-$REPO_DIR/results/L20}"
+source "$REPO_DIR/scripts/results_env.sh"
 OUT="$RESULTS_ROOT/$RUN_ID/query"
 mkdir -p "$OUT"
 S3DIS_EXTRA=()

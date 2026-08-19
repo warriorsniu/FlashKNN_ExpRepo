@@ -16,6 +16,7 @@
 #include <thrust/extrema.h>
 
 #include "flash_knn_query_GMPS.h"
+#include "flash_knn_bitonic_top_p.cuh"
 
 constexpr uint64_t WARP_SIZE = 32;
 constexpr uint64_t WARP_SIZE_1 = WARP_SIZE - 1;
@@ -117,80 +118,6 @@ __device__ void Dynamic_Load_Support_Points(
 }
 
 
-// 还可以尝试优化为使用共享内存维护候选列表，这样比较器数量更多，目前比较器数量为WARPSIZE/2，使用共享内存，比较器数量可以增加到WARPSIZE
-template <typename CoordDType, int ArrayLengthPerThread, int depth_K>
-__device__ void Bitonic_Sort(
-    CoordDType* best_dis,
-    int* best_idx
-){
-    int depth = 1;
-    for(int step = 1;step < ArrayLengthPerThread*blockDim.x;step <<= 1){
-        int sub_depth = depth-1;
-        for(int cmp_step = step;cmp_step > 0;cmp_step >>= 1){
-            for(int i = 0;i<ArrayLengthPerThread;i++){
-                if(cmp_step < blockDim.x){
-                    int array_idx = threadIdx.x + (blockDim.x*i);
-                    int tgt_thread_ = threadIdx.x^cmp_step;
-                    int cmp_drct_ = ((array_idx >> depth)&1) ^ ((array_idx >> sub_depth)&1); // 0表示低位，1表示高位
-                    cmp_drct_ = 1 - 2*cmp_drct_;
-                    CoordDType cur_dis = best_dis[i];
-                    int cur_idx = best_idx[i];
-                    CoordDType cmp_dis = WARP_SHFL(cur_dis, tgt_thread_, blockDim.x);
-                    int cmp_idx = WARP_SHFL(cur_idx, tgt_thread_, blockDim.x);
-                    if((cur_dis - cmp_dis)*cmp_drct_ > 0){
-                        best_dis[i] = cmp_dis;
-                        best_idx[i] = cmp_idx;
-                    }
-                }
-                else if(ArrayLengthPerThread == 2){
-                    int array_idx = threadIdx.x + (blockDim.x*i);
-                    int idx_step = cmp_step >> depth_K;   //32对应5
-                    int cmp_drct_ = ((array_idx >> depth)&1) ^ ((array_idx >> sub_depth)&1);
-                    cmp_drct_ = 1 - 2*cmp_drct_;
-                    CoordDType cur_dis = best_dis[i];
-                    int cur_idx = best_idx[i];
-                    CoordDType cmp_dis = best_dis[i+idx_step];
-                    int cmp_idx = best_idx[i+idx_step];
-                    if((cur_dis - cmp_dis)*cmp_drct_ > 0){
-                        CoordDType temp = cur_dis;
-                        best_dis[i] = cmp_dis;
-                        best_dis[i+idx_step] = temp;
-
-                        int temp_idx = cur_idx;
-                        best_idx[i] = cmp_idx;
-                        best_idx[i+idx_step] = temp_idx;
-                    }
-                    break;
-                }
-                else if(i < (ArrayLengthPerThread >> 1)){
-                    int tid = threadIdx.x + (blockDim.x*i);
-                    int array_idx = ((tid>>sub_depth)<<(sub_depth+1)) | ((tid)&(cmp_step-1));
-                    int array_idx_in_thread = array_idx >> depth_K;
-                    int idx_step = cmp_step >> depth_K;   //32对应5
-                    int cmp_drct_ = ((array_idx >> depth)&1) ^ ((array_idx >> sub_depth)&1);
-                    cmp_drct_ = 1 - 2*cmp_drct_;
-                    CoordDType cur_dis = best_dis[array_idx_in_thread];
-                    int cur_idx = best_idx[array_idx_in_thread];
-                    CoordDType cmp_dis = best_dis[array_idx_in_thread+idx_step];
-                    int cmp_idx = best_idx[array_idx_in_thread+idx_step];
-                    if((cur_dis - cmp_dis)*cmp_drct_ > 0){
-                        CoordDType temp = cur_dis;
-                        best_dis[array_idx_in_thread] = cmp_dis;
-                        best_dis[array_idx_in_thread+idx_step] = temp;
-
-                        int temp_idx = cur_idx;
-                        best_idx[array_idx_in_thread] = cmp_idx;
-                        best_idx[array_idx_in_thread+idx_step] = temp_idx;
-                    }
-                }
-            }
-            sub_depth -= 1;
-        }
-        depth += 1;
-    }
-}
-
-
 template <typename CoordDType, int ArrayLengthPerThread, int depth_K>
 __global__ void FlashKNN_Query_GMPS_kernel(
     int* Indices_out,
@@ -244,10 +171,10 @@ __global__ void FlashKNN_Query_GMPS_kernel(
             
             nbr_idx_start = max(child_idx_origin - child_idx_start - K, 0);
             // 遍历所有邻域子节点
-            bool skip = true;
             int offset = threadIdx.x;
             int S_points_num_traversed = 0;
-            while (S_points_num_traversed < total_support_points_num){    
+            while (S_points_num_traversed < total_support_points_num){
+                bool skip = true;
                 CoordDType max_dis = best_dis[(K-1)>>depth_K];
                 max_dis = WARP_SHFL(max_dis, (K-1)&(blockDim.x - 1), blockDim.x);
                 for(int batch_idx = 0;batch_idx < batch && offset < total_support_points_num;batch_idx++){
@@ -285,12 +212,14 @@ __global__ void FlashKNN_Query_GMPS_kernel(
                     skip = skip_other&skip;
                 }
                 skip = WARP_SHFL(skip, 0);
+                S_points_num_traversed += batch*blockDim.x;
                 if(skip){
                     continue;
                 }
-                //调用双调排序
-                Bitonic_Sort<CoordDType, ArrayLengthPerThread, depth_K>(best_dis, best_idx);
-                S_points_num_traversed += batch*blockDim.x;
+                // Use the same generated bitonic top-P network as SMPS.
+                flashknn::BitonicTopP<
+                    CoordDType, ArrayLengthPerThread, depth_K>(
+                        best_dis, best_idx);
             }
             if(child_idx_finished+threadIdx.y < child_idx_end){
                 for(int nbr_idx = threadIdx.x;nbr_idx<K;nbr_idx += blockDim.x){

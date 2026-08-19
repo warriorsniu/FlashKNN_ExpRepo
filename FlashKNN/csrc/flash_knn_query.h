@@ -153,6 +153,33 @@ void FlashKNN_Query_Dynamic_Load(
     float cut_radiu2 = INFINITY
 );
 
+void FlashKNN_Query_Dynamic_Load_Ablation(
+    const torch::Tensor &GridCoord,
+    const torch::Tensor &Parent2Child,
+    const torch::Tensor &ParentNeigh,
+    const torch::Tensor &CumCntInNeigh,
+    const int K,
+    torch::Tensor &Indices,
+    torch::Tensor &Dis,
+    int batch_for_prune,
+    float cut_radiu2,
+    bool candidate_in_shared,
+    bool enable_skip
+);
+
+void FlashKNN_Query_Dynamic_Load_Thread_Group(
+    const torch::Tensor &GridCoord,
+    const torch::Tensor &Parent2Child,
+    const torch::Tensor &ParentNeigh,
+    const torch::Tensor &CumCntInNeigh,
+    const int K,
+    torch::Tensor &Indices,
+    torch::Tensor &Dis,
+    int batch_for_prune,
+    float cut_radiu2,
+    int thread_group_size
+);
+
 void FlashKNN_Nearest_Back_Query_DL(
     const torch::Tensor &xyz_H,
     const torch::Tensor &xyz_L,

@@ -7,6 +7,8 @@
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("get_cuda_shared_mem", &get_cuda_shared_mem, "获取cuda的共享内存信息");
     m.def("FlashKNN_Query_Dynamic_Load", &FlashKNN_Query_Dynamic_Load, "网格KNN查询, 使用动态数据读取, 避免共享内存溢出");
+    m.def("FlashKNN_Query_Dynamic_Load_Ablation", &FlashKNN_Query_Dynamic_Load_Ablation, "Candidate placement and skip ablation using the production top-P network");
+    m.def("FlashKNN_Query_Dynamic_Load_Thread_Group", &FlashKNN_Query_Dynamic_Load_Thread_Group, "Fixed thread-group ablation using the production top-P network");
     m.def("FlashKNN_Nearest_Back_Query_DL", &FlashKNN_Nearest_Back_Query_DL, "网格最近邻逆向查询");
     m.def("FlashKNN_Back_Query_DL", &FlashKNN_Back_Query_DL, "网格K近邻逆向查询");
     m.def("FlashKNN_Selected_Query_DL", &FlashKNN_Selected_Query_DL, "子集做query, 全集做support");

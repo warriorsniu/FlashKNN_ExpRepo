@@ -6,7 +6,7 @@ source "$REPO_DIR/scripts/runtime_env.sh"
 source "$REPO_DIR/data/paths.env"
 GPU="${GPU:-0}"
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
-RESULTS_ROOT="${RESULTS_ROOT:-$REPO_DIR/results/L20}"
+source "$REPO_DIR/scripts/results_env.sh"
 OUT="$RESULTS_ROOT/$RUN_ID/network"
 mkdir -p "$OUT"
 WARMUPS=10; REPEATS=30; SAMPLES=68; LIDAR_SAMPLES=22

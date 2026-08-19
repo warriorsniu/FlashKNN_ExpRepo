@@ -136,6 +136,7 @@ def main():
     main_table = pd.DataFrame()
     paper_query_table = pd.DataFrame()
     scaling_table = pd.DataFrame()
+    semantickitti_representative = pd.DataFrame()
     if not qdf.empty:
         group = ["gpu", "dataset", "scope", "mode", "k", "method", "alpha"]
         main_table = qdf.groupby(group, dropna=False).agg(
@@ -143,6 +144,37 @@ def main():
             query_points=("num_query", "mean"), construction_ms=("construction_ms", "mean"),
             query_ms=("query_ms", "mean"), total_ms=("total_ms", "mean"),
             recall=("recall", "mean")).reset_index()
+
+        # Paper operating point for SemanticKITTI. Accuracy experiments use
+        # matched training/evaluation and found no systematic degradation at
+        # alpha=4 relative to alpha=8, so report alpha=4 against the exact CUDA
+        # k-d tree. Keep the full alpha sweep in main_table.
+        semantic = main_table[
+            (main_table.dataset == "SemanticKITTI") &
+            (main_table.scope == "full") &
+            (main_table.k == 24)
+        ]
+        representative_rows = []
+        for (gpu_name, mode), subset in semantic.groupby(["gpu", "mode"]):
+            flash = subset[(subset.method == "flashknn") & (subset.alpha == 4)]
+            exact = subset[subset.method.isin(["cuda_kdtree", "cukd"])]
+            if flash.empty or exact.empty:
+                continue
+            flash_row, exact_row = flash.iloc[0], exact.iloc[0]
+            representative_rows.append({
+                "gpu": gpu_name,
+                "dataset": "SemanticKITTI",
+                "mode": mode,
+                "k": 24,
+                "alpha": 4,
+                "samples": int(flash_row["samples"]),
+                "flashknn_total_ms": flash_row["total_ms"],
+                "flashknn_recall": flash_row["recall"],
+                "exact_method": exact_row["method"],
+                "exact_total_ms": exact_row["total_ms"],
+                "speedup_vs_exact": exact_row["total_ms"] / flash_row["total_ms"],
+            })
+        semantickitti_representative = pd.DataFrame(representative_rows)
         references = qdf[qdf.method.isin(["cuda_kdtree", "cukd"])]
         baseline = references.groupby(["gpu", "dataset", "sample", "mode", "k"])["total_ms"].mean()
         qdf["speedup_vs_exact"] = qdf.apply(lambda r: (
@@ -243,6 +275,10 @@ def main():
     workbook = args.output_dir / "benchmark_results.xlsx"
     with pd.ExcelWriter(workbook, engine="openpyxl") as writer:
         if not main_table.empty: main_table.to_excel(writer, sheet_name="query_main_table", index=False)
+        if not semantickitti_representative.empty:
+            semantickitti_representative.to_excel(
+                writer, sheet_name="semkitti_alpha4", index=False
+            )
         if not paper_query_table.empty:
             paper_query_table.to_excel(writer, sheet_name="paper_query_table", index=False)
         if not scaling_table.empty:
@@ -253,6 +289,16 @@ def main():
         if not network_efficiency.empty:
             network_efficiency.to_excel(writer, sheet_name="network_efficiency_fig", index=False)
     report = ["# Benchmark summary", "", f"Workbook: `{workbook.name}`", ""]
+    if not semantickitti_representative.empty:
+        report += [
+            "## SemanticKITTI representative operating point (alpha=4, k=24)",
+            "",
+            semantickitti_representative.to_markdown(index=False),
+            "",
+            "Speedup is total latency of the exact CUDA k-d tree divided by "
+            "FlashKNN total latency on the same GPU and query mode.",
+            "",
+        ]
     if not main_table.empty: report += ["## Query main table", "", main_table.to_markdown(index=False), ""]
     if not network_table.empty: report += ["## Network latency", "", network_table.to_markdown(index=False), ""]
     (args.output_dir / "summary.md").write_text("\n".join(report), encoding="utf-8")

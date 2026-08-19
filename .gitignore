@@ -4,6 +4,8 @@ results/**
 !results/**/
 !results/**/*.json
 !results/**/*.csv
+!results/**/README.md
+!results/RESULT_SELECTION.md
 !results/.gitkeep
 analysis/output/
 .runtime/

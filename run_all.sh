@@ -9,8 +9,7 @@ if [[ -z "${GPU+x}" ]]; then
 fi
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
 export GPU RUN_ID
-RESULTS_ROOT="${RESULTS_ROOT:-$REPO_DIR/results/L20}"
-export RESULTS_ROOT
+source "$REPO_DIR/scripts/results_env.sh"
 RUN_DIR="$RESULTS_ROOT/$RUN_ID"
 
 echo "Run ID: $RUN_ID"

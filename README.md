@@ -29,7 +29,9 @@ S3DIS 仍受原许可约束，下载前须阅读并接受官网条款，数据�
 SemanticKITTI 的 efficiency pack 覆盖 00--21 全部 22 个序列，每个序列在完整帧范围内
 等距抽取 5 帧，共 110 帧。已有完整、合法下载的数据时由脚本生成；仓库不重新分发原始数据。
 
-## 2. 环境安装（L20 / Ada SM89 / CUDA 12.8）
+## 2. 环境安装
+
+### L20（Ada SM89 / CUDA 12.8）
 
 要求 x86_64 Linux（glibc 2.35 或兼容版本）、NVIDIA 驱动可支持 CUDA 12.8、CUDA 12.8
 toolkit（含 `nvcc`）、
@@ -65,6 +67,25 @@ bash scripts/install.sh
 应先检查 `CUDA_VISIBLE_DEVICES` 和实际 GPU 型号，不要手工伪造 `TORCH_CUDA_ARCH_LIST`。
 脚本优先自动选择 `/usr/local/cuda-12.8`；只有 toolkit 安装在非标准位置时才需要在执行前
 设置一次 `CUDA_HOME=/实际/cuda-12.8/路径`，其余代码和实验参数均无需修改。
+
+### RTX 3090 本机环境（Ampere SM86 / CUDA 11.8）
+
+本轮 RTX 3090 复跑保持与 L20 相同的 Python 3.10、PyTorch 2.7.1、源码 commit、
+数据和计时协议，但使用本机 CUDA 11.8 toolkit 与官方 `cu118` wheels。该设置用于新的
+跨平台实验；原论文历史软件栈应作为历史结果单独记录，不能与新 run 合并。
+
+```bash
+export CUDA_VISIBLE_DEVICES=1
+export CUDA_HOME=/usr/local/cuda-11.8
+conda create -n flashknn-exp-cu118 python=3.10 -y
+conda activate flashknn-exp-cu118
+bash scripts/install.sh
+```
+
+安装器会检测 RTX 3090 的 compute capability `8.6`，并为所有本地扩展生成 `sm_86`
+cubin。正式运行默认写入 `results/RTX3090/<RUN_ID>`；L20 仍写入
+`results/L20/<RUN_ID>`，避免两个平台共用结果目录。每个平台的 JSON 会分别记录
+PyTorch CUDA runtime、nvcc、driver、GPU UUID 和完整依赖列表。
 
 ## 3. 准备数据
 
@@ -140,9 +161,9 @@ python scripts/prepare_data.py --s3dis-existing /path/to/s3dis \
 bash run_all.sh
 ```
 
-该入口自动选择当前显存占用最低的 GPU，执行依赖/数据 preflight，统一生成一个 run ID，并在当前 PyTorch 2.7.1+cu128 环境中依次完成 query、ball query、network latency 和 Excel/绘图分析。Python 选择顺序为显式 `PYTHON_BIN`、已激活的 uv/venv、已激活的 Conda、仓库 `.venv`、最后才是 `PATH`，因此原始 Conda 安装与本机 `uv pip` 环境使用同一个入口；所有子脚本继承同一解释器，不会混用系统 Python。最终路径会打印在终端，不需要设置 GPU、环境名或输出目录。快速端到端验收使用 `SMOKE=1 bash run_all.sh`。
+该入口自动选择当前显存占用最低的 GPU，执行依赖/数据 preflight，统一生成一个 run ID，并在当前已激活的 PyTorch 2.7.1+cu118/cu128 环境中依次完成 query、ball query、network latency 和 Excel/绘图分析。Python 选择顺序为显式 `PYTHON_BIN`、已激活的 uv/venv、已激活的 Conda、仓库 `.venv`、最后才是 `PATH`，因此原始 Conda 安装与本机 `uv pip` 环境使用同一个入口；所有子脚本继承同一解释器，不会混用系统 Python。最终路径会打印在终端，不需要设置 GPU、环境名或输出目录。快速端到端验收使用 `SMOKE=1 bash run_all.sh`。
 
-已有同一 GPU、PyTorch/CUDA、数据 manifest 和 warmup/repeat 配置的历史结果时，可用冒号分隔的 `REUSE_RUN_DIRS` 合并后断点续跑，例如 `REUSE_RUN_DIRS=results/L20/l20_full_20260806 RUN_ID=l20_complete GPU=0 bash run_all.sh`。`scripts/merge_run_results.py` 保留原有 JSON 顶层结构和记录字段；元数据不同的文件会被拒绝或跳过，smoke 结果不会混入正式结果。L20 运行默认写入 `results/L20/<RUN_ID>`，也可以用 `RESULTS_ROOT` 显式覆盖结果根目录。
+已有同一 GPU、PyTorch/CUDA、算法 build、数据 manifest 和 warmup/repeat 配置的结果时，可用冒号分隔的 `REUSE_RUN_DIRS` 合并后断点续跑，例如 `REUSE_RUN_DIRS=results/L20/l20_complete_20260807 RUN_ID=l20_refresh GPU=0 bash run_all.sh`。只能复用 `results/RESULT_SELECTION.md` 标为保留、且算法与协议相容的字段；不得从旧 Git revision 恢复 smoke、旧 kernel 或被取代的结果。`scripts/merge_run_results.py` 保留原有 JSON 顶层结构和记录字段；元数据不同的文件会被拒绝或跳过，smoke 结果不会混入正式结果。结果根目录按 GPU 自动选择：L20 写入 `results/L20/<RUN_ID>`，RTX 3090 写入 `results/RTX3090/<RUN_ID>`；也可用 `RESULTS_ROOT` 显式覆盖。
 
 先确认机器空闲并指定从 **0 开始编号**的物理 GPU：
 
@@ -169,11 +190,16 @@ EXPREPO_S3DIS_QUERY=/path/to/s3disfull/raw GPU=0 RUN_ID=l20_01 bash run_query.sh
 
 S3DIS `sample_part` 和 SemanticKITTI query 均对比 FlashKNN、精确 cudaKDTree、FLANN-CUDA、CPU nanoflann、FAISS GPU Flat 和 matched-recall IVF-Flat；S3DIS `full` 点数缩放实验按论文方法只运行 FlashKNN、cudaKDTree、FLANN-CUDA 和 nanoflann，避免在百万点完整查询上运行复杂度近似二次的 exact FAISS Flat。两套 fixed-size 实验都以论文默认 FlashKNN `alpha=4` recall 校准 IVF：S3DIS 的 `num_down=2` 即 `alpha=4`，SemanticKITTI 通过 `faiss_ivf_match_alpha=4` 显式记录。需要注意，canonical S3DIS 后续只用最终 build 覆盖了 FlashKNN/cudaKDTree timing 与 recall，未重跑未变更的 IVF，因此其 `target_recall` 保留首次正式 alpha=4 校准值，与覆盖后的 FlashKNN recall 可能存在极小差异；新的 SemanticKITTI 文件则逐条严格匹配当前 alpha=4 recall。IVF 在实用范围 `nprobe=1...64` 中选择第一个达到目标的设置；若因等距候选的 ID tie-breaking 始终不能精确达到，则选择 recall 最接近的设置，并保存完整校准轨迹。限制实用范围可避免因等距候选的 ID tie-breaking 无法精确达到目标时，退化为扫描全部 IVF lists 并产生过大显存临时开销。所有 GPU 方法的计时输入已在 GPU，排除文件 I/O、体素化、裁块与 CPU→GPU 传输；FAISS Flat 的 `add` 与 search 分别计时，IVF 原始 JSON 分别保留 training、add 和 search，论文主表的 construction/total 按 `training + add` 计算。nanoflann 严格复用原论文脚本口径：先把输入复制到 CPU，再开始计时，故其 GPU→CPU 传输不在表中。
 
+SemanticKITTI 的论文代表性 FlashKNN operating point 使用 `alpha=4`：matched
+training/evaluation 实验未观察到它相对 `alpha=8` 的系统性网络精度下降。L20 与 RTX 3090
+的2026-08-18正式结果已经在同轮实验中以 `alpha=4` recall 重新校准 IVF；旧的
+`alpha=8` matched-recall 或仅含三个 k 的结果已删除，不能从历史提交恢复后改写标签使用。
+
 `run_network_latency.sh` 测试：
 
 - DeLA S3DIS：CPU KDTree 预处理 + 网络，以及 FlashKNN GPU 预处理 + 网络；
 - PTv3、OctFormer、SpUNet、MinkUNet34C：4 cm 体素后的网络 forward；
-- SemanticKITTI：DeLA / DeepLA 分别使用 CPU KDTree 与 FlashKNN 构建四层 hierarchy，并记录 preprocessing、network 和 end-to-end；PTv3、OctFormer、SPUNet、MinkUNet34C 在相同 LiDAR 帧上记录 CUDA-ready network forward。
+- SemanticKITTI：DeLA / DeepLA 使用 `alpha=4`，分别采用 CPU KDTree 与 FlashKNN 构建四层 hierarchy，并记录 preprocessing、network 和 end-to-end；PTv3、OctFormer、SPUNet、MinkUNet34C 在相同 LiDAR 帧上记录 CUDA-ready network forward。
 
 正式参数为 10 次 warmup、30 次记录；S3DIS 使用与论文一致的
 Area 5 全部 68 个验证房间，
@@ -192,6 +218,99 @@ SMOKE=1 GPU=0 RUN_ID=smoke bash run_network_latency.sh
 
 同一台 GPU 上的所有方法应单卡串行运行；不要同时启动训练。正式测试建议先记录空载
 `nvidia-smi`，并在结果中检查 GPU UUID，防止设备编号变化。
+
+### 最终排序逻辑的设计消融
+
+`run_ablation.sh` 复现原论文的两组设计消融，但所有 PS 变体统一使用当前
+generated bitonic top-P 逻辑，不再通过复制 CUDA backup 并反复重编译来切换实现：
+
+- support 数据位置与排序方式：SMPS、SMSS、GMPS；
+- 候选列表位置与 skip：Register+Skip、CandidateSM+Skip、Register+NoSkip、
+  CandidateSM+NoSkip。
+
+正式实验使用同一批 81 个 S3DIS 250k pre-query crop，覆盖
+`k=8,16,24,32,40,48,56,64`，默认 5 次 warm-up 和 20 次记录。JSON 保存源码 SHA256、
+扩展二进制 SHA256、GPU UUID、共租进程快照以及每次 construction/query/total timing。
+
+```bash
+GPU=5 RUN_ID=rtx3090_ablation_final_20260810 bash run_ablation.sh
+python scripts/validate_ablation.py \
+  results/RTX3090/rtx3090_ablation_final_20260810/ablation/s3dis_design_ablation.json
+python analysis/analyze_ablation.py \
+  results/RTX3090/rtx3090_ablation_final_20260810/ablation/s3dis_design_ablation.json \
+  --output-dir analysis/output/rtx3090_ablation_final_20260810
+```
+
+功能检查使用 `SMOKE=1`，只运行一个房间和 k=8/32/64。正式运行前必须用 SMPS
+重复探针确认同机训练任务没有造成可观察的性能漂移；若与安静基线相比出现稳定的数个百分点
+变化，应保留 smoke、等待机器空闲，不得将共租结果用于论文。
+
+### 线程分组策略消融
+
+`run_thread_grouping_ablation.sh` 在同一个最终 SMPS/generated bitonic top-P build 中比较
+Fixed-8、Fixed-16、Fixed-32 和生产 Adaptive 策略。正式协议为同一批 81 个 S3DIS
+250k pre-query crop、`k=8,16,24,32,48,64`、单卡无共租、5 次 warm-up 和 20 次正式记录。
+分析脚本按所有 query timing 报告均值和 p95，并以每个房间的 timing mean 为统计单位报告
+room SD 与 Student-t 95% CI。四种策略按实际纳入的 room–k 做平衡循环排序，避免固定
+测量顺序与 GPU 升频混入 thread-group 差异；每个 k 上每种策略位于首位 20 或 21 次。
+
+```bash
+# 只做功能检查：一个房间，但覆盖全部 6 个 k 和 4 种策略
+SMOKE=1 GPU=0 RUN_ID=thread_grouping_smoke \
+  bash run_thread_grouping_ablation.sh
+
+# 复现正式实验仍需在机器空闲且获得明确授权后解锁
+ALLOW_FORMAL_THREAD_GROUPING=1 GPU=0 RUN_ID=rtx3090_thread_grouping_final \
+  bash run_thread_grouping_ablation.sh
+```
+
+RTX 3090 推荐正式结果为
+`results/RTX3090/rtx3090_thread_grouping_balanced_final_v2_20260811/`。固定顺序的早期
+正式目录不用于论文，因为同一 CUDA 模板也显示了可观察的顺序偏差。
+
+JSON 同时保存相对 CUKD 的 index-set recall，以及每种固定策略相对 Adaptive 的逐查询排序
+邻居距离等价性。后者用于正确处理等距点：不同线程遍历顺序可能选择不同但距离完全相同的
+合法邻居索引，不能把这种 tie-breaking 差异误判为 recall 退化。正式命令默认被锁定，未设置
+`ALLOW_FORMAL_THREAD_GROUPING=1` 时会在 GPU 探测和结果目录创建前退出。
+
+### 自适应八叉树邻域消融
+
+`run_adaptive_neighborhood.sh` 在同一运行内比较固定 3×3×3 邻域、多层 Morton 线性八叉树的
+自适应 3×3×3 邻域和 exact cudaKDTree。自适应策略从粗到细遍历：当前候选多于 `8k` 时尝试子层，只有子层
+候选不少于 `2k` 才采用子层；不使用几何边界 guard，也不在查询后重试。若子层少于 `2k`，
+会保留候选可能多于 `8k` 的父层，这是无额外回退近似范式的预期行为。
+
+生产 CUDA kernel 的函数签名和五类输入语义保持不变。层级选择后，脚本把不同层的 query
+节点和实际引用的 support 节点副本降平为兼容的 `GridCoord`、`Parent2Child`、
+`ParentNeigh` 与 `CumCntInNeigh`，所有层只调用一次
+`FlashKNN_Query_Dynamic_Load`。结果分别记录 octree construction、level selection、
+compatible-input construction 和 query（含输出映射）时间，同时保存点副本倍率、峰值增量显存、
+逐层选择比例、落在/超出 `[2k,8k]` 的 query 数以及相对 CUKD recall。
+
+```bash
+# 一个 250k 房间、全部 6 个 k 的功能检查
+PYTHON_BIN=/path/to/pytorch-2.7.1-cu118/bin/python \
+SMOKE=1 GPU=0 RUN_ID=adaptive_neighborhood_smoke \
+  bash run_adaptive_neighborhood.sh
+
+# 复现81房间正式实验仍需明确授权，并要求目标 GPU 无共租进程
+PYTHON_BIN=/path/to/pytorch-2.7.1-cu118/bin/python \
+ALLOW_FORMAL_ADAPTIVE_NEIGHBORHOOD=1 GPU=0 RUN_ID=adaptive_neighborhood_final \
+  bash run_adaptive_neighborhood.sh
+```
+
+RTX 3090 推荐正式结果为
+`results/RTX3090/rtx3090_adaptive_neighborhood_final_v2_20260818/`：81房间、六个k、
+486个room-k记录，5次warm-up/20次记录，Fixed/Adaptive/exact三种策略通过完整coverage。
+
+### 2026-08-18 SemanticKITTI 六 k 正式结果
+
+L20 直接来源为 `results/L20/l20_semantickitti_six_k_alpha4_20260818/`，并已逐字节汇入
+`results/L20/l20_complete_20260807/query/semantickitti.json`。RTX 3090 对应结果为
+`results/RTX3090/rtx3090_semantickitti_unifiedk_alpha4ivf_20260818/`。两者均覆盖110帧、
+pre/post、`k=8,16,24,32,48,64`、FlashKNN `alpha=4,8,16,32` 和全部基线，各1320条；
+参数为3次warm-up/10次记录，FAISS IVF target逐条等于同配置FlashKNN `alpha=4` recall。
+RTX 3090 任务正常以退出码0完成，结果检查为1320条唯一记录且无方法、alpha或target缺失。
 
 LiDAR 网络实验统一使用 pack 中已经按 0.06 m 体素化的 XYZ 与 remission。DeLA/DeepLA 的 CPU 层次计时沿用论文口径，不计 CPU→GPU 传输；FlashKNN 层次默认使用论文设置 `alpha=4` 并在 GPU 上计时，两者的 model forward 均使用 CUDA event。可用 `LIDAR_ALPHA` 显式覆盖探索性实验，但正式 coverage validator 只接受 `alpha=4`。四个 Pointcept 模型采用随机初始化，仅比较执行形状与 latency：SPUNet/MinkUNet 使用 SemanticKITTI 配置，PTv3 使用 NuScenes backbone 并适配为4输入通道和19类，同时沿用 S3DIS 基线的 non-FlashAttention 128-point patch fallback；OctFormer 适配为4输入通道、19类和覆盖 LiDAR 空间范围的12层 octree，并因 efficiency pack 不含 normal 而输入零 normal。网络权重未经训练，因此这些结果不能解释精度。
 

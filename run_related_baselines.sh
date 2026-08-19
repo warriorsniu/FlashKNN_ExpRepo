@@ -3,16 +3,16 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$REPO_DIR/scripts/python_env.sh"
 source "$REPO_DIR/scripts/runtime_env.sh"
 source "$REPO_DIR/data/paths.env"
 
 GPU="${GPU:-0}"
 RUN_ID="${RUN_ID:-related_$(date +%Y%m%d_%H%M%S)}"
-RESULTS_ROOT="${RESULTS_ROOT:-$REPO_DIR/results/L20}"
+source "$REPO_DIR/scripts/results_env.sh"
 OUT="$RESULTS_ROOT/$RUN_ID/query"
 POINTOPS_BUILD="$REPO_DIR/Pointcept/libs/pointops/build/lib.linux-x86_64-cpython-310"
 OPTIX_ROOT="${OptiX_INSTALL_DIR:-}"
-PYTHON_BIN="${PYTHON_BIN:-$REPO_DIR/.venv/bin/python}"
 mkdir -p "$OUT"
 
 if [[ ! -x "$PYTHON_BIN" ]]; then
@@ -38,9 +38,12 @@ if [[ -z "$OPTIX_ROOT" || ! -f "$OPTIX_ROOT/include/optix.h" ]]; then
 fi
 
 export OptiX_INSTALL_DIR="$OPTIX_ROOT"
+CUDA_ARCHITECTURES="$(CUDA_VISIBLE_DEVICES="$GPU" $PYTHON_BIN -c \
+  'import torch; major, minor = torch.cuda.get_device_capability(0); print(f"{major}{minor}")')"
 for K in 24 32 48; do
   cmake -S "$REPO_DIR/third_party/Arkade" -B "$REPO_DIR/third_party/Arkade/build-k${K}-l2" \
-    -G Ninja -DKN="$K" -DNORM=2 -DCMAKE_CUDA_ARCHITECTURES=89 -DCMAKE_BUILD_TYPE=Release
+    -G Ninja -DKN="$K" -DNORM=2 -DCMAKE_CUDA_ARCHITECTURES="$CUDA_ARCHITECTURES" \
+    -DCMAKE_BUILD_TYPE=Release
   cmake --build "$REPO_DIR/third_party/Arkade/build-k${K}-l2" \
     --target arkade-benchmark -j "$(nproc)"
 done

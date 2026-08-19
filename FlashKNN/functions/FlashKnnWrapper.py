@@ -9,6 +9,8 @@ from .CuFun import (
     FlashKNN_Morton_Neighbor_Keys,
     FlashKNN_Nearest_Back_Query_DL,
     FlashKNN_Query_Dynamic_Load,
+    FlashKNN_Query_Dynamic_Load_Ablation,
+    FlashKNN_Query_Dynamic_Load_Thread_Group,
     FlashKNN_Query_GM,
     FlashKNN_Query_GMPS,
     FlashKNN_Query_SMSS,
@@ -171,6 +173,9 @@ class FlashKNN():
             batch_for_prune = 1,
             memory_mode = "SM",
             sorting_mode = "PS",
+            candidate_mode = "register",
+            enable_skip = True,
+            thread_group_size = None,
             traverse_info = None,
             ):
         """
@@ -181,10 +186,37 @@ class FlashKNN():
         cut_radius:         截断距离
         batch_for_prune:    剪枝批次
         memory_mode:        内存模式, SM:共享内存, GM: 全局内存, Hybrid: 混合内存
+        candidate_mode:     PS候选列表位置, register 或 shared
+        enable_skip:        PS是否跳过不含更优候选的排序轮次
+        thread_group_size:  None为生产自适应策略，或固定为8/16/32（仅用于消融）
         """
         ts = time.time()
         ts_origin = time.time()
         device = grid_coord.device
+        if candidate_mode not in {"register", "shared"}:
+            raise ValueError(
+                f"candidate_mode must be 'register' or 'shared', got {candidate_mode!r}"
+            )
+        if thread_group_size not in {None, 8, 16, 32}:
+            raise ValueError(
+                "thread_group_size must be None, 8, 16, or 32, got "
+                f"{thread_group_size!r}"
+            )
+        if (candidate_mode != "register" or not enable_skip) and not (
+            memory_mode == "SM" and sorting_mode == "PS"
+        ):
+            raise ValueError(
+                "candidate placement/skip ablations require memory_mode='SM' "
+                "and sorting_mode='PS'"
+            )
+        if thread_group_size is not None and not (
+            memory_mode == "SM" and sorting_mode == "PS"
+            and candidate_mode == "register" and enable_skip
+        ):
+            raise ValueError(
+                "fixed thread-group ablations require memory_mode='SM', "
+                "sorting_mode='PS', register candidates, and skip enabled"
+            )
         fused_construction = (
             batch_idx is not None
             and grid_coord.is_cuda
@@ -326,17 +358,29 @@ class FlashKNN():
             out_dis = grid_coord.new_zeros((len(grid_coord), self.num_nbr), device=device, dtype=torch.float32)
             # print(cnt_in_neigh[14])
             if sorting_mode == "PS":
-                FlashKNN_Query_Dynamic_Load(
-                    intput_xyz, 
-                    steps.int(),  
-                    neigh.int(), 
-                    cnt_in_neigh.int(), 
+                arguments = (
+                    intput_xyz,
+                    steps.int(),
+                    neigh.int(),
+                    cnt_in_neigh.int(),
                     self.num_nbr,
                     out_indices,
                     out_dis,
                     batch_for_prune,
-                    cut_radius*cut_radius
+                    cut_radius*cut_radius,
                 )
+                if thread_group_size is not None:
+                    FlashKNN_Query_Dynamic_Load_Thread_Group(
+                        *arguments, thread_group_size,
+                    )
+                elif candidate_mode == "register" and enable_skip:
+                    FlashKNN_Query_Dynamic_Load(*arguments)
+                else:
+                    FlashKNN_Query_Dynamic_Load_Ablation(
+                        *arguments,
+                        candidate_mode == "shared",
+                        enable_skip,
+                    )
             elif sorting_mode == "SS":
                 FlashKNN_Query_SMSS(
                     intput_xyz, 
@@ -394,6 +438,13 @@ class FlashKNN():
                     "查询耗时": query_time, 
                     "查询类型": "query",
                     "memory_mode": memory_mode,
+                    "sorting_mode": sorting_mode,
+                    "candidate_mode": candidate_mode,
+                    "enable_skip": enable_skip,
+                    "thread_group_size": (
+                        "adaptive" if thread_group_size is None
+                        else thread_group_size
+                    ),
                     "dynamic_load": dynamic_load})
         return out_indices
     

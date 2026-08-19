@@ -1,0 +1,528 @@
+{
+  "metadata": {
+    "dataset": "S3DIS",
+    "scope": "sample_part",
+    "mode": "pre",
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 3090",
+      "uuid": "GPU-97038723-1a8a-70df-e5b7-52a98de11890",
+      "driver": "595.58.03",
+      "memory_mib": 24576
+    },
+    "physical_gpu_index": 5,
+    "python": "3.10.20",
+    "torch": "2.7.1+cu118",
+    "torch_cuda": "11.8",
+    "git": {
+      "commit": "4018bead2290bf3d7365814749a7828a5d37abcf",
+      "dirty": true
+    },
+    "source_sha256": {
+      "FlashKNN/functions/adaptive_octree.py": "3b0bb3b059a2bae93ed739f0618eae131d5d2a0cb168a1a415eb28d3ece4eda8",
+      "FlashKNN/functions/FlashKnnWrapper.py": "080865079cf9e8bc21eab360292527158d2328c196f8f5d9b16485075488df30",
+      "analysis/analyze_adaptive_sparse_bins.py": "dca603cdc5b054312210748dd5226ae9f7cd43d73ddc89f03077d5f50acdfb8f"
+    },
+    "alpha": 4,
+    "octree_shift": 2,
+    "adaptive_min_factor": 2,
+    "adaptive_max_factor": 8,
+    "voxel_size_m": 0.02,
+    "crop_points": 250000,
+    "seed": 47,
+    "k": [
+      8,
+      16,
+      24,
+      32,
+      48,
+      64
+    ],
+    "co_tenant_end": {
+      "gpus": [
+        "0, NVIDIA GeForce RTX 3090, GPU-c568a174-078b-fcba-f91d-00dd48a900c7, 1, 0, P8",
+        "1, NVIDIA GeForce RTX 3090, GPU-8998eefa-dc46-f1dc-5f7e-547fb11dd3c0, 1, 0, P8",
+        "2, NVIDIA GeForce RTX 3090, GPU-ca185828-0264-4b74-410e-4190ab03c800, 1, 0, P8",
+        "3, NVIDIA GeForce RTX 3090, GPU-a666add9-d15d-c22b-3929-a3544be199dc, 1, 0, P8",
+        "4, NVIDIA GeForce RTX 3090, GPU-33cd42cf-2313-3092-6240-d65e35263acb, 1, 0, P8",
+        "5, NVIDIA GeForce RTX 3090, GPU-97038723-1a8a-70df-e5b7-52a98de11890, 402, 0, P2",
+        "6, NVIDIA GeForce RTX 3090, GPU-052270dc-d46b-d4ed-246a-c0b33fdbc8e4, 1, 0, P8",
+        "7, NVIDIA GeForce RTX 3090, GPU-e2fd3470-7ac2-4642-fed7-a831d51046b6, 1, 0, P8"
+      ],
+      "compute_processes": [
+        "GPU-97038723-1a8a-70df-e5b7-52a98de11890, 779673, /data/nyc/miniconda3/envs/flashknn-exp-cu118/bin/python, 392"
+      ],
+      "load_average": [
+        5.00927734375,
+        1.75537109375,
+        1.666015625
+      ],
+      "training_processes": []
+    }
+  },
+  "summary": {
+    "8": {
+      "below_2k": {
+        "queries": 908,
+        "query_fraction": 4.4839506172839505e-05,
+        "fixed_recall": 0.9329570484581498,
+        "adaptive_recall": 0.9943557268722467,
+        "adaptive_minus_fixed": 0.06139867841409696
+      },
+      "within_2k_8k": {
+        "queries": 82421,
+        "query_fraction": 0.004070172839506172,
+        "fixed_recall": 0.9998195241503985,
+        "adaptive_recall": 0.9998301403768457,
+        "adaptive_minus_fixed": 1.061622644715765e-05
+      },
+      "above_8k": {
+        "queries": 20166671,
+        "query_fraction": 0.995884987654321,
+        "fixed_recall": 0.9998181591299823,
+        "adaptive_recall": 0.9995391467932412,
+        "adaptive_minus_fixed": -0.0002790123367411024
+      }
+    },
+    "16": {
+      "below_2k": {
+        "queries": 5888,
+        "query_fraction": 0.0002907654320987654,
+        "fixed_recall": 0.9411727241847826,
+        "adaptive_recall": 0.9980893342391305,
+        "adaptive_minus_fixed": 0.056916610054347894
+      },
+      "within_2k_8k": {
+        "queries": 1406451,
+        "query_fraction": 0.06945437037037037,
+        "fixed_recall": 0.9999032138339693,
+        "adaptive_recall": 0.9999025917006706,
+        "adaptive_minus_fixed": -6.221332986555694e-07
+      },
+      "above_8k": {
+        "queries": 18837661,
+        "query_fraction": 0.9302548641975309,
+        "fixed_recall": 0.9998959962439073,
+        "adaptive_recall": 0.9955537672644178,
+        "adaptive_minus_fixed": -0.0043422289794895486
+      }
+    },
+    "24": {
+      "below_2k": {
+        "queries": 21118,
+        "query_fraction": 0.0010428641975308642,
+        "fixed_recall": 0.9520768522256612,
+        "adaptive_recall": 0.9989779812220044,
+        "adaptive_minus_fixed": 0.046901128996343244
+      },
+      "within_2k_8k": {
+        "queries": 16692038,
+        "query_fraction": 0.8242981728395061,
+        "fixed_recall": 0.9999413366458009,
+        "adaptive_recall": 0.9999436843219803,
+        "adaptive_minus_fixed": 2.3476761794594125e-06
+      },
+      "above_8k": {
+        "queries": 3536844,
+        "query_fraction": 0.17465896296296296,
+        "fixed_recall": 0.9999512576627726,
+        "adaptive_recall": 0.9932005677236542,
+        "adaptive_minus_fixed": -0.006750689939118426
+      }
+    },
+    "32": {
+      "below_2k": {
+        "queries": 77980,
+        "query_fraction": 0.0038508641975308643,
+        "fixed_recall": 0.9690313221338804,
+        "adaptive_recall": 0.9996032636573481,
+        "adaptive_minus_fixed": 0.03057194152346765
+      },
+      "within_2k_8k": {
+        "queries": 19156630,
+        "query_fraction": 0.9460064197530864,
+        "fixed_recall": 0.9999372443117605,
+        "adaptive_recall": 0.9999419668934463,
+        "adaptive_minus_fixed": 4.7225816858231795e-06
+      },
+      "above_8k": {
+        "queries": 1015390,
+        "query_fraction": 0.05014271604938272,
+        "fixed_recall": 0.9999610679147913,
+        "adaptive_recall": 0.9916242158185524,
+        "adaptive_minus_fixed": -0.008336852096238911
+      }
+    },
+    "48": {
+      "below_2k": {
+        "queries": 486973,
+        "query_fraction": 0.024048049382716048,
+        "fixed_recall": 0.9708081777173253,
+        "adaptive_recall": 0.999834298035389,
+        "adaptive_minus_fixed": 0.02902612031806373
+      },
+      "within_2k_8k": {
+        "queries": 19709486,
+        "query_fraction": 0.9733079506172839,
+        "fixed_recall": 0.9998143866486422,
+        "adaptive_recall": 0.9998570310889894,
+        "adaptive_minus_fixed": 4.264444034718373e-05
+      },
+      "above_8k": {
+        "queries": 53541,
+        "query_fraction": 0.002644,
+        "fixed_recall": 0.9999824860644544,
+        "adaptive_recall": 0.9965501869600507,
+        "adaptive_minus_fixed": -0.00343229910440368
+      }
+    },
+    "64": {
+      "below_2k": {
+        "queries": 1369273,
+        "query_fraction": 0.06761841975308643,
+        "fixed_recall": 0.9609654630595944,
+        "adaptive_recall": 0.9998962610998683,
+        "adaptive_minus_fixed": 0.038930798040273884
+      },
+      "within_2k_8k": {
+        "queries": 18879184,
+        "query_fraction": 0.9323053827160493,
+        "fixed_recall": 0.9961379579157129,
+        "adaptive_recall": 0.996385091875528,
+        "adaptive_minus_fixed": 0.00024713395981512676
+      },
+      "above_8k": {
+        "queries": 1543,
+        "query_fraction": 7.619753086419753e-05,
+        "fixed_recall": 0.9999898736228127,
+        "adaptive_recall": 0.99962532404407,
+        "adaptive_minus_fixed": -0.0003645495787426567
+      }
+    }
+  },
+  "rooms": [
+    {
+      "room": "Area_1/WC_1",
+      "crop_center": 158359
+    },
+    {
+      "room": "Area_1/conferenceRoom_1",
+      "crop_center": 122622
+    },
+    {
+      "room": "Area_1/conferenceRoom_2",
+      "crop_center": 256131
+    },
+    {
+      "room": "Area_1/hallway_6",
+      "crop_center": 103229
+    },
+    {
+      "room": "Area_1/hallway_7",
+      "crop_center": 513652
+    },
+    {
+      "room": "Area_1/hallway_8",
+      "crop_center": 248443
+    },
+    {
+      "room": "Area_1/office_16",
+      "crop_center": 309277
+    },
+    {
+      "room": "Area_1/office_30",
+      "crop_center": 377553
+    },
+    {
+      "room": "Area_1/office_31",
+      "crop_center": 971313
+    },
+    {
+      "room": "Area_2/auditorium_1",
+      "crop_center": 1542199
+    },
+    {
+      "room": "Area_2/auditorium_2",
+      "crop_center": 496831
+    },
+    {
+      "room": "Area_2/conferenceRoom_1",
+      "crop_center": 45775
+    },
+    {
+      "room": "Area_2/hallway_10",
+      "crop_center": 309497
+    },
+    {
+      "room": "Area_2/hallway_12",
+      "crop_center": 300159
+    },
+    {
+      "room": "Area_2/hallway_2",
+      "crop_center": 125199
+    },
+    {
+      "room": "Area_2/hallway_3",
+      "crop_center": 26812
+    },
+    {
+      "room": "Area_2/hallway_5",
+      "crop_center": 436285
+    },
+    {
+      "room": "Area_2/hallway_8",
+      "crop_center": 744920
+    },
+    {
+      "room": "Area_2/office_14",
+      "crop_center": 42974
+    },
+    {
+      "room": "Area_2/office_4",
+      "crop_center": 180441
+    },
+    {
+      "room": "Area_2/office_5",
+      "crop_center": 245131
+    },
+    {
+      "room": "Area_3/WC_1",
+      "crop_center": 128208
+    },
+    {
+      "room": "Area_3/WC_2",
+      "crop_center": 115050
+    },
+    {
+      "room": "Area_3/conferenceRoom_1",
+      "crop_center": 269858
+    },
+    {
+      "room": "Area_3/hallway_2",
+      "crop_center": 296297
+    },
+    {
+      "room": "Area_3/hallway_4",
+      "crop_center": 345864
+    },
+    {
+      "room": "Area_3/lounge_1",
+      "crop_center": 173789
+    },
+    {
+      "room": "Area_3/lounge_2",
+      "crop_center": 166397
+    },
+    {
+      "room": "Area_3/office_8",
+      "crop_center": 42283
+    },
+    {
+      "room": "Area_4/conferenceRoom_1",
+      "crop_center": 167330
+    },
+    {
+      "room": "Area_4/conferenceRoom_2",
+      "crop_center": 276745
+    },
+    {
+      "room": "Area_4/conferenceRoom_3",
+      "crop_center": 106917
+    },
+    {
+      "room": "Area_4/hallway_1",
+      "crop_center": 182777
+    },
+    {
+      "room": "Area_4/hallway_10",
+      "crop_center": 44872
+    },
+    {
+      "room": "Area_4/hallway_14",
+      "crop_center": 32886
+    },
+    {
+      "room": "Area_4/hallway_2",
+      "crop_center": 129006
+    },
+    {
+      "room": "Area_4/hallway_3",
+      "crop_center": 1839
+    },
+    {
+      "room": "Area_4/hallway_4",
+      "crop_center": 14893
+    },
+    {
+      "room": "Area_4/hallway_7",
+      "crop_center": 142904
+    },
+    {
+      "room": "Area_4/lobby_1",
+      "crop_center": 448699
+    },
+    {
+      "room": "Area_4/lobby_2",
+      "crop_center": 91472
+    },
+    {
+      "room": "Area_4/office_10",
+      "crop_center": 77453
+    },
+    {
+      "room": "Area_4/office_16",
+      "crop_center": 432783
+    },
+    {
+      "room": "Area_4/office_17",
+      "crop_center": 124285
+    },
+    {
+      "room": "Area_4/office_9",
+      "crop_center": 56492
+    },
+    {
+      "room": "Area_5/conferenceRoom_1",
+      "crop_center": 64146
+    },
+    {
+      "room": "Area_5/conferenceRoom_2",
+      "crop_center": 472992
+    },
+    {
+      "room": "Area_5/conferenceRoom_3",
+      "crop_center": 342608
+    },
+    {
+      "room": "Area_5/hallway_1",
+      "crop_center": 396991
+    },
+    {
+      "room": "Area_5/hallway_10",
+      "crop_center": 6434
+    },
+    {
+      "room": "Area_5/hallway_13",
+      "crop_center": 25449
+    },
+    {
+      "room": "Area_5/hallway_15",
+      "crop_center": 6479
+    },
+    {
+      "room": "Area_5/hallway_2",
+      "crop_center": 900198
+    },
+    {
+      "room": "Area_5/hallway_3",
+      "crop_center": 230402
+    },
+    {
+      "room": "Area_5/hallway_4",
+      "crop_center": 212776
+    },
+    {
+      "room": "Area_5/hallway_5",
+      "crop_center": 218394
+    },
+    {
+      "room": "Area_5/hallway_6",
+      "crop_center": 166901
+    },
+    {
+      "room": "Area_5/hallway_7",
+      "crop_center": 228520
+    },
+    {
+      "room": "Area_5/hallway_9",
+      "crop_center": 260573
+    },
+    {
+      "room": "Area_5/lobby_1",
+      "crop_center": 183465
+    },
+    {
+      "room": "Area_5/office_13",
+      "crop_center": 92735
+    },
+    {
+      "room": "Area_5/office_14",
+      "crop_center": 65811
+    },
+    {
+      "room": "Area_5/office_15",
+      "crop_center": 333469
+    },
+    {
+      "room": "Area_5/office_17",
+      "crop_center": 130742
+    },
+    {
+      "room": "Area_5/office_18",
+      "crop_center": 35066
+    },
+    {
+      "room": "Area_5/office_19",
+      "crop_center": 236159
+    },
+    {
+      "room": "Area_5/office_21",
+      "crop_center": 212035
+    },
+    {
+      "room": "Area_5/office_24",
+      "crop_center": 323066
+    },
+    {
+      "room": "Area_5/office_29",
+      "crop_center": 326919
+    },
+    {
+      "room": "Area_5/office_36",
+      "crop_center": 162857
+    },
+    {
+      "room": "Area_5/office_37",
+      "crop_center": 50314
+    },
+    {
+      "room": "Area_5/office_38",
+      "crop_center": 48
+    },
+    {
+      "room": "Area_5/office_40",
+      "crop_center": 296020
+    },
+    {
+      "room": "Area_5/office_41",
+      "crop_center": 92018
+    },
+    {
+      "room": "Area_6/conferenceRoom_1",
+      "crop_center": 26139
+    },
+    {
+      "room": "Area_6/hallway_1",
+      "crop_center": 279035
+    },
+    {
+      "room": "Area_6/hallway_2",
+      "crop_center": 302433
+    },
+    {
+      "room": "Area_6/lounge_1",
+      "crop_center": 341266
+    },
+    {
+      "room": "Area_6/office_8",
+      "crop_center": 49923
+    },
+    {
+      "room": "Area_6/office_9",
+      "crop_center": 175409
+    },
+    {
+      "room": "Area_6/openspace_1",
+      "crop_center": 338521
+    }
+  ]
+}
