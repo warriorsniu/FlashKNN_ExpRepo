@@ -37,6 +37,16 @@ def main() -> None:
     cukd.CukdKnnQueryTorch(
         xyz, xyz, 8, exact_indices, exact_distances, torch.zeros(2), True
     )
+    memory_info = torch.zeros(4, dtype=torch.int64)
+    memory_support = xyz.clone().contiguous()
+    cukd.CukdKnnQueryTorchMemory(
+        memory_support, memory_support, 8,
+        exact_indices, exact_distances, memory_info,
+    )
+    if not (memory_info > 0).all():
+        raise SystemExit(f"cudaKDTree memory accounting failed: {memory_info.tolist()}")
+    if memory_info[3] != memory_info[0] + memory_info[1]:
+        raise SystemExit(f"cudaKDTree memory accounting is inconsistent: {memory_info.tolist()}")
     flann_indices, _ = FlannCudaKnnQueryTorchWrapper(
         xyz, xyz, 8, torch.zeros(2), False
     )

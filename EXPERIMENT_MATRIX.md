@@ -26,6 +26,26 @@ the paper. `run_all.sh` is not successful unless
 - FAISS Flat/IVF-Flat are evaluated in the fixed-size 250,000-point table; exact Flat is intentionally not extended to the million-point scaling sweep.
 - Output figures preserve per-room voxelized point counts on the x-axis.
 
+## S3DIS fixed-250k memory footprint
+
+- Dataset/crops: the same 81 S3DIS `sample_part` rooms and deterministic
+  250,000-point crops as the main table.
+- Representative configuration: pre/post query, k=32, alpha=4.
+- RTX 3090 methods: FlashKNN, cudaKDTree, exact FAISS GPU Flat, and the
+  canonical per-room matched-recall FAISS GPU IVF-Flat configuration.
+- L20 methods: FlashKNN and cudaKDTree, matching the compact cross-architecture
+  operator table. The runner supports FAISS on L20 if a full duplicate baseline
+  matrix is later requested.
+- Boundary: peak incremental method-owned GPU allocation above CUDA-ready
+  support/query/grid/batch inputs; includes construction/index, workspace, and
+  outputs; excludes file I/O, voxelization, crop, H2D, and input tensors.
+- Accounting: FlashKNN uses the PyTorch active-allocation high-water mark;
+  cudaKDTree uses an instrumented native memory resource because its spatial
+  tree is invisible to the PyTorch allocator; FAISS combines its
+  `StandardGpuResources` allocation ledger with PyTorch output tensors.
+- Statistics: per-room memory, room mean, sample SD, and Student-t 95% CI.
+  Formal runs require one idle GPU and identical default FAISS scratch policy.
+
 ## Final-kernel design ablations
 
 - Dataset: the same 81 S3DIS `sample_part`, pre-query, 250,000-point crops.
