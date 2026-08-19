@@ -33,9 +33,10 @@ the paper. `run_all.sh` is not successful unless
 - Representative configuration: pre/post query, k=32, alpha=4.
 - RTX 3090 methods: FlashKNN, cudaKDTree, exact FAISS GPU Flat, and the
   canonical per-room matched-recall FAISS GPU IVF-Flat configuration.
-- L20 methods: FlashKNN and cudaKDTree, matching the compact cross-architecture
-  operator table. The runner supports FAISS on L20 if a full duplicate baseline
-  matrix is later requested.
+- L20 methods: FlashKNN, cudaKDTree, exact FAISS GPU Flat, and the same
+  canonical per-room matched-recall FAISS GPU IVF-Flat configuration. The L20
+  latency table remains compact (FlashKNN/cudaKDTree only), while the memory
+  comparison uses the same four-method set on both GPUs.
 - Boundary: peak incremental method-owned GPU allocation above CUDA-ready
   support/query/grid/batch inputs; includes construction/index, workspace, and
   outputs; excludes file I/O, voxelization, crop, H2D, and input tensors.
