@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -58,6 +59,54 @@ def gpu_info(torch, physical):
     return result
 
 
+def sha256(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def git_identity(repo):
+    commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=repo, text=True,
+    ).strip()
+    dirty = bool(subprocess.check_output(
+        ["git", "status", "--porcelain"], cwd=repo, text=True,
+    ).strip())
+    return {"commit": commit, "dirty": dirty}
+
+
+def co_tenant_snapshot():
+    snapshot = {}
+    for name, command in {
+        "gpus": [
+            "nvidia-smi", "--query-gpu=index,name,uuid,memory.used,"
+            "utilization.gpu,pstate", "--format=csv,noheader,nounits",
+        ],
+        "compute_processes": [
+            "nvidia-smi", "--query-compute-apps=gpu_uuid,pid,process_name,"
+            "used_memory", "--format=csv,noheader,nounits",
+        ],
+    }.items():
+        try:
+            snapshot[name] = subprocess.check_output(
+                command, text=True,
+            ).splitlines()
+        except (OSError, subprocess.CalledProcessError) as error:
+            snapshot[name] = [f"unavailable: {error}"]
+    try:
+        processes = subprocess.check_output(
+            ["ps", "-eo", "pid=,ppid=,args="], text=True,
+        ).splitlines()
+        snapshot["training_processes"] = [
+            line.strip() for line in processes if "tools/train.py" in line
+        ]
+    except (OSError, subprocess.CalledProcessError) as error:
+        snapshot["training_processes"] = [f"unavailable: {error}"]
+    return snapshot
+
+
 def load_room(torch, path):
     if path.is_dir():
         xyz = torch.as_tensor(np.load(path / "coord.npy"), dtype=torch.float32)
@@ -107,8 +156,10 @@ def main():
     from hierarchy import _voxel_first_cuda, build_flash_hierarchy
     try:
         from FlashKNN import FlashKNN
+        import FlashKNN.CuFun as flash_cuda
     except ImportError:
         from functions import FlashKNN
+        from functions import CuFun as flash_cuda
 
     np.random.seed(47)
     torch.manual_seed(47)
@@ -127,6 +178,14 @@ def main():
         paths = paths[:args.max_samples]
     if not paths:
         raise SystemExit(f"No Pointcept PTH/per-field-NPY S3DIS rooms found below {args.data_root}")
+    source_files = (
+        "DeLA/S3DIS/benchmark_latency.py",
+        "DeLA/S3DIS/hierarchy.py",
+        "FlashKNN/csrc/api.cpp",
+        "FlashKNN/csrc/flash_knn_query.h",
+        "FlashKNN/csrc/flash_knn_query_dynamic_load.cu",
+        "FlashKNN/functions/FlashKnnWrapper.py",
+    )
     metadata = {
         "dataset": "S3DIS", "split": "Area_5", "model": "DeLA",
         "weights": "random initialization",
@@ -136,12 +195,32 @@ def main():
         "warmups": args.warmups, "repeats": args.repeats,
         "gpu": gpu_info(torch, args.gpu), "torch": torch.__version__,
         "torch_cuda": torch.version.cuda, "python": platform.python_version(),
+        "physical_gpu_index": args.gpu,
+        "git": git_identity(repo),
+        "source_sha256": {
+            relative: sha256(repo / relative) for relative in source_files
+        },
+        "extension": {
+            "path": str(Path(flash_cuda.__file__).resolve()),
+            "sha256": sha256(Path(flash_cuda.__file__).resolve()),
+        },
+        "flashknn_configuration": {
+            "memory_mode": "SM", "sorting_mode": "PS",
+            "candidate_mode": "register", "enable_skip": True,
+            "thread_group_size": "adaptive", "alpha": 4,
+            "sorting_revision": "generated_bitonic_top_p",
+        },
+        "co_tenant_start": co_tenant_snapshot(),
     }
     records = []
     if args.output.is_file():
         previous = json.loads(args.output.read_text(encoding="utf-8"))
         old = previous.get("metadata", {})
-        fields = ("dataset", "split", "model", "warmups", "repeats", "torch", "torch_cuda")
+        fields = (
+            "dataset", "split", "model", "warmups", "repeats", "torch",
+            "torch_cuda", "source_sha256", "extension",
+            "flashknn_configuration",
+        )
         changed = {field: (old.get(field), metadata.get(field))
                    for field in fields if old.get(field) != metadata.get(field)}
         if old.get("gpu", {}).get("uuid") != metadata["gpu"].get("uuid"):
@@ -149,6 +228,7 @@ def main():
         if changed:
             raise SystemExit(f"Refusing to resume incompatible output {args.output}: {changed}")
         records = previous.get("records", [])
+        metadata["co_tenant_resume"] = co_tenant_snapshot()
     completed = {
         record["room"] for record in records
         if set(record.get("backends", {})) == {"cpu_kdtree", "flashknn"}
@@ -226,6 +306,7 @@ def main():
                 k: round(v["end_to_end"]["mean_ms"], 3)
                 for k, v in room_record["backends"].items()
             }, flush=True)
+    payload["metadata"]["co_tenant_end"] = co_tenant_snapshot()
     save(args.output, payload)
 
 
