@@ -1,0 +1,114 @@
+{
+  "current_source": "results/L20/l20_complete_20260807/query/s3dis_full_k32.json",
+  "historical_source": "7f6cf676f4a12f9c64f01ce402d4c7795a289fa2:results/L20/l20_complete_20260807/query/s3dis_full_k32.json",
+  "bins": [
+    {
+      "bin": "<=250k",
+      "rooms": 191,
+      "mean_support_points": 161755.1780104712,
+      "flashknn_query_ms": 0.9697367383547478,
+      "flashknn_mquery_s": 162.72476857884007,
+      "cuda_kdtree_query_ms": 1.5137347875465272,
+      "cuda_kdtree_mquery_s": 107.45684870425255,
+      "query_speedup": 1.5486074771932645
+    },
+    {
+      "bin": "250k-500k",
+      "rooms": 57,
+      "mean_support_points": 324380.5263157895,
+      "flashknn_query_ms": 2.0470539728800454,
+      "flashknn_mquery_s": 159.30674382180513,
+      "cuda_kdtree_query_ms": 2.6548640769824647,
+      "cuda_kdtree_mquery_s": 126.1144168016752,
+      "query_speedup": 1.3018619678303438
+    },
+    {
+      "bin": "500k-1m",
+      "rooms": 19,
+      "mean_support_points": 689798.4736842106,
+      "flashknn_query_ms": 4.431964221753572,
+      "flashknn_mquery_s": 155.57333719719878,
+      "cuda_kdtree_query_ms": 5.050875011243318,
+      "cuda_kdtree_mquery_s": 137.02126073177948,
+      "query_speedup": 1.1434254578097067
+    },
+    {
+      "bin": "1m-2m",
+      "rooms": 4,
+      "mean_support_points": 1251351,
+      "flashknn_query_ms": 8.010226488113403,
+      "flashknn_mquery_s": 156.85909145389746,
+      "cuda_kdtree_query_ms": 8.488363027572632,
+      "cuda_kdtree_mquery_s": 147.77929053713612,
+      "query_speedup": 1.0613516910361793
+    },
+    {
+      "bin": ">2m",
+      "rooms": 1,
+      "mean_support_points": 2424985,
+      "flashknn_query_ms": 15.88716506958008,
+      "flashknn_mquery_s": 152.63799358661137,
+      "cuda_kdtree_query_ms": 16.52231216430664,
+      "cuda_kdtree_mquery_s": 146.77031736748842,
+      "query_speedup": 1.0399786300415994
+    }
+  ],
+  "representative_rooms": [
+    {
+      "room": "Area_4/office_21",
+      "support_points": 249534,
+      "query_points": 249534,
+      "flashknn_query_ms": 1.506495475769043,
+      "flashknn_mquery_s": 165.63873175431658,
+      "cuda_kdtree_query_ms": 1.995372772216797,
+      "cuda_kdtree_mquery_s": 125.05633206710317,
+      "query_speedup": 1.3245129536138764,
+      "target_points": 250000,
+      "old_flashknn_query_ms": 1.506805419921875,
+      "old_cuda_kdtree_query_ms": 1.976466178894043,
+      "old_query_speedup": 1.3116930379746834
+    },
+    {
+      "room": "Area_6/openspace_1",
+      "support_points": 500963,
+      "query_points": 500963,
+      "flashknn_query_ms": 3.287839889526367,
+      "flashknn_mquery_s": 152.36842937390318,
+      "cuda_kdtree_query_ms": 3.8732528686523438,
+      "cuda_kdtree_mquery_s": 129.3390896459349,
+      "query_speedup": 1.1780539803628662,
+      "target_points": 500000,
+      "old_flashknn_query_ms": 3.2949209213256836,
+      "old_cuda_kdtree_query_ms": 3.8889646530151367,
+      "old_query_speedup": 1.1802907401645453
+    },
+    {
+      "room": "Area_4/lobby_1",
+      "support_points": 1017404,
+      "query_points": 1017404,
+      "flashknn_query_ms": 6.667017936706543,
+      "flashknn_mquery_s": 152.60255929393674,
+      "cuda_kdtree_query_ms": 7.079529762268066,
+      "cuda_kdtree_mquery_s": 143.71067488443677,
+      "query_speedup": 1.0618735136874855,
+      "target_points": 1000000,
+      "old_flashknn_query_ms": 6.665468215942383,
+      "old_cuda_kdtree_query_ms": 7.071185111999512,
+      "old_query_speedup": 1.0608684765890475
+    },
+    {
+      "room": "Area_2/auditorium_2",
+      "support_points": 2424985,
+      "query_points": 2424985,
+      "flashknn_query_ms": 15.88716506958008,
+      "flashknn_mquery_s": 152.63799358661137,
+      "cuda_kdtree_query_ms": 16.52231216430664,
+      "cuda_kdtree_mquery_s": 146.77031736748842,
+      "query_speedup": 1.0399786300415994,
+      "target_points": 2425000,
+      "old_flashknn_query_ms": 15.906023979187012,
+      "old_cuda_kdtree_query_ms": 16.436767578125,
+      "old_query_speedup": 1.0333674587459736
+    }
+  ]
+}

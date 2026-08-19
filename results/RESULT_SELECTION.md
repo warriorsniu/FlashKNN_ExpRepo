@@ -8,7 +8,8 @@ not a supported paper result, even if it exists in an older Git revision.
 
 | Directory | Status | Intended use |
 | --- | --- | --- |
-| `L20/l20_complete_20260807/` | Canonical, with pending refreshes below | Main query/network result pack. |
+| `L20/l20_complete_20260807/` | Final canonical except NCU | Main query/network result pack with final-kernel S3DIS refresh. |
+| `L20/l20_s3dis_final_kernel_refresh_20260819/` | Final raw refresh | Direct source for final-kernel S3DIS fixed/full query and DeLA hierarchy results. |
 | `L20/l20_semantickitti_six_k_alpha4_20260818/` | Final | Direct source for the canonical six-k SemanticKITTI query result. |
 | `L20/l20_bitonic_generated_validation/` | Final algorithm, 5/20 protocol | Direct source for S3DIS k=24/32/48 optimized-kernel paired timings. |
 | `L20/l20_bitonic_generated_k8_k16_k64_validation/` | Final algorithm, 5/20 protocol | Direct source for S3DIS k=8/16/64 optimized-kernel paired timings. |
@@ -17,21 +18,9 @@ not a supported paper result, even if it exists in an older Git revision.
 | `L20/l20_ball_query_20260807/` | Final independent baseline | Ball-query comparison and one-room radius sweep. |
 | `L20/l20_arkade_20260807/` | Final independent baseline | Arkade/TrueKNN RT-core comparison. |
 
-The canonical L20 pack deliberately retains three mixed/provenance-sensitive
-artifacts until their final-kernel replacements arrive:
+The canonical L20 fixed-size and full-room query files now use the verified final production kernel and unified 3 warm-up/10-repeat protocol for FlashKNN and paired cudaKDTree. Historical FLANN-CUDA, nanoflann and FAISS fields were preserved unchanged. `network/dela_s3dis.json` is the final 68-room, 10/30 paired CPU-KDTree/FlashKNN refresh. The raw source files retain complete hashes and co-tenant provenance in `L20/l20_s3dis_final_kernel_refresh_20260819/`.
 
-- `query/s3dis_full_k32.json`: third-party full-room baselines are valid, while
-  FlashKNN and cudaKDTree must be refreshed with the production build.
-- `network/dela_s3dis.json`: native/CPU timing remains useful, while the
-  FlashKNN hierarchy path must be refreshed with the production build.
-- `query/s3dis_sample_part.json`: optimized FlashKNN/cudaKDTree overrides are
-  valid, but use 5 warm-ups/20 repeats whereas untouched methods use the main
-  3/10 protocol. Re-run the pair at 3/10 before treating the file as a fully
-  uniform main-table batch.
-
-The old L20 NCU profile was removed because it predates the final sorting
-logic. Any microarchitecture table must be regenerated from the production
-kernel.
+The old L20 NCU profile remains removed because it predates the final sorting logic. A final-kernel profiling attempt on 2026-08-19 was blocked by the host setting `RmProfilingAdminOnly: 1`; no incomplete profile is retained as paper data. Any microarchitecture table must be regenerated after an administrator enables non-admin performance counters.
 
 ## Retained RTX 3090 results
 
