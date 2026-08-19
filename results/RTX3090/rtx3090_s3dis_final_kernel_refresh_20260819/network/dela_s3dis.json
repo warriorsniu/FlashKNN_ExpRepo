@@ -86,8 +86,7 @@
         "GPU-8998eefa-dc46-f1dc-5f7e-547fb11dd3c0, 849677, /data/nyc/miniconda3/envs/flashknn-exp-cu118/bin/python, 4306"
       ],
       "training_processes": []
-    },
-    "canonical_source": "results/RTX3090/rtx3090_s3dis_final_kernel_refresh_20260819/network/dela_s3dis.json"
+    }
   },
   "records": [
     {

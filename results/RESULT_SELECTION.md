@@ -37,21 +37,21 @@ kernel.
 
 | Directory | Status | Intended use |
 | --- | --- | --- |
-| `RTX3090/rtx3090_complete_20260808/` | Canonical merge source, with pending refreshes below | Main query/network pack; its SemanticKITTI file has been replaced by the final six-k alpha=4-IVF result. |
+| `RTX3090/rtx3090_complete_20260808/` | Final canonical | Main query/network pack. SemanticKITTI uses the six-k alpha=4-IVF result; S3DIS fixed/full and DeLA S3DIS use the production-kernel refresh. |
+| `RTX3090/rtx3090_s3dis_final_kernel_refresh_20260819/` | Final direct source | Paired 3/10 S3DIS fixed/full query refresh and 10/30 DeLA S3DIS refresh on the same idle physical GPU. |
 | `RTX3090/rtx3090_semantickitti_unifiedk_alpha4ivf_20260818/` | Final | Direct source for the canonical SemanticKITTI replacement. |
 | `RTX3090/rtx3090_ablation_final_20260810/` | Final | SMPS/SMSS/GMPS and candidate-storage/skip ablation. |
 | `RTX3090/rtx3090_thread_grouping_balanced_final_v2_20260811/` | Final | Balanced Fixed-8/16/32 versus Adaptive thread grouping. |
 | `RTX3090/rtx3090_adaptive_neighborhood_final_v2_20260818/` | Final | Fixed 3x3x3 versus adaptive octree neighborhood versus cudaKDTree. |
 | `RTX3090/rtx3090_s3dis_semantic_boundary_20260818/` | Final | Performance-matched checkpoint semantic-boundary analysis. |
 
-The RTX canonical pack predates the final generated top-P implementation for
-`query/s3dis_sample_part.json`, `query/s3dis_full_k32.json`, and the FlashKNN
-path in `network/dela_s3dis.json`. These files are retained only because they
-also contain unaffected third-party/native baselines needed for an incremental
-refresh. Their historical FlashKNN timings must not be used as final-algorithm
-numbers. The replacement should use the same 3/10 query and 10/30 network
-protocols; after replacement, attach machine-readable source hashes and timing
-provenance.
+The 2026-08-19 RTX refresh replaced FlashKNN and the paired cudaKDTree control
+in `query/s3dis_sample_part.json` and `query/s3dis_full_k32.json`, while
+preserving all unaffected third-party baselines. It also replaced
+`network/dela_s3dis.json` as one complete paired file. The raw refresh and
+canonical timing overrides record the source commit, source/extension hashes,
+production flags, physical GPU UUID, 3/10 or 10/30 protocol, and co-tenant
+snapshots.
 
 ## Removed result classes
 
