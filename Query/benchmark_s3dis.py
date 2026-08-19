@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -55,6 +56,56 @@ def gpu_info(torch: Any, physical_gpu: int) -> dict[str, Any]:
         return {"name": name, "uuid": uuid, "driver": driver, "memory_mib": int(memory)}
     except Exception:
         return {"name": torch.cuda.get_device_name(0)}
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def git_identity(repo: Path) -> dict[str, Any]:
+    commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=repo, text=True,
+    ).strip()
+    dirty = bool(subprocess.check_output(
+        ["git", "status", "--porcelain"], cwd=repo, text=True,
+    ).strip())
+    return {"commit": commit, "dirty": dirty}
+
+
+def co_tenant_snapshot() -> dict[str, Any]:
+    commands = {
+        "gpus": [
+            "nvidia-smi", "--query-gpu=index,name,uuid,memory.used,"
+            "utilization.gpu,pstate", "--format=csv,noheader,nounits",
+        ],
+        "compute_processes": [
+            "nvidia-smi", "--query-compute-apps=gpu_uuid,pid,process_name,"
+            "used_memory", "--format=csv,noheader,nounits",
+        ],
+    }
+    snapshot: dict[str, Any] = {}
+    for name, command in commands.items():
+        try:
+            snapshot[name] = subprocess.check_output(
+                command, text=True,
+            ).splitlines()
+        except (OSError, subprocess.CalledProcessError) as error:
+            snapshot[name] = [f"unavailable: {error}"]
+    try:
+        process_lines = subprocess.check_output(
+            ["ps", "-eo", "pid=,ppid=,args="], text=True,
+        ).splitlines()
+        snapshot["training_processes"] = [
+            line.strip() for line in process_lines
+            if "tools/train.py" in line
+        ]
+    except (OSError, subprocess.CalledProcessError) as error:
+        snapshot["training_processes"] = [f"unavailable: {error}"]
+    return snapshot
 
 
 def room_paths(root: Path) -> list[Path]:
@@ -163,8 +214,10 @@ def main() -> None:
     import torch
     try:
         from FlashKNN import FlashKNN, xyz2key
+        import FlashKNN.CuFun as flash_cuda
     except ImportError:
         from functions import FlashKNN, xyz2key
+        from functions import CuFun as flash_cuda
     import Cukd.CuFun as cukd
 
     if not torch.cuda.is_available():
@@ -175,6 +228,14 @@ def main() -> None:
     paths = room_paths(args.data_root)
     if args.max_samples is not None:
         paths = paths[:args.max_samples]
+    repo = Path(__file__).resolve().parents[1]
+    source_files = (
+        "FlashKNN/csrc/api.cpp",
+        "FlashKNN/csrc/flash_knn_query.h",
+        "FlashKNN/csrc/flash_knn_query_dynamic_load.cu",
+        "FlashKNN/functions/FlashKnnWrapper.py",
+        "Query/benchmark_s3dis.py",
+    )
     payload = {
         "metadata": {
             "dataset": "S3DIS",
@@ -185,10 +246,26 @@ def main() -> None:
                 "Pointcept legacy PTH; translated and rounded to room-local millimetres"
             ),
             "gpu": gpu_info(torch, args.gpu),
+            "physical_gpu_index": args.gpu,
             "python": platform.python_version(), "torch": torch.__version__,
             "torch_cuda": torch.version.cuda, "voxel_size_m": args.voxel_size,
             "crop_points": args.crop_points, "num_down": args.num_down,
             "warmups": args.warmups, "repeats": args.repeats,
+            "git": git_identity(repo),
+            "source_sha256": {
+                relative: sha256(repo / relative) for relative in source_files
+            },
+            "extension": {
+                "path": str(Path(flash_cuda.__file__).resolve()),
+                "sha256": sha256(Path(flash_cuda.__file__).resolve()),
+            },
+            "flashknn_configuration": {
+                "memory_mode": "SM", "sorting_mode": "PS",
+                "candidate_mode": "register", "enable_skip": True,
+                "thread_group_size": "adaptive", "alpha": 4,
+                "sorting_revision": "generated_bitonic_top_p",
+            },
+            "co_tenant_start": co_tenant_snapshot(),
             "timing_boundary": "CUDA-ready inputs; excludes file I/O, voxelization, cropping and H2D",
         },
         "records": [],
@@ -200,6 +277,7 @@ def main() -> None:
         identity_fields = (
             "source_format", "torch", "torch_cuda", "voxel_size_m",
             "crop_points", "num_down", "warmups", "repeats",
+            "source_sha256", "extension", "flashknn_configuration",
         )
         changed = {
             field: (old.get(field), current.get(field))
@@ -214,6 +292,7 @@ def main() -> None:
                 f"Refusing to resume incompatible output {args.output}: {changed}"
             )
         payload = previous
+        payload["metadata"]["co_tenant_resume"] = co_tenant_snapshot()
     required_methods = {"flashknn", "cuda_kdtree"}
     if not args.skip_legacy:
         required_methods.update(("flann_cuda", "nanoflann"))
@@ -333,6 +412,8 @@ def main() -> None:
                 del support, grid, query_indices, query, batch
         del coord
         torch.cuda.empty_cache()
+    payload["metadata"]["co_tenant_end"] = co_tenant_snapshot()
+    atomic_json(args.output, payload)
     print(f"Saved {len(payload['records'])} records to {args.output}")
 
 

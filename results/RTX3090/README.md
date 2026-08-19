@@ -2,7 +2,7 @@
 
 `rtx3090_complete_20260808/` 是论文修改期间在本机 RTX 3090 上生成的 canonical 增量合并目录。实验固定使用物理 GPU 1（UUID `GPU-8998eefa-dc46-f1dc-5f7e-547fb11dd3c0`），未使用 DataParallel、DistributedDataParallel、NCCL 或任何多卡并行。15 个实验 JSON 的 `metadata.gpu.uuid` 都已核对为该 UUID；环境清单 `system.json` 另行记录 `selected_gpu=1`。
 
-软件环境为 Python 3.10.20、PyTorch 2.7.1+cu118、CUDA runtime/toolkit 11.8；所有本地 CUDA 扩展为 RTX 3090 生成 `sm_86` cubin。与 L20 结果保持同一数据 manifest、warm-up/repeat 和计时边界，但按硬件平台使用 cu118，不与 L20/cu128 结果混合平均。2026-08-08 的 S3DIS fixed/full 与 DeLA S3DIS FlashKNN 路径早于最终 generated top-P 实现，因此只保留其中未受影响的第三方/native 基线，FlashKNN 数字待同协议增量补跑；2026-08-18 的 SemanticKITTI、最终消融和边界分析不受此限制。
+软件环境为 Python 3.10.20、PyTorch 2.7.1+cu118、CUDA runtime/toolkit 11.8；所有本地 CUDA 扩展为 RTX 3090 生成 `sm_86` cubin。与 L20 结果保持同一数据 manifest、warm-up/repeat 和计时边界，但按硬件平台使用 cu118，不与 L20/cu128 结果混合平均。2026-08-19 已在同一空闲物理 GPU 1 上用最终 generated top-P production kernel 补跑 S3DIS fixed/full 与 DeLA S3DIS，并增量写入 canonical；未受影响的第三方/native 基线保持不变。
 
 ## 覆盖与方法集
 
@@ -18,13 +18,25 @@
 
 | 场景 | FlashKNN total | cudaKDTree total | 加速比 | FlashKNN recall |
 | --- | ---: | ---: | ---: | ---: |
-| S3DIS 250k, pre, k=32 | 2.446 ms | 13.402 ms | 5.48x | 0.999901 |
-| S3DIS 250k, post, k=32 | 1.567 ms | 6.255 ms | 3.99x | 0.999853 |
-| S3DIS full, pre, k=32 | 2.660 ms | 10.420 ms | 3.92x | 0.999914 |
+| S3DIS 250k, pre, k=32 | 2.409 ms | 13.334 ms | 5.54x | 0.999901 |
+| S3DIS 250k, post, k=32 | 1.541 ms | 6.212 ms | 4.03x | 0.999853 |
+| S3DIS full, pre, k=32 | 2.536 ms | 10.151 ms | 4.00x | 0.999914 |
 | SemanticKITTI, pre, k=24, alpha=4 | 1.392 ms | 4.325 ms | 3.11x | 0.981446 |
 | SemanticKITTI, post, k=24, alpha=4 | 1.402 ms | 3.661 ms | 2.61x | 0.978889 |
 
-表中前三个 S3DIS 行只用于核对待替换文件，不能引用为最终 generated top-P 性能；后两个 SemanticKITTI 行来自最终六k文件，可以引用。
+表中前三个 S3DIS 行来自2026-08-19最终 kernel 3/10补跑；后两个 SemanticKITTI 行来自最终六k文件，均可引用。
+
+## S3DIS DeLA 最终内核延迟
+
+2026-08-19补跑覆盖Area 5全部68房间，CPU KDTree与FlashKNN采用相同随机初始化模型，
+每个backend为10次warm-up、30次正式记录。CPU端到端平均473.800 ms；FlashKNN hierarchy
+平均12.428 ms、网络forward平均10.356 ms、端到端平均22.785 ms，对CPU端到端加速20.79×。
+CPU批次相对旧结果只变化0.3%，说明机器负载稳定；最终Flash批次相对旧实现慢约4.7%，因此
+canonical采用本次最终实现数字，不回退选择旧批次的更快结果。
+
+直接来源目录为 `rtx3090_s3dis_final_kernel_refresh_20260819/`。fixed/full canonical只替换
+FlashKNN和同轮cudaKDTree字段，FLANN、nanoflann、FAISS保持原值；metadata中的
+`timing_overrides`记录未变基线哈希、源码/扩展哈希、GPU UUID及production flags。
 
 SemanticKITTI 使用 alpha=4 作为代表性效率设置，是因为多种子网络实验已在 matched training/evaluation 协议下验证 alpha=4 相对 alpha=8 未显示系统性精度下降。该结论不表示可以把使用 alpha=8 训练的 checkpoint 在推理时直接切换为 alpha=4 而完全没有影响。
 
