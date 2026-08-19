@@ -54,6 +54,11 @@ def arguments() -> argparse.Namespace:
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--physical-gpu", type=int, required=True)
     parser.add_argument("--gpu-uuid", required=True)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Output JSON path (defaults to PROFILE_DIR/provenance.json).",
+    )
     return parser.parse_args()
 
 
@@ -89,6 +94,19 @@ def source_hashes(repo: Path) -> dict[str, str]:
                 digest.update(chunk)
         hashes[relative] = digest.hexdigest()
     return hashes
+
+
+def artifact_identity(path: Path) -> dict[str, object]:
+    """Return immutable identity fields for one retained NCU artifact."""
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return {
+        "file": path.name,
+        "bytes": path.stat().st_size,
+        "sha256": digest.hexdigest(),
+    }
 
 
 def profile_summary(path: Path) -> list[dict[str, object]]:
@@ -132,9 +150,9 @@ def main() -> None:
             if not path.is_file() or path.stat().st_size == 0:
                 raise SystemExit(f"Missing or empty NCU artifact: {path}")
         profiles[backend] = {
-            "report": report.name,
-            "summary_csv": summary_csv.name,
-            "raw_csv": raw_csv.name,
+            "report": artifact_identity(report),
+            "summary_csv": artifact_identity(summary_csv),
+            "raw_csv": artifact_identity(raw_csv),
             "kernels": profile_summary(raw_csv),
         }
     payload = {
@@ -154,7 +172,8 @@ def main() -> None:
         "k": 32,
         "profiles": profiles,
     }
-    output = profile_dir / "provenance.json"
+    output = args.output.resolve() if args.output else profile_dir / "provenance.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(output)
 

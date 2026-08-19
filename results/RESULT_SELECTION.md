@@ -8,8 +8,9 @@ not a supported paper result, even if it exists in an older Git revision.
 
 | Directory | Status | Intended use |
 | --- | --- | --- |
-| `L20/l20_complete_20260807/` | Final canonical except NCU | Main query/network result pack with final-kernel S3DIS refresh. |
+| `L20/l20_complete_20260807/` | Final canonical query/network | Main query/network result pack with final-kernel S3DIS refresh. |
 | `L20/l20_s3dis_final_kernel_refresh_20260819/` | Final raw refresh | Direct source for final-kernel S3DIS fixed/full query and DeLA hierarchy results. |
+| `L20/l20_ncu/` | Final canonical NCU | Final-kernel k=32 cudaKDTree/SMPS/GMSS reports, raw CSV and provenance. |
 | `L20/l20_semantickitti_six_k_alpha4_20260818/` | Final | Direct source for the canonical six-k SemanticKITTI query result. |
 | `L20/l20_bitonic_generated_validation/` | Final algorithm, 5/20 protocol | Direct source for S3DIS k=24/32/48 optimized-kernel paired timings. |
 | `L20/l20_bitonic_generated_k8_k16_k64_validation/` | Final algorithm, 5/20 protocol | Direct source for S3DIS k=8/16/64 optimized-kernel paired timings. |
@@ -20,7 +21,7 @@ not a supported paper result, even if it exists in an older Git revision.
 
 The canonical L20 fixed-size and full-room query files now use the verified final production kernel and unified 3 warm-up/10-repeat protocol for FlashKNN and paired cudaKDTree. Historical FLANN-CUDA, nanoflann and FAISS fields were preserved unchanged. `network/dela_s3dis.json` is the final 68-room, 10/30 paired CPU-KDTree/FlashKNN refresh. The raw source files retain complete hashes and co-tenant provenance in `L20/l20_s3dis_final_kernel_refresh_20260819/`.
 
-The old L20 NCU profile remains removed because it predates the final sorting logic. A final-kernel profiling attempt on 2026-08-19 was blocked by the host setting `RmProfilingAdminOnly: 1`; no incomplete profile is retained as paper data. Any microarchitecture table must be regenerated after an administrator enables non-admin performance counters.
+The administrator subsequently enabled performance-counter access and all three final-kernel NCU profiles completed on physical GPU 0. `L20/l20_ncu/` is the canonical copy and `L20/l20_s3dis_final_kernel_refresh_20260819/ncu/microarch/` is the direct raw location. The old pre-final reports and standalone cudaKDTree I/O report are superseded; the retained profiles include raw CSV, complete requested metrics, source hashes and GPU provenance.
 
 ## Retained RTX 3090 results
 

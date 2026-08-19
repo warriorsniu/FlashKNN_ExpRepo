@@ -27,10 +27,27 @@ DeLA 68-room 平均 latency 为：CPU KDTree preprocessing/network/end-to-end 76
 
 三个 raw JSON 的 `metadata.provenance` 记录 source commit、七个关键源码 SHA256、已安装扩展 SHA256、物理 GPU、effective FlashKNN flags、数据根、room manifest 和共租快照路径。`provenance/gpu_{start,end}.csv` 与 `provenance/compute_processes_{start,end}.csv` 证明正式批次首尾目标 GPU 空闲。canonical `l20_complete_20260807` 中 fixed/full 仅替换 `flashknn` 和 `cuda_kdtree`，历史 FLANN/nanoflann/FAISS 字段经写入前后深比较确认未改变；DeLA canonical 替换为本目录的完整 paired 文件。
 
-## NCU 状态
+## NCU 微架构结果
 
-最终源码的 NCU profiling 已尝试，但当前驱动设置为 `RmProfilingAdminOnly: 1`，本用户没有 performance-counter 权限，cudaKDTree 首个 profile 返回 `ERR_NVGPUCTRPERM`，没有生成 `.ncu-rep`，因此未继续 SMPS/GMSS，也没有将旧 kernel 的 NCU 数据恢复为论文结果。原始错误保存在 `provenance/ncu_permission_error.log`。管理员将 `NVreg_RestrictProfilingToAdminUsers=0` 应用到 NVIDIA 模块并重载驱动或重启后，可运行 `NCU_GPU=0 NCU_OUTPUT_DIR=results/L20/l20_s3dis_final_kernel_refresh_20260819/ncu/microarch bash scripts/run_knn_ncu_microarch.sh`；脚本会生成三种 backend 的 `.ncu-rep`、summary CSV 和 raw CSV，并可用 `scripts/summarize_ncu_profiles.py` 校验和记录 provenance。
+管理员开放 performance counter 后，已在同一物理 GPU 0 上完成最终 kernel 的 cudaKDTree、FlashKNN-SMPS 和 FlashKNN-GMSS profiling。协议为确定性的 S3DIS 250k pre-query、k=32、seed=47；每种方法均保留 `.ncu-rep`、NCU console CSV 和 raw wide CSV，机器可读汇总及源码 SHA256 位于 `provenance/ncu_provenance.json`。最初的 `ERR_NVGPUCTRPERM` 记录 `provenance/ncu_permission_error.log` 仅保留为权限修复历史，不再表示当前状态。
+
+| Backend | HBM read sectors | HBM write sectors | Total sectors | Uniform branch targets (%) | Synchronized threads | Duration (ms) | Active warps (%) | Registers/thread | Shared memory/block (KiB) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| cudaKDTree | 413,936 | 4,608,776 | 5,022,712 | 69.58 | 8.87 | 4.471 | 55.34 | 34 | 1.024 |
+| FlashKNN-SMPS | 345,412 | 640,840 | 986,252 | 67.29 | 23.13 | 1.655 | 70.93 | 55 | 5.120 |
+| FlashKNN-GMSS | 335,448 | 1,513,248 | 1,848,696 | 85.52 | 15.95 | 2.545 | 40.58 | 38 | 1.024 |
+
+SMPS 相对 cudaKDTree 的总 DRAM sector 数减少 80.37%，NCU-instrumented kernel duration 加速 2.70×，同步线程指标提高 2.61×，active-warps 占用率提高 15.59 个百分点。GMSS 的 uniform-branch 指标最高，但总 I/O、同步线程数和 duration 均不及 SMPS。NCU duration 受 replay/instrumentation 影响，只用于同轮微架构对照，不替代正式 3/10 benchmark latency。
+
+本轮绝对 sector 数不复现论文原表的 3090 数值：论文记录的 FlashKNN/cudaKDTree 总 sector 分别为 2,212,036/178,565,712，而 L20 最终 kernel 为 986,252/5,022,712；I/O 降低方向一致，但降低比例由 98.76% 变为 80.37%。最终 generated-bitonic SMPS 的 Uniform Warp Ratio 也由旧 kernel 的约 99.0% 变为 67.29%，而 synchronized-threads ratio 仍明显高于 cudaKDTree。因此论文若加入 L20 表，应按架构和 kernel revision 分栏，不能将两组绝对计数当作复现实验或直接合并。
+
+| SMPS revision | HBM read sectors | HBM write sectors | Uniform branch targets (%) | Synchronized threads | Duration (ms) |
+|---|---:|---:|---:|---:|---:|
+| 旧完整双调排序 kernel | 347,320 | 1,479,008 | 99.03 | 31.40 | 2.706 |
+| 最终 generated top-P kernel | 345,412 | 640,840 | 67.29 | 23.13 | 1.655 |
+
+旧报告的 kernel 实例为 `FlashKNN_Query_dynamic_load_kernel<float,2,5>`，最终报告为带编译期 ablation 参数的 `<float,2,5,false,true>`，二者 launch 形状相同。最终 top-P 删除了完整排序中大量全线程共同执行的 stage/loop 指令，同时保留按 lane 位置和比较结果触发的 compare-exchange，因此以动态指令为分母的 synchronized-threads 平均值下降并不等同于总体线程效率退化：新 kernel 的 duration 下降38.9%，DRAM writes 下降56.7%。由于同一版本还引入了编译期 `CandidateInShared/EnableSkip` 参数，现有证据支持“变化主要与 top-P 重构一致”，但若要在论文中声称唯一因果，仍需在同一源码中只切换完整排序/top-P 做 NCU A/B。
 
 ## 验证与重建
 
-`python scripts/validate_result_coverage.py --run-dir results/L20/l20_complete_20260807` 已通过。`analysis/analyze_results.py` 已重新生成 `analysis/output/l20_complete_20260807` 下的 workbook、summary 和论文图，`analysis/analyze_l20_full_room_refresh.py` 另生成 full-room 分箱及历史对比；历史结果只用于对比，不再进入最终图表。
+`python scripts/validate_result_coverage.py --run-dir results/L20/l20_complete_20260807` 已通过。`scripts/summarize_ncu_profiles.py` 已验证三份 NCU report、summary CSV、raw CSV 和全部必需指标。`analysis/analyze_results.py` 已重新生成 `analysis/output/l20_complete_20260807` 下的 workbook、summary 和论文图，`analysis/analyze_l20_full_room_refresh.py` 另生成 full-room 分箱及历史对比；历史结果只用于对比，不再进入最终图表。
