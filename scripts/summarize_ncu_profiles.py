@@ -11,14 +11,21 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from finalize_l20_s3dis_refresh import source_hashes
-
-
 BACKENDS = ("cukd", "flash-smps", "flash-gmss")
+NCU_SOURCE_FILES = (
+    "FlashKNN/csrc/flash_knn_query_dynamic_load.cu",
+    "FlashKNN/csrc/flash_knn_query.h",
+    "FlashKNN/functions/FlashKnnWrapper.py",
+    "FlashKNN/csrc/api.cpp",
+    "FlashKNN/csrc/flash_knn_bitonic_top_p.cuh",
+    "Query/benchmark_s3dis.py",
+    "scripts/profile_knn_threads.py",
+)
 FIELDS = (
     "Kernel Name",
     "Block Size",
@@ -70,6 +77,18 @@ def raw_rows(path: Path) -> tuple[list[str], list[str], list[list[str]]]:
     if len(header) != len(units) or any(len(row) != len(header) for row in rows):
         raise SystemExit(f"NCU raw CSV has inconsistent columns: {path}")
     return header, units, rows
+
+
+def source_hashes(repo: Path) -> dict[str, str]:
+    """Hash the production kernel and exact NCU profile entry dependencies."""
+    hashes = {}
+    for relative in NCU_SOURCE_FILES:
+        digest = hashlib.sha256()
+        with (repo / relative).open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        hashes[relative] = digest.hexdigest()
+    return hashes
 
 
 def profile_summary(path: Path) -> list[dict[str, object]]:
