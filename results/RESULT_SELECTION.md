@@ -11,6 +11,7 @@ not a supported paper result, even if it exists in an older Git revision.
 | `L20/l20_complete_20260807/` | Final canonical query/network | Main query/network result pack with final-kernel S3DIS refresh. |
 | `L20/l20_s3dis_final_kernel_refresh_20260819/` | Final raw refresh | Direct source for final-kernel S3DIS fixed/full query and DeLA hierarchy results. |
 | `L20/l20_ncu/` | Final canonical NCU | Final-kernel k=32 cudaKDTree/SMPS/GMSS reports, raw CSV and provenance. |
+| `L20/l20_s3dis_memory_k32_20260819/` | Final memory result | Same 81 fixed-250k crops, pre/post, k=32; FlashKNN/cudaKDTree/FAISS Flat/matched IVF peak incremental allocation with room SD/95% CI. |
 | `L20/l20_semantickitti_six_k_alpha4_20260818/` | Final | Direct source for the canonical six-k SemanticKITTI query result. |
 | `L20/l20_bitonic_generated_validation/` | Final algorithm, 5/20 protocol | Direct source for S3DIS k=24/32/48 optimized-kernel paired timings. |
 | `L20/l20_bitonic_generated_k8_k16_k64_validation/` | Final algorithm, 5/20 protocol | Direct source for S3DIS k=8/16/64 optimized-kernel paired timings. |
