@@ -72,7 +72,8 @@ def git_identity(repo):
         ["git", "rev-parse", "HEAD"], cwd=repo, text=True,
     ).strip()
     dirty = bool(subprocess.check_output(
-        ["git", "status", "--porcelain"], cwd=repo, text=True,
+        ["git", "status", "--porcelain", "--untracked-files=no"],
+        cwd=repo, text=True,
     ).strip())
     return {"commit": commit, "dirty": dirty}
 
@@ -180,7 +181,7 @@ def main():
         raise SystemExit(f"No Pointcept PTH/per-field-NPY S3DIS rooms found below {args.data_root}")
     source_files = (
         "DeLA/S3DIS/benchmark_latency.py",
-        "DeLA/S3DIS/hierarchy.py",
+        "Networks/hierarchy.py",
         "FlashKNN/csrc/api.cpp",
         "FlashKNN/csrc/flash_knn_query.h",
         "FlashKNN/csrc/flash_knn_query_dynamic_load.cu",
