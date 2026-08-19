@@ -15,13 +15,13 @@ import hashlib
 import json
 import os
 import platform
+import subprocess
 from pathlib import Path
 from typing import Any
 
 from benchmark_s3dis import (
     atomic_json,
     co_tenant_snapshot,
-    git_identity,
     gpu_info,
     load_xyz,
     prepare,
@@ -59,6 +59,37 @@ def file_sha256(path: Path) -> str:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def source_git_identity(repo: Path) -> dict[str, Any]:
+    """Audit source changes while excluding generated result directories."""
+    commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=repo, text=True,
+    ).strip()
+    status = subprocess.check_output(
+        [
+            "git", "status", "--porcelain", "--untracked-files=all", "--", ".",
+            ":(exclude)results", ":(exclude)analysis/output",
+        ],
+        cwd=repo,
+        text=True,
+    ).strip()
+    return {"commit": commit, "source_dirty": bool(status), "source_status": status.splitlines()}
+
+
+def external_co_tenant_snapshot() -> dict[str, Any]:
+    """Return the standard snapshot without counting this benchmark itself."""
+    snapshot = co_tenant_snapshot()
+    current_pid = str(os.getpid())
+    external = []
+    for line in snapshot.get("compute_processes", []):
+        fields = [field.strip() for field in line.split(",")]
+        if len(fields) > 1 and fields[1] == current_pid:
+            continue
+        external.append(line)
+    snapshot["compute_processes"] = external
+    snapshot["measurement_process_pid"] = int(current_pid)
+    return snapshot
 
 
 def clean_allocator(torch: Any) -> None:
@@ -316,7 +347,7 @@ def main() -> None:
             "python": platform.python_version(),
             "torch": torch.__version__,
             "torch_cuda": torch.version.cuda,
-            "git": git_identity(repo),
+            "git": source_git_identity(repo),
             "canonical_s3dis": str(args.canonical_s3dis.resolve()),
             "canonical_s3dis_sha256": file_sha256(args.canonical_s3dis),
             "source_sha256": {
@@ -344,7 +375,7 @@ def main() -> None:
                 "latency benchmark; IVF nlist/nprobe copied per room from the "
                 "canonical matched-recall result"
             ),
-            "co_tenant_start": co_tenant_snapshot(),
+            "co_tenant_start": external_co_tenant_snapshot(),
         },
         "records": [],
     }
@@ -404,7 +435,7 @@ def main() -> None:
         del coord
         clean_allocator(torch)
 
-    payload["metadata"]["co_tenant_end"] = co_tenant_snapshot()
+    payload["metadata"]["co_tenant_end"] = external_co_tenant_snapshot()
     payload["metadata"]["records"] = len(payload["records"])
     atomic_json(args.output, payload)
     print(f"Saved {len(payload['records'])} records to {args.output}")
