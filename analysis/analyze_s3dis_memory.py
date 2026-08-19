@@ -138,9 +138,11 @@ def main() -> None:
         "tensors and all allocations made by its native spatial-tree builder.",
         "",
     ])
-    (args.output_dir / "summary.md").write_text(
-        "\n".join(lines), encoding="utf-8"
-    )
+    markdown = "\n".join(lines)
+    (args.output_dir / "summary.md").write_text(markdown, encoding="utf-8")
+    # Result directories retain README.md under the repository's ignore rules;
+    # keep the human-readable summary visible after results are pushed.
+    (args.output_dir / "README.md").write_text(markdown, encoding="utf-8")
     print(f"Validated {len(seen)} records; wrote {args.output_dir}")
 
 

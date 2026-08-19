@@ -42,7 +42,7 @@ output，排除文件I/O、voxelization、crop、H2D及输入tensor。FAISS沿�
 | Post | 121.12 MiB | 37.73 MiB | 1564.22 MiB | 1566.99 MiB |
 
 表中是81个房间的均值；逐房间sample SD和Student-t 95% CI位于
-`rtx3090_s3dis_memory_k32_20260819/analysis/summary.md`。FlashKNN的显存footprint
+`rtx3090_s3dis_memory_k32_20260819/analysis/README.md`。FlashKNN的显存footprint
 高于cudaKDTree，但仍低于300 MiB；其I/O优势指HBM traffic和访问模式，并不等价于
 比树方法使用更少的allocated memory。FAISS的约1.5--1.6 GiB主要包括默认GPU resource
 scratch。cudaKDTree的树由native `cudaMallocAsync`分配，因此通过instrumented memory

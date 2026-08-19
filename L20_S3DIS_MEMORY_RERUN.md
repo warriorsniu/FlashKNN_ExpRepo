@@ -63,13 +63,15 @@ results/L20/l20_s3dis_memory_k32_20260819/
   system.json
   s3dis_memory_k32.json
   analysis/summary.json
+  analysis/README.md
   analysis/summary.md
 ```
 
 正式结果必须包含 162 条唯一记录（81 rooms × pre/post），且 analysis validator
 通过。完成后：
 
-1. 将上述完整结果目录提交到远端 `main`；
+1. 将上述完整结果目录提交到远端 `main`；其中`analysis/README.md`是应被Git
+   保留的人类可读汇总，`summary.md`若受ignore规则影响可不单独强制加入；
 2. 在 `results/L20/README.md` 增加均值表和测量边界；
 3. 在 `results/RESULT_SELECTION.md` 将该目录登记为 retained/final；
 4. 在提交说明中写明：仅补 memory，未覆盖或更改任何既有 latency；
