@@ -26,6 +26,41 @@ constexpr uint64_t MaxArrayIdx = ArraySizePerThread-1;
 
 using namespace std;
 
+// CUDA 11.x lowers the short conditional update to predicated moves after
+// register allocation, which keeps the fully unrolled network compact. CUDA
+// 12.x may preserve the same source form as divergent control flow on sm_89;
+// use an in-place mask there to make the branch-free intent explicit.
+__device__ __forceinline__ void BitonicSelectPeer(
+    float& current_distance, int& current_index,
+    const float peer_distance, const int peer_index,
+    const bool take_peer) {
+#if __CUDACC_VER_MAJOR__ < 12
+    if (take_peer) {
+        current_distance = peer_distance;
+        current_index = peer_index;
+    }
+#else
+    const unsigned int mask =
+        0u - static_cast<unsigned int>(take_peer);
+    unsigned int current_bits = __float_as_uint(current_distance);
+    current_bits ^= (current_bits ^ __float_as_uint(peer_distance)) & mask;
+    current_distance = __uint_as_float(current_bits);
+    current_index ^= (current_index ^ peer_index) & static_cast<int>(mask);
+#endif
+}
+
+__device__ __forceinline__ void BitonicConditionalSwap(
+    float& first_distance, int& first_index,
+    float& second_distance, int& second_index,
+    const bool swap) {
+    const float old_first_distance = first_distance;
+    const int old_first_index = first_index;
+    first_distance = swap ? second_distance : old_first_distance;
+    first_index = swap ? second_index : old_first_index;
+    second_distance = swap ? old_first_distance : second_distance;
+    second_index = swap ? old_first_index : second_index;
+}
+
 template <typename T>
 struct SharedMemory;
 template <>
@@ -144,8 +179,9 @@ __device__ __forceinline__ void BitonicSortDescendingShuffle(
                           : current_distance < peer_distance)
             : (lower_lane ? current_distance < peer_distance
                           : current_distance > peer_distance);
-        distance[Register] = take_peer ? peer_distance : current_distance;
-        index[Register] = take_peer ? peer_index : current_index;
+        BitonicSelectPeer(
+            distance[Register], index[Register],
+            peer_distance, peer_index, take_peer);
         BitonicSortDescendingShuffle<
             CoordDType, Register + 1, RegisterEnd, RegisterBegin,
             LaneWidth, Size, Stride>(distance, index);
@@ -166,14 +202,9 @@ __device__ __forceinline__ void BitonicSortDescendingRegisters(
             const bool swap = AscendingGroup
                 ? distance[Register] > distance[PeerRegister]
                 : distance[Register] < distance[PeerRegister];
-            const CoordDType current_distance = distance[Register];
-            const CoordDType peer_distance = distance[PeerRegister];
-            const int current_index = index[Register];
-            const int peer_index = index[PeerRegister];
-            distance[Register] = swap ? peer_distance : current_distance;
-            distance[PeerRegister] = swap ? current_distance : peer_distance;
-            index[Register] = swap ? peer_index : current_index;
-            index[PeerRegister] = swap ? current_index : peer_index;
+            BitonicConditionalSwap(
+                distance[Register], index[Register],
+                distance[PeerRegister], index[PeerRegister], swap);
         }
         BitonicSortDescendingRegisters<
             CoordDType, Register + 1, RegisterEnd, RegisterBegin,
@@ -221,15 +252,12 @@ __device__ __forceinline__ void BitonicCompareSplit(
     CoordDType* distance, int* index) {
     if constexpr (Register < HalfRegisters) {
         constexpr int PeerRegister = Register + HalfRegisters;
-        const CoordDType current_distance = distance[Register];
         const CoordDType peer_distance = distance[PeerRegister];
-        const int current_index = index[Register];
         const int peer_index = index[PeerRegister];
-        const bool swap = current_distance > peer_distance;
-        distance[Register] = swap ? peer_distance : current_distance;
-        distance[PeerRegister] = swap ? current_distance : peer_distance;
-        index[Register] = swap ? peer_index : current_index;
-        index[PeerRegister] = swap ? current_index : peer_index;
+        const bool take_peer = distance[Register] > peer_distance;
+        BitonicSelectPeer(
+            distance[Register], index[Register],
+            peer_distance, peer_index, take_peer);
         BitonicCompareSplit<
             CoordDType, Register + 1, HalfRegisters>(distance, index);
     }
@@ -251,8 +279,9 @@ __device__ __forceinline__ void BitonicMergeAscendingShuffle(
         const bool take_peer = lower_lane
             ? current_distance > peer_distance
             : current_distance < peer_distance;
-        distance[Register] = take_peer ? peer_distance : current_distance;
-        index[Register] = take_peer ? peer_index : current_index;
+        BitonicSelectPeer(
+            distance[Register], index[Register],
+            peer_distance, peer_index, take_peer);
         BitonicMergeAscendingShuffle<
             CoordDType, Register + 1, RegisterEnd,
             LaneWidth, Stride>(distance, index);
@@ -267,15 +296,11 @@ __device__ __forceinline__ void BitonicMergeAscendingRegisters(
         constexpr int RegisterStride = Stride / LaneWidth;
         if constexpr ((Register & RegisterStride) == 0) {
             constexpr int PeerRegister = Register + RegisterStride;
-            const CoordDType current_distance = distance[Register];
-            const CoordDType peer_distance = distance[PeerRegister];
-            const int current_index = index[Register];
-            const int peer_index = index[PeerRegister];
-            const bool swap = current_distance > peer_distance;
-            distance[Register] = swap ? peer_distance : current_distance;
-            distance[PeerRegister] = swap ? current_distance : peer_distance;
-            index[Register] = swap ? peer_index : current_index;
-            index[PeerRegister] = swap ? current_index : peer_index;
+            const bool swap =
+                distance[Register] > distance[PeerRegister];
+            BitonicConditionalSwap(
+                distance[Register], index[Register],
+                distance[PeerRegister], index[PeerRegister], swap);
         }
         BitonicMergeAscendingRegisters<
             CoordDType, Register + 1, RegisterEnd,
@@ -302,6 +327,120 @@ __device__ __forceinline__ void BitonicMergeAscending(
     }
 }
 
+template <typename CoordDType, int ArrayLengthPerThread, int LaneWidth>
+__device__ __forceinline__ void BitonicTopPGeneric(
+    CoordDType* best_dis, int* best_idx) {
+    constexpr int HalfRegisters = ArrayLengthPerThread / 2;
+    constexpr int HalfLength = HalfRegisters * LaneWidth;
+
+    // Sort only the newly generated upper half in descending order.  The
+    // register loop is compile-time bounded (and therefore cheap for four
+    // elements), while network stages stay warp-uniform for larger layouts.
+    #pragma unroll 1
+    for (int size = 2; size <= HalfLength; size <<= 1) {
+        #pragma unroll 1
+        for (int stride = size >> 1; stride > 0; stride >>= 1) {
+            if (stride < LaneWidth) {
+                #pragma unroll
+                for (int local_register = 0;
+                     local_register < HalfRegisters; ++local_register) {
+                    const int reg = HalfRegisters + local_register;
+                    const int logical_index =
+                        local_register * LaneWidth + threadIdx.x;
+                    const CoordDType current_distance = best_dis[reg];
+                    const int current_index = best_idx[reg];
+                    const CoordDType peer_distance = WARP_SHFL(
+                        current_distance, threadIdx.x ^ stride, LaneWidth);
+                    const int peer_index = WARP_SHFL(
+                        current_index, threadIdx.x ^ stride, LaneWidth);
+                    const bool ascending_group =
+                        (logical_index & size) != 0;
+                    const bool lower_lane =
+                        (logical_index & stride) == 0;
+                    const bool take_peer = ascending_group
+                        ? (lower_lane
+                            ? current_distance > peer_distance
+                            : current_distance < peer_distance)
+                        : (lower_lane
+                            ? current_distance < peer_distance
+                            : current_distance > peer_distance);
+                    BitonicSelectPeer(
+                        best_dis[reg], best_idx[reg],
+                        peer_distance, peer_index, take_peer);
+                }
+            } else {
+                const int register_stride = stride / LaneWidth;
+                const int register_shift = __ffs(register_stride) - 1;
+                #pragma unroll
+                for (int pair = 0; pair < HalfRegisters / 2; ++pair) {
+                    const int first_local =
+                        ((pair >> register_shift) << (register_shift + 1))
+                        | (pair & (register_stride - 1));
+                    const int second_local = first_local + register_stride;
+                    const int first = HalfRegisters + first_local;
+                    const int second = HalfRegisters + second_local;
+                    const int logical_index =
+                        first_local * LaneWidth + threadIdx.x;
+                    const bool ascending_group =
+                        (logical_index & size) != 0;
+                    const bool swap = ascending_group
+                        ? best_dis[first] > best_dis[second]
+                        : best_dis[first] < best_dis[second];
+                    BitonicConditionalSwap(
+                        best_dis[first], best_idx[first],
+                        best_dis[second], best_idx[second], swap);
+                }
+            }
+        }
+    }
+
+    #pragma unroll
+    for (int reg = 0; reg < HalfRegisters; ++reg) {
+        BitonicSelectPeer(
+            best_dis[reg], best_idx[reg],
+            best_dis[reg + HalfRegisters], best_idx[reg + HalfRegisters],
+            best_dis[reg] > best_dis[reg + HalfRegisters]);
+    }
+
+    // The compare-split result is bitonic.  Merge only the retained lower
+    // half in ascending order.
+    #pragma unroll 1
+    for (int stride = HalfLength >> 1; stride > 0; stride >>= 1) {
+        if (stride < LaneWidth) {
+            #pragma unroll
+            for (int reg = 0; reg < HalfRegisters; ++reg) {
+                const CoordDType current_distance = best_dis[reg];
+                const int current_index = best_idx[reg];
+                const CoordDType peer_distance = WARP_SHFL(
+                    current_distance, threadIdx.x ^ stride, LaneWidth);
+                const int peer_index = WARP_SHFL(
+                    current_index, threadIdx.x ^ stride, LaneWidth);
+                const bool lower_lane = (threadIdx.x & stride) == 0;
+                const bool take_peer = lower_lane
+                    ? current_distance > peer_distance
+                    : current_distance < peer_distance;
+                BitonicSelectPeer(
+                    best_dis[reg], best_idx[reg],
+                    peer_distance, peer_index, take_peer);
+            }
+        } else {
+            const int register_stride = stride / LaneWidth;
+            const int register_shift = __ffs(register_stride) - 1;
+            #pragma unroll
+            for (int pair = 0; pair < HalfRegisters / 2; ++pair) {
+                const int first =
+                    ((pair >> register_shift) << (register_shift + 1))
+                    | (pair & (register_stride - 1));
+                const int second = first + register_stride;
+                BitonicConditionalSwap(
+                    best_dis[first], best_idx[first],
+                    best_dis[second], best_idx[second],
+                    best_dis[first] > best_dis[second]);
+            }
+        }
+    }
+}
+
 template <typename CoordDType, int ArrayLengthPerThread, int depth_K>
 __device__ __forceinline__ void Bitonic_Sort(
     CoordDType* best_dis,
@@ -309,16 +448,21 @@ __device__ __forceinline__ void Bitonic_Sort(
     static_assert(ArrayLengthPerThread >= 2);
     static_assert((ArrayLengthPerThread & (ArrayLengthPerThread - 1)) == 0);
     constexpr int LaneWidth = 1 << depth_K;
-    constexpr int HalfRegisters = ArrayLengthPerThread / 2;
-    constexpr int RetainedLength = HalfRegisters * LaneWidth;
-    BitonicSortDescending<
-        CoordDType, HalfRegisters, ArrayLengthPerThread,
-        LaneWidth>(best_dis, best_idx);
-    BitonicCompareSplit<
-        CoordDType, 0, HalfRegisters>(best_dis, best_idx);
-    BitonicMergeAscending<
-        CoordDType, HalfRegisters, LaneWidth,
-        RetainedLength / 2>(best_dis, best_idx);
+    if constexpr (ArrayLengthPerThread == 2) {
+        constexpr int HalfRegisters = ArrayLengthPerThread / 2;
+        constexpr int RetainedLength = HalfRegisters * LaneWidth;
+        BitonicSortDescending<
+            CoordDType, HalfRegisters, ArrayLengthPerThread,
+            LaneWidth>(best_dis, best_idx);
+        BitonicCompareSplit<
+            CoordDType, 0, HalfRegisters>(best_dis, best_idx);
+        BitonicMergeAscending<
+            CoordDType, HalfRegisters, LaneWidth,
+            RetainedLength / 2>(best_dis, best_idx);
+    } else {
+        BitonicTopPGeneric<
+            CoordDType, ArrayLengthPerThread, LaneWidth>(best_dis, best_idx);
+    }
 }
 
 
