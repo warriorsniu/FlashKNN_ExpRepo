@@ -25,10 +25,8 @@ __device__ __forceinline__ void SortDescendingShuffle(
                           : current_distance < peer_distance)
             : (lower_lane ? current_distance < peer_distance
                           : current_distance > peer_distance);
-        if (take_peer) {
-            distance[Register] = peer_distance;
-            index[Register] = peer_index;
-        }
+        distance[Register] = take_peer ? peer_distance : current_distance;
+        index[Register] = take_peer ? peer_index : current_index;
         SortDescendingShuffle<
             CoordDType, Register + 1, RegisterEnd, RegisterBegin,
             LaneWidth, Size, Stride>(distance, index);
@@ -49,14 +47,14 @@ __device__ __forceinline__ void SortDescendingRegisters(
             const bool swap = AscendingGroup
                 ? distance[Register] > distance[PeerRegister]
                 : distance[Register] < distance[PeerRegister];
-            if (swap) {
-                CoordDType temporary_distance = distance[Register];
-                distance[Register] = distance[PeerRegister];
-                distance[PeerRegister] = temporary_distance;
-                int temporary_index = index[Register];
-                index[Register] = index[PeerRegister];
-                index[PeerRegister] = temporary_index;
-            }
+            const CoordDType current_distance = distance[Register];
+            const CoordDType peer_distance = distance[PeerRegister];
+            const int current_index = index[Register];
+            const int peer_index = index[PeerRegister];
+            distance[Register] = swap ? peer_distance : current_distance;
+            distance[PeerRegister] = swap ? current_distance : peer_distance;
+            index[Register] = swap ? peer_index : current_index;
+            index[PeerRegister] = swap ? current_index : peer_index;
         }
         SortDescendingRegisters<
             CoordDType, Register + 1, RegisterEnd, RegisterBegin,
@@ -104,14 +102,15 @@ __device__ __forceinline__ void CompareSplit(
     CoordDType* distance, int* index) {
     if constexpr (Register < HalfRegisters) {
         constexpr int PeerRegister = Register + HalfRegisters;
-        if (distance[Register] > distance[PeerRegister]) {
-            CoordDType temporary_distance = distance[Register];
-            distance[Register] = distance[PeerRegister];
-            distance[PeerRegister] = temporary_distance;
-            int temporary_index = index[Register];
-            index[Register] = index[PeerRegister];
-            index[PeerRegister] = temporary_index;
-        }
+        const CoordDType current_distance = distance[Register];
+        const CoordDType peer_distance = distance[PeerRegister];
+        const int current_index = index[Register];
+        const int peer_index = index[PeerRegister];
+        const bool swap = current_distance > peer_distance;
+        distance[Register] = swap ? peer_distance : current_distance;
+        distance[PeerRegister] = swap ? current_distance : peer_distance;
+        index[Register] = swap ? peer_index : current_index;
+        index[PeerRegister] = swap ? current_index : peer_index;
         CompareSplit<CoordDType, Register + 1, HalfRegisters>(distance, index);
     }
 }
@@ -129,11 +128,11 @@ __device__ __forceinline__ void MergeAscendingShuffle(
         int peer_index = WARP_SHFL(
             current_index, threadIdx.x ^ Stride, LaneWidth);
         const bool lower_lane = (logical_index & Stride) == 0;
-        if (lower_lane ? current_distance > peer_distance
-                       : current_distance < peer_distance) {
-            distance[Register] = peer_distance;
-            index[Register] = peer_index;
-        }
+        const bool take_peer = lower_lane
+            ? current_distance > peer_distance
+            : current_distance < peer_distance;
+        distance[Register] = take_peer ? peer_distance : current_distance;
+        index[Register] = take_peer ? peer_index : current_index;
         MergeAscendingShuffle<
             CoordDType, Register + 1, RegisterEnd,
             LaneWidth, Stride>(distance, index);
@@ -148,14 +147,15 @@ __device__ __forceinline__ void MergeAscendingRegisters(
         constexpr int RegisterStride = Stride / LaneWidth;
         if constexpr ((Register & RegisterStride) == 0) {
             constexpr int PeerRegister = Register + RegisterStride;
-            if (distance[Register] > distance[PeerRegister]) {
-                CoordDType temporary_distance = distance[Register];
-                distance[Register] = distance[PeerRegister];
-                distance[PeerRegister] = temporary_distance;
-                int temporary_index = index[Register];
-                index[Register] = index[PeerRegister];
-                index[PeerRegister] = temporary_index;
-            }
+            const CoordDType current_distance = distance[Register];
+            const CoordDType peer_distance = distance[PeerRegister];
+            const int current_index = index[Register];
+            const int peer_index = index[PeerRegister];
+            const bool swap = current_distance > peer_distance;
+            distance[Register] = swap ? peer_distance : current_distance;
+            distance[PeerRegister] = swap ? current_distance : peer_distance;
+            index[Register] = swap ? peer_index : current_index;
+            index[PeerRegister] = swap ? current_index : peer_index;
         }
         MergeAscendingRegisters<
             CoordDType, Register + 1, RegisterEnd,
