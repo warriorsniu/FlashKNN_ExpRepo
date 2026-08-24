@@ -203,9 +203,22 @@ def normalized_timings(items: list[dict]) -> list[dict[str, float]]:
 
 
 def recall(torch: Any, exact: Any, predicted: Any) -> dict[str, float]:
-    merged = torch.cat((exact.long(), predicted.long()), 1).sort(1).values
-    values = (merged[:, 1:] == merged[:, :-1]).sum(1).float() / exact.shape[1]
-    return {"mean": float(values.mean()), "minimum": float(values.min())}
+    """Compute set recall without counting repeated predictions twice."""
+    exact = exact.long()
+    predicted = predicted.long().sort(1).values
+    positions = torch.searchsorted(predicted, exact)
+    safe = positions.clamp_max(predicted.shape[1] - 1)
+    values = (
+        (positions < predicted.shape[1])
+        & (predicted.gather(1, safe) == exact)
+    ).sum(1).float() / exact.shape[1]
+    duplicate_slots = (predicted[:, 1:] == predicted[:, :-1]).sum(1)
+    return {
+        "mean": float(values.mean()),
+        "minimum": float(values.min()),
+        "duplicate_queries": int((duplicate_slots > 0).sum()),
+        "duplicate_slots": int(duplicate_slots.sum()),
+    }
 
 
 def main() -> None:

@@ -16,6 +16,8 @@ the paper. `run_all.sh` is not successful unless
 - Timings: construction, query, and total, with 3 warmups and 10 recorded
   repetitions. CUDA inputs are ready before timing. The historical nanoflann
   protocol copies inputs to CPU before starting its construction/query timers.
+- Recall is row-wise set recall: each exact neighbor is counted at most once,
+  and repeated predictions are reported separately instead of inflating recall.
 
 ## Speedups under different number of point
 

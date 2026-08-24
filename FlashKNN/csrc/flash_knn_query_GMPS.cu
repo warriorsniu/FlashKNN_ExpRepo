@@ -177,6 +177,13 @@ __global__ void FlashKNN_Query_GMPS_kernel(
                 bool skip = true;
                 CoordDType max_dis = best_dis[(K-1)>>depth_K];
                 max_dis = WARP_SHFL(max_dis, (K-1)&(blockDim.x - 1), blockDim.x);
+                // BitonicTopP retains only the lower half; invalidate upper
+                // scratch slots before selectively loading this round.
+                #pragma unroll
+                for (int batch_idx = 0; batch_idx < batch; ++batch_idx) {
+                    best_dis[batch_idx + batch] = INFINITY;
+                    best_idx[batch_idx + batch] = child_idx_origin;
+                }
                 for(int batch_idx = 0;batch_idx < batch && offset < total_support_points_num;batch_idx++){
                     int child_nbr_idx_with_offset = ((nbr_idx_start + offset)%total_support_points_num);
                     while (

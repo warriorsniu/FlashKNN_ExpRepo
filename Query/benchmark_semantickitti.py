@@ -55,12 +55,22 @@ def import_faiss(torch: Any) -> Any:
 
 
 def recall_intersection(torch: Any, exact: Any, predicted: Any) -> dict[str, float]:
-    both = torch.cat((exact.long(), predicted.long()), dim=1).sort(dim=1).values
-    recall = (both[:, 1:] == both[:, :-1]).sum(dim=1).float() / exact.shape[1]
+    """Compute set recall without counting repeated predictions twice."""
+    exact = exact.long()
+    predicted = predicted.long().sort(dim=1).values
+    positions = torch.searchsorted(predicted, exact)
+    safe = positions.clamp_max(predicted.shape[1] - 1)
+    recall = (
+        (positions < predicted.shape[1])
+        & (predicted.gather(1, safe) == exact)
+    ).sum(dim=1).float() / exact.shape[1]
+    duplicate_slots = (predicted[:, 1:] == predicted[:, :-1]).sum(dim=1)
     return {
         "mean": float(recall.mean()), "minimum": float(recall.min()),
         "p01": float(torch.quantile(recall, 0.01)),
         "p05": float(torch.quantile(recall, 0.05)),
+        "duplicate_queries": int((duplicate_slots > 0).sum()),
+        "duplicate_slots": int(duplicate_slots.sum()),
     }
 
 

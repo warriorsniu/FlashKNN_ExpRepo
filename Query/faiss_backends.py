@@ -54,8 +54,14 @@ def _search(index: Any, query: torch.Tensor, k: int,
 
 
 def _recall(approx: torch.Tensor, exact: torch.Tensor, k: int) -> tuple[float, float]:
-    merged = torch.cat((approx, exact), dim=1).sort(dim=1).values
-    per_query = (merged[:, 1:] == merged[:, :-1]).sum(dim=1).float() / k
+    approx = approx.long().sort(dim=1).values
+    exact = exact.long()
+    positions = torch.searchsorted(approx, exact)
+    safe = positions.clamp_max(approx.shape[1] - 1)
+    per_query = (
+        (positions < approx.shape[1])
+        & (approx.gather(1, safe) == exact)
+    ).sum(dim=1).float() / k
     return float(per_query.mean()), float(per_query.min())
 
 

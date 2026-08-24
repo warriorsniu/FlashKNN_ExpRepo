@@ -588,6 +588,14 @@ __global__ void FlashKNN_Query_dynamic_load_kernel(
                         max_dis = WARP_SHFL(
                             max_dis, (K-1)&(blockDim.x - 1), blockDim.x);
                     }
+                    // Compare-split writes only the retained lower half.  Clear
+                    // the upper scratch half before selectively loading this
+                    // round so a winning candidate cannot be reused later.
+                    #pragma unroll
+                    for (int batch_idx = 0; batch_idx < batch; ++batch_idx) {
+                        best_dis[batch_idx + batch] = INFINITY;
+                        best_idx[batch_idx + batch] = child_idx_origin;
+                    }
                     for(int batch_idx = 0;batch_idx < batch && offset < loaded_support_points_num_cur_batch;batch_idx++){
                         int child_nbr_idx_with_offset = ((nbr_idx_start + offset)%loaded_support_points_num_cur_batch);
                         CoordDType dis_x = buf[child_nbr_idx_with_offset*3 + 0] - center_x;
@@ -1303,6 +1311,12 @@ __global__ void FlashKNN_Selected_Query_DL_kernel(
                     bool skip = true;
                     CoordDType max_dis = best_dis[(K-1)>>depth_K];
                     max_dis = WARP_SHFL(max_dis, (K-1)&(blockDim.x - 1), blockDim.x);
+                    // The one-sided compare-split requires fresh upper slots.
+                    #pragma unroll
+                    for (int batch_idx = 0; batch_idx < batch; ++batch_idx) {
+                        best_dis[batch_idx + batch] = INFINITY;
+                        best_idx[batch_idx + batch] = query_index;
+                    }
                     for(int batch_idx = 0;batch_idx < batch && offset < loaded_support_points_num_cur_batch;batch_idx++){
                         int child_nbr_idx_with_offset = ((nbr_idx_start + offset)%loaded_support_points_num_cur_batch);
                         CoordDType dis_x = buf[child_nbr_idx_with_offset*3 + 0] - center_x;
