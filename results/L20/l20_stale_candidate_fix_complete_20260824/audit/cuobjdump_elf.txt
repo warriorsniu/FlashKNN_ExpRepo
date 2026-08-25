@@ -1,0 +1,5 @@
+ELF file    1: flash_knn_construction.sm_89.cubin
+ELF file    2: flash_knn_query.sm_89.cubin
+ELF file    3: flash_knn_query_GMPS.sm_89.cubin
+ELF file    4: flash_knn_query_dynamic_load.sm_89.cubin
+ELF file    5: flash_knn_query_global_memory.sm_89.cubin

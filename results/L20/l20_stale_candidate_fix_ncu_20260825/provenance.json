@@ -1,0 +1,207 @@
+{
+  "generated_at_utc": "2026-08-25T02:25:47.667913+00:00",
+  "source_commit": "2a69727257a0ee46d214c4db2e49b7572a10adfe",
+  "production_source_sha256": {
+    "FlashKNN/csrc/flash_knn_query_dynamic_load.cu": "de65e0e46452921ee6ce35fc9fe411114ec2bd13a97a7f646ea2b3dd7a7d2565",
+    "FlashKNN/csrc/flash_knn_query.h": "20ef7a84e9f5893b67a2aac60a9e43c593a17bf9099b57d59a3f5c1603c73406",
+    "FlashKNN/functions/FlashKnnWrapper.py": "080865079cf9e8bc21eab360292527158d2328c196f8f5d9b16485075488df30",
+    "FlashKNN/csrc/api.cpp": "f74a62904aab4aa6aaaa507e3e0d93accce5e9ceffe529a88ae1486c577848c6",
+    "FlashKNN/csrc/flash_knn_bitonic_top_p.cuh": "a5b0fdcb032c8ac4a664e6da78dc40df5221675884d0adf3fa4d7c05a0c6a75e",
+    "Query/benchmark_s3dis.py": "b368fd2d95dac671d6e9c8a4d0f286767510d94066ad56bfb48beefa4d4d4eaf",
+    "scripts/profile_knn_threads.py": "5078a9cc52f6ba785f00834cf51e88ea8db7a45305136b26958903cd524466bb"
+  },
+  "extension": {
+    "file": "CuFun.cpython-310-x86_64-linux-gnu.so",
+    "bytes": 13080640,
+    "sha256": "95c5566be5d4a646e1300a6c77706f5c690bc6b6ba941a8a72ecfcdae32b6a44",
+    "relative_path": "FlashKNN/functions/CuFun.cpython-310-x86_64-linux-gnu.so",
+    "torch_cuda_arch_list": "8.9"
+  },
+  "gpu": {
+    "physical_index": 0,
+    "uuid": "GPU-78990023-5606-bb80-49bf-8ddfe8683461",
+    "name": "NVIDIA L20",
+    "compute_capability": "8.9"
+  },
+  "dataset": "S3DIS",
+  "crop_points": 250000,
+  "voxel_size_m": 0.02,
+  "seed": 47,
+  "k": 32,
+  "profiles": {
+    "cukd": {
+      "report": {
+        "file": "cukd_k32.ncu-rep",
+        "bytes": 307373,
+        "sha256": "a89eb78bf5f1f15cde6ef531d45f47a90e0689f97e4be639b7ef36668aff1765"
+      },
+      "summary_csv": {
+        "file": "cukd_k32.csv",
+        "bytes": 174,
+        "sha256": "6614ba6280a2deab3caf4be2b8dc00ec8d22908ec5c833cfe08dfa72f156812f"
+      },
+      "raw_csv": {
+        "file": "cukd_k32_raw.csv",
+        "bytes": 13532,
+        "sha256": "ae0ca49cb837a20bc052e4a719f439e2eff7add0b1cb4d48df15f30d91949cd0"
+      },
+      "kernels": [
+        {
+          "Kernel Name": "void KnnKernel<32>(const float3 *, int, SpatialKDTree<float3, default_data_traits<float3, point_traits<float3>>>, float *, int *, int, float)",
+          "Block Size": "(1024, 1, 1)",
+          "Grid Size": "(245, 1, 1)",
+          "Device": "0",
+          "CC": "8.9",
+          "dram__sectors_read.sum": {
+            "value": "414112.000000",
+            "unit": "sector"
+          },
+          "dram__sectors_write.sum": {
+            "value": "4599500.000000",
+            "unit": "sector"
+          },
+          "smsp__sass_average_branch_targets_threads_uniform.pct": {
+            "value": "69.578738",
+            "unit": "%"
+          },
+          "smsp__thread_inst_executed_per_inst_executed.ratio": "8.87",
+          "gpu__time_duration.sum": {
+            "value": "4.477792",
+            "unit": "ms"
+          },
+          "launch__registers_per_thread": {
+            "value": "34",
+            "unit": "register/thread"
+          },
+          "launch__shared_mem_per_block": {
+            "value": "1.024000",
+            "unit": "Kbyte/block"
+          },
+          "sm__warps_active.avg.pct_of_peak_sustained_active": {
+            "value": "55.229069",
+            "unit": "%"
+          },
+          "launch__block_size": "1,024",
+          "launch__grid_size": "245",
+          "launch__waves_per_multiprocessor": "2.66"
+        }
+      ]
+    },
+    "flash-smps": {
+      "report": {
+        "file": "flash-smps_k32.ncu-rep",
+        "bytes": 1369923,
+        "sha256": "9eddd3ac0dadca4629fff036508ca1bad952a783612d25867417bcc79717c2e0"
+      },
+      "summary_csv": {
+        "file": "flash-smps_k32.csv",
+        "bytes": 180,
+        "sha256": "eff854b052638a2e5409a65e2e2d5d19c7838f4c92e7f57caecef31676e135e9"
+      },
+      "raw_csv": {
+        "file": "flash-smps_k32_raw.csv",
+        "bytes": 13550,
+        "sha256": "5decce7932072ce5843af144d3ee32501f80f4ab04647fa1576d6115154b317b"
+      },
+      "kernels": [
+        {
+          "Kernel Name": "void FlashKNN_Query_dynamic_load_kernel<float, 2, 5, 0, 1>(int *, T1 *, const T1 *, const int *, const int *, const int *, int, int, int, int, int, T1)",
+          "Block Size": "(32, 4, 1)",
+          "Grid Size": "(512, 16, 1)",
+          "Device": "0",
+          "CC": "8.9",
+          "dram__sectors_read.sum": {
+            "value": "344984.000000",
+            "unit": "sector"
+          },
+          "dram__sectors_write.sum": {
+            "value": "638424.000000",
+            "unit": "sector"
+          },
+          "smsp__sass_average_branch_targets_threads_uniform.pct": {
+            "value": "96.996197",
+            "unit": "%"
+          },
+          "smsp__thread_inst_executed_per_inst_executed.ratio": "31.33",
+          "gpu__time_duration.sum": {
+            "value": "1.393312",
+            "unit": "ms"
+          },
+          "launch__registers_per_thread": {
+            "value": "58",
+            "unit": "register/thread"
+          },
+          "launch__shared_mem_per_block": {
+            "value": "5.120000",
+            "unit": "Kbyte/block"
+          },
+          "sm__warps_active.avg.pct_of_peak_sustained_active": {
+            "value": "63.662386",
+            "unit": "%"
+          },
+          "launch__block_size": "128",
+          "launch__grid_size": "8,192",
+          "launch__waves_per_multiprocessor": "11.13"
+        }
+      ]
+    },
+    "flash-gmss": {
+      "report": {
+        "file": "flash-gmss_k32.ncu-rep",
+        "bytes": 531731,
+        "sha256": "452b87fb69f5299da1aa324ab8655683e2ac40ddf5df5905e8fc571e9a46594e"
+      },
+      "summary_csv": {
+        "file": "flash-gmss_k32.csv",
+        "bytes": 180,
+        "sha256": "1d82643f8033b14a9fa1898f187af9fd3db6b31ebffeeb9e6e19dd333429608b"
+      },
+      "raw_csv": {
+        "file": "flash-gmss_k32_raw.csv",
+        "bytes": 13567,
+        "sha256": "3dbe2e12622d4212182285bb1ee45030038fbb05318a7ed9aa22229f283397d1"
+      },
+      "kernels": [
+        {
+          "Kernel Name": "void FlashKNN_Query_GM_kernel<32>(int *, float *, const float *, const float *, const int *, const int *, const int *, const int *, const int *, const int *, int, int, int, float)",
+          "Block Size": "(32, 1, 1)",
+          "Grid Size": "(512, 4, 1)",
+          "Device": "0",
+          "CC": "8.9",
+          "dram__sectors_read.sum": {
+            "value": "334340.000000",
+            "unit": "sector"
+          },
+          "dram__sectors_write.sum": {
+            "value": "1505704.000000",
+            "unit": "sector"
+          },
+          "smsp__sass_average_branch_targets_threads_uniform.pct": {
+            "value": "85.521986",
+            "unit": "%"
+          },
+          "smsp__thread_inst_executed_per_inst_executed.ratio": "15.95",
+          "gpu__time_duration.sum": {
+            "value": "2.497984",
+            "unit": "ms"
+          },
+          "launch__registers_per_thread": {
+            "value": "38",
+            "unit": "register/thread"
+          },
+          "launch__shared_mem_per_block": {
+            "value": "1.024000",
+            "unit": "Kbyte/block"
+          },
+          "sm__warps_active.avg.pct_of_peak_sustained_active": {
+            "value": "40.668119",
+            "unit": "%"
+          },
+          "launch__block_size": "32",
+          "launch__grid_size": "2,048",
+          "launch__waves_per_multiprocessor": "0.93"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,2368 @@
+{
+  "metadata": {
+    "dataset": "SemanticKITTI",
+    "model": "dela",
+    "variant": "24",
+    "backends": [
+      "cpu_kdtree",
+      "flashknn"
+    ],
+    "alpha": 4,
+    "voxel_sizes_m": [
+      0.06,
+      0.12,
+      0.24,
+      0.48
+    ],
+    "k": [
+      24,
+      24,
+      24,
+      24
+    ],
+    "checkpoint": null,
+    "weights_note": "Random weights if checkpoint is null; operation shapes and latency are unchanged.",
+    "timing_boundary": "CUDA-ready voxelized scan; hierarchy/downsampling/KNN plus network forward; excludes disk I/O and voxelization. CPU backend excludes hierarchy H2D, matching the paper's CPU-KDTree timing convention.",
+    "warmups": 10,
+    "repeats": 30,
+    "gpu": {
+      "name": "NVIDIA L20",
+      "uuid": "GPU-78990023-5606-bb80-49bf-8ddfe8683461",
+      "driver": "580.159.03",
+      "memory_mib": 46068
+    },
+    "torch": "2.7.1+cu128",
+    "torch_cuda": "12.8",
+    "python": "3.10.12",
+    "manifest": {
+      "format_version": 2,
+      "dataset": "SemanticKITTI",
+      "sequences": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21"
+      ],
+      "source_frame_counts": {
+        "00": 4541,
+        "01": 1101,
+        "02": 4661,
+        "03": 801,
+        "04": 271,
+        "05": 2761,
+        "06": 1101,
+        "07": 1101,
+        "08": 4071,
+        "09": 1591,
+        "10": 1201,
+        "11": 921,
+        "12": 1061,
+        "13": 3281,
+        "14": 631,
+        "15": 1901,
+        "16": 1731,
+        "17": 491,
+        "18": 1801,
+        "19": 4981,
+        "20": 831,
+        "21": 2721
+      },
+      "voxel_size_m": 0.06,
+      "post_voxel_size_m": 0.12,
+      "clip_range_xy_m": null,
+      "selection": {
+        "strategy": "per_sequence_linspace",
+        "samples_per_sequence": 5
+      },
+      "voxel_representative": "first point in raw frame order",
+      "samples": [
+        {
+          "file": "00_000000.npz",
+          "sha256": "9142384588d9e28e0379cc943de4a21f43413bdca313ad13527f8586fd67197c",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/00/velodyne/000000.bin",
+          "sequence": "00",
+          "frame": "000000",
+          "raw_points": 124668,
+          "clipped_points": 124668,
+          "support_points": 83889,
+          "post_query_points": 51749
+        },
+        {
+          "file": "00_001135.npz",
+          "sha256": "7c59427bf59844899650163bed406ae57f9f8db23dd2ce4ab14bb1027b1c72c6",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/00/velodyne/001135.bin",
+          "sequence": "00",
+          "frame": "001135",
+          "raw_points": 123999,
+          "clipped_points": 123999,
+          "support_points": 84885,
+          "post_query_points": 52110
+        },
+        {
+          "file": "00_002270.npz",
+          "sha256": "b01fcc884cfd7644d0b194794ca2578723ce12831e25b5b96a0806d826434a01",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/00/velodyne/002270.bin",
+          "sequence": "00",
+          "frame": "002270",
+          "raw_points": 123768,
+          "clipped_points": 123768,
+          "support_points": 84596,
+          "post_query_points": 51170
+        },
+        {
+          "file": "00_003405.npz",
+          "sha256": "a9b54ba5f25f2ec1626d6839ce40fd64e3e2fde8b9a10f857b448772ed55022c",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/00/velodyne/003405.bin",
+          "sequence": "00",
+          "frame": "003405",
+          "raw_points": 122956,
+          "clipped_points": 122956,
+          "support_points": 78726,
+          "post_query_points": 43970
+        },
+        {
+          "file": "00_004540.npz",
+          "sha256": "9b40500b48ca77880a9b58c49ba3f124ac79847f14ab2033ff3e6c9b5351e94a",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/00/velodyne/004540.bin",
+          "sequence": "00",
+          "frame": "004540",
+          "raw_points": 120879,
+          "clipped_points": 120879,
+          "support_points": 77075,
+          "post_query_points": 45994
+        },
+        {
+          "file": "01_000000.npz",
+          "sha256": "8180777e6b5784e69a4c253d0bc290cc48468a997596597fc5ea0f769f65eff7",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/01/velodyne/000000.bin",
+          "sequence": "01",
+          "frame": "000000",
+          "raw_points": 122829,
+          "clipped_points": 122829,
+          "support_points": 90407,
+          "post_query_points": 65222
+        },
+        {
+          "file": "01_000275.npz",
+          "sha256": "ffcc5d2f05902ccdb76d95cd1b7f012944a30c11d35424afeab775cba03f42c8",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/01/velodyne/000275.bin",
+          "sequence": "01",
+          "frame": "000275",
+          "raw_points": 90526,
+          "clipped_points": 90526,
+          "support_points": 58507,
+          "post_query_points": 37755
+        },
+        {
+          "file": "01_000550.npz",
+          "sha256": "6afc6023e873426bb29412367143d78f25263dce1b68d1f67226277a1471109a",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/01/velodyne/000550.bin",
+          "sequence": "01",
+          "frame": "000550",
+          "raw_points": 98754,
+          "clipped_points": 98754,
+          "support_points": 65522,
+          "post_query_points": 41532
+        },
+        {
+          "file": "01_000825.npz",
+          "sha256": "3e3012f44ff1389e2d773393c0dccd1d819f6dbbb32f34d370fa7ad44da6a422",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/01/velodyne/000825.bin",
+          "sequence": "01",
+          "frame": "000825",
+          "raw_points": 86068,
+          "clipped_points": 86068,
+          "support_points": 54150,
+          "post_query_points": 33886
+        },
+        {
+          "file": "01_001100.npz",
+          "sha256": "8c4c1a570ad023f9d14ff87420779da686c2dfc0c36e84bac08f50c6c7e10804",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/01/velodyne/001100.bin",
+          "sequence": "01",
+          "frame": "001100",
+          "raw_points": 113125,
+          "clipped_points": 113125,
+          "support_points": 85846,
+          "post_query_points": 63621
+        },
+        {
+          "file": "02_000000.npz",
+          "sha256": "8e6c032b846993fd2548133d79f4937a3510d95f034183eed37f3c3c035c2599",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/02/velodyne/000000.bin",
+          "sequence": "02",
+          "frame": "000000",
+          "raw_points": 124649,
+          "clipped_points": 124649,
+          "support_points": 87126,
+          "post_query_points": 59020
+        },
+        {
+          "file": "02_001165.npz",
+          "sha256": "77d98f89ef2a9f32c47d6bd8be24974396975751740513ab80e823758ddee8b4",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/02/velodyne/001165.bin",
+          "sequence": "02",
+          "frame": "001165",
+          "raw_points": 127089,
+          "clipped_points": 127089,
+          "support_points": 84123,
+          "post_query_points": 50440
+        },
+        {
+          "file": "02_002330.npz",
+          "sha256": "a8aaa811a00a2801d484ea66c1c069730923def73a7352edb4a7163eef453e77",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/02/velodyne/002330.bin",
+          "sequence": "02",
+          "frame": "002330",
+          "raw_points": 126959,
+          "clipped_points": 126959,
+          "support_points": 85935,
+          "post_query_points": 51595
+        },
+        {
+          "file": "02_003495.npz",
+          "sha256": "5fcaa575a39d339123f1ef60bf68924e812d3bc44580883b5003eaedf4ee1633",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/02/velodyne/003495.bin",
+          "sequence": "02",
+          "frame": "003495",
+          "raw_points": 128329,
+          "clipped_points": 128329,
+          "support_points": 75311,
+          "post_query_points": 42149
+        },
+        {
+          "file": "02_004660.npz",
+          "sha256": "f603a2bca4ab50008f16410e7fe02e3833a94aee79e4cb31b05ae76eddc424a7",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/02/velodyne/004660.bin",
+          "sequence": "02",
+          "frame": "004660",
+          "raw_points": 126308,
+          "clipped_points": 126308,
+          "support_points": 59414,
+          "post_query_points": 27214
+        },
+        {
+          "file": "03_000000.npz",
+          "sha256": "643b69c0da63020d1881098b40e06624bd1e479419fd39f05cf65c59cac4b956",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/03/velodyne/000000.bin",
+          "sequence": "03",
+          "frame": "000000",
+          "raw_points": 124929,
+          "clipped_points": 124929,
+          "support_points": 82134,
+          "post_query_points": 48283
+        },
+        {
+          "file": "03_000200.npz",
+          "sha256": "f8c0dd45c5516976bd206b957a73c694ff879f888a907b1789fa610bc9da2104",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/03/velodyne/000200.bin",
+          "sequence": "03",
+          "frame": "000200",
+          "raw_points": 124445,
+          "clipped_points": 124445,
+          "support_points": 81531,
+          "post_query_points": 48395
+        },
+        {
+          "file": "03_000400.npz",
+          "sha256": "bff41fbc5f65bf9ddb94155d5a08297b15208b387efefecb13731dc98326cf91",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/03/velodyne/000400.bin",
+          "sequence": "03",
+          "frame": "000400",
+          "raw_points": 123251,
+          "clipped_points": 123251,
+          "support_points": 78896,
+          "post_query_points": 49553
+        },
+        {
+          "file": "03_000600.npz",
+          "sha256": "109fdcf89f0db91e9f34604bc7d674782bdbbbe68f7661cb90a2f0b0851b5370",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/03/velodyne/000600.bin",
+          "sequence": "03",
+          "frame": "000600",
+          "raw_points": 124317,
+          "clipped_points": 124317,
+          "support_points": 84861,
+          "post_query_points": 51932
+        },
+        {
+          "file": "03_000800.npz",
+          "sha256": "771a24d79cb07ec682b32f400a36cdf5e23fda6a0b1a05d95d58bb4f3c945d35",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/03/velodyne/000800.bin",
+          "sequence": "03",
+          "frame": "000800",
+          "raw_points": 123285,
+          "clipped_points": 123285,
+          "support_points": 85242,
+          "post_query_points": 55197
+        },
+        {
+          "file": "04_000000.npz",
+          "sha256": "dca7c02b7f637ff8888ff1f903de2ff7b810389b51ec292d019092bd793e6231",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/04/velodyne/000000.bin",
+          "sequence": "04",
+          "frame": "000000",
+          "raw_points": 124231,
+          "clipped_points": 124231,
+          "support_points": 87339,
+          "post_query_points": 60065
+        },
+        {
+          "file": "04_000067.npz",
+          "sha256": "f5fc44d82dedc3326e276d70e9af2afdc7eed75bb5fee0472951c4470beff4f4",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/04/velodyne/000067.bin",
+          "sequence": "04",
+          "frame": "000067",
+          "raw_points": 126215,
+          "clipped_points": 126215,
+          "support_points": 87606,
+          "post_query_points": 52282
+        },
+        {
+          "file": "04_000135.npz",
+          "sha256": "316294187f937730ce88bcc8135e5ca81f835fbfaabf7ffbdaa7ae9189d2ee8c",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/04/velodyne/000135.bin",
+          "sequence": "04",
+          "frame": "000135",
+          "raw_points": 125331,
+          "clipped_points": 125331,
+          "support_points": 85306,
+          "post_query_points": 50284
+        },
+        {
+          "file": "04_000202.npz",
+          "sha256": "f4337b39c480bc85d2d07f0f3f19502f0f77f786217ca77551ea6ca53bbcf8d2",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/04/velodyne/000202.bin",
+          "sequence": "04",
+          "frame": "000202",
+          "raw_points": 125764,
+          "clipped_points": 125764,
+          "support_points": 89841,
+          "post_query_points": 59951
+        },
+        {
+          "file": "04_000270.npz",
+          "sha256": "a4e24f3b3f3d5ca20196939707b32abaf84b1c5433b9b2939e8be905029b7925",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/04/velodyne/000270.bin",
+          "sequence": "04",
+          "frame": "000270",
+          "raw_points": 122676,
+          "clipped_points": 122676,
+          "support_points": 90720,
+          "post_query_points": 61329
+        },
+        {
+          "file": "05_000000.npz",
+          "sha256": "9d0783997fc7bd9a348af62717ee37b3eda8a3ce0e3d46dd1bd596d5b4409423",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/05/velodyne/000000.bin",
+          "sequence": "05",
+          "frame": "000000",
+          "raw_points": 126956,
+          "clipped_points": 126956,
+          "support_points": 82873,
+          "post_query_points": 52520
+        },
+        {
+          "file": "05_000690.npz",
+          "sha256": "9cc90cea38b93ed15fe016c0f36e2fb2b5a8d138f6238fd26a388de8667f4709",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/05/velodyne/000690.bin",
+          "sequence": "05",
+          "frame": "000690",
+          "raw_points": 126163,
+          "clipped_points": 126163,
+          "support_points": 79051,
+          "post_query_points": 46237
+        },
+        {
+          "file": "05_001380.npz",
+          "sha256": "8949eb11f37aaf9905d9e4b41efc6b17fb8b9e2b3623bf207acf1751047fda57",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/05/velodyne/001380.bin",
+          "sequence": "05",
+          "frame": "001380",
+          "raw_points": 118029,
+          "clipped_points": 118029,
+          "support_points": 77222,
+          "post_query_points": 45930
+        },
+        {
+          "file": "05_002070.npz",
+          "sha256": "6c1d2c30986c2b2dc4a2debd24728a9ce3a19e2872569d777900d14e497a1802",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/05/velodyne/002070.bin",
+          "sequence": "05",
+          "frame": "002070",
+          "raw_points": 125538,
+          "clipped_points": 125538,
+          "support_points": 85089,
+          "post_query_points": 52324
+        },
+        {
+          "file": "05_002760.npz",
+          "sha256": "d0cc9cf553ec9a21172ff6c89393deb7e204d16becb9aa1a2c428dcee705bb88",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/05/velodyne/002760.bin",
+          "sequence": "05",
+          "frame": "002760",
+          "raw_points": 121491,
+          "clipped_points": 121491,
+          "support_points": 78715,
+          "post_query_points": 47218
+        },
+        {
+          "file": "06_000000.npz",
+          "sha256": "8e278843d5c8e70c66f01774e4037142b67bdf3ea0cca475ed0d72eab57e1c71",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/06/velodyne/000000.bin",
+          "sequence": "06",
+          "frame": "000000",
+          "raw_points": 123020,
+          "clipped_points": 123020,
+          "support_points": 87410,
+          "post_query_points": 59735
+        },
+        {
+          "file": "06_000275.npz",
+          "sha256": "8a5d86a9afb4784740e97de43d60795e7ab6dd1f3161eb1340b377ed22bb6f4d",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/06/velodyne/000275.bin",
+          "sequence": "06",
+          "frame": "000275",
+          "raw_points": 122585,
+          "clipped_points": 122585,
+          "support_points": 83893,
+          "post_query_points": 55396
+        },
+        {
+          "file": "06_000550.npz",
+          "sha256": "4d30d2dee1fc12a150a1613c01da60dcb678c707e79123d810ace0094d6b7e4b",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/06/velodyne/000550.bin",
+          "sequence": "06",
+          "frame": "000550",
+          "raw_points": 119563,
+          "clipped_points": 119563,
+          "support_points": 86943,
+          "post_query_points": 56670
+        },
+        {
+          "file": "06_000825.npz",
+          "sha256": "b752cfd65386cdfec78483a085b9387723d4ba9b7dfa8807c551065b2b26a030",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/06/velodyne/000825.bin",
+          "sequence": "06",
+          "frame": "000825",
+          "raw_points": 123959,
+          "clipped_points": 123959,
+          "support_points": 87258,
+          "post_query_points": 57610
+        },
+        {
+          "file": "06_001100.npz",
+          "sha256": "8930b8d7416fff99d8adaaadedd0e8d600540d832c5b33ca72028fc7b8de6abe",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/06/velodyne/001100.bin",
+          "sequence": "06",
+          "frame": "001100",
+          "raw_points": 122139,
+          "clipped_points": 122139,
+          "support_points": 84347,
+          "post_query_points": 57495
+        },
+        {
+          "file": "07_000000.npz",
+          "sha256": "d4466ceb31c566d102681a33466666f17a660b53e480887460a8f6f2bac3b65e",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/07/velodyne/000000.bin",
+          "sequence": "07",
+          "frame": "000000",
+          "raw_points": 122626,
+          "clipped_points": 122626,
+          "support_points": 74104,
+          "post_query_points": 42421
+        },
+        {
+          "file": "07_000275.npz",
+          "sha256": "b9edcb6f636e647dd78df4be5d9cf9db2d7c7d1cc4a2ea268af9a710c99173a4",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/07/velodyne/000275.bin",
+          "sequence": "07",
+          "frame": "000275",
+          "raw_points": 125738,
+          "clipped_points": 125738,
+          "support_points": 74457,
+          "post_query_points": 38070
+        },
+        {
+          "file": "07_000550.npz",
+          "sha256": "a5615af6d9ce3ffd1c4543c2cd7110c76c8debfc0e247e17441addc2c30e192b",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/07/velodyne/000550.bin",
+          "sequence": "07",
+          "frame": "000550",
+          "raw_points": 126343,
+          "clipped_points": 126343,
+          "support_points": 80116,
+          "post_query_points": 47197
+        },
+        {
+          "file": "07_000825.npz",
+          "sha256": "b8e5fe72a6ec0e0df2b8525786d77504077ab837e7fb2e4a60ef2c04cb060094",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/07/velodyne/000825.bin",
+          "sequence": "07",
+          "frame": "000825",
+          "raw_points": 118172,
+          "clipped_points": 118172,
+          "support_points": 70221,
+          "post_query_points": 36877
+        },
+        {
+          "file": "07_001100.npz",
+          "sha256": "863758c74913e4ee4c24a1f0559fa39d2192464b66a32761282731d4988969d9",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/07/velodyne/001100.bin",
+          "sequence": "07",
+          "frame": "001100",
+          "raw_points": 115982,
+          "clipped_points": 115982,
+          "support_points": 76637,
+          "post_query_points": 46113
+        },
+        {
+          "file": "08_000000.npz",
+          "sha256": "a4124a4744eef39a47d8f8e139321463f89998196362b0e9b157ba0498af33ce",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/08/velodyne/000000.bin",
+          "sequence": "08",
+          "frame": "000000",
+          "raw_points": 123389,
+          "clipped_points": 123389,
+          "support_points": 88110,
+          "post_query_points": 61690
+        },
+        {
+          "file": "08_001017.npz",
+          "sha256": "c907de46fcb0edab8230b785342edac5c6404229e66c2b5d503fc21392b95397",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/08/velodyne/001017.bin",
+          "sequence": "08",
+          "frame": "001017",
+          "raw_points": 126826,
+          "clipped_points": 126826,
+          "support_points": 91038,
+          "post_query_points": 62039
+        },
+        {
+          "file": "08_002035.npz",
+          "sha256": "cc837e2a7e8b45383272c7eb671457b9228dc9b873d8636db531603e85176df1",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/08/velodyne/002035.bin",
+          "sequence": "08",
+          "frame": "002035",
+          "raw_points": 124534,
+          "clipped_points": 124534,
+          "support_points": 80079,
+          "post_query_points": 45187
+        },
+        {
+          "file": "08_003052.npz",
+          "sha256": "3c7e3dc849901ab03337f25a950f05dd673f78689ee7b7e1a9e1c2bd4a458e14",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/08/velodyne/003052.bin",
+          "sequence": "08",
+          "frame": "003052",
+          "raw_points": 124459,
+          "clipped_points": 124459,
+          "support_points": 86841,
+          "post_query_points": 57769
+        },
+        {
+          "file": "08_004070.npz",
+          "sha256": "e3969515cbcfd375033b4a540100c5224d4b99b6770d76d1fbeed2dd2087bb58",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/08/velodyne/004070.bin",
+          "sequence": "08",
+          "frame": "004070",
+          "raw_points": 122346,
+          "clipped_points": 122346,
+          "support_points": 83070,
+          "post_query_points": 53675
+        },
+        {
+          "file": "09_000000.npz",
+          "sha256": "39eb557ed5b7221fec720ad3be471960b242368f4cd9e266a47e6376eb72fd56",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/09/velodyne/000000.bin",
+          "sequence": "09",
+          "frame": "000000",
+          "raw_points": 126997,
+          "clipped_points": 126997,
+          "support_points": 91186,
+          "post_query_points": 59104
+        },
+        {
+          "file": "09_000397.npz",
+          "sha256": "478815f29253e60cfd131bbcf51b90822ee46b54b6fe5e7b92798d2c0d0ea567",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/09/velodyne/000397.bin",
+          "sequence": "09",
+          "frame": "000397",
+          "raw_points": 125364,
+          "clipped_points": 125364,
+          "support_points": 84530,
+          "post_query_points": 51352
+        },
+        {
+          "file": "09_000795.npz",
+          "sha256": "2d848a56d890038a68e6297615e029dc7d6796b51fdadcd0e599858787462baa",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/09/velodyne/000795.bin",
+          "sequence": "09",
+          "frame": "000795",
+          "raw_points": 122837,
+          "clipped_points": 122837,
+          "support_points": 80175,
+          "post_query_points": 46415
+        },
+        {
+          "file": "09_001192.npz",
+          "sha256": "070dc71412fa98f6dbbecff7208d583eecdf6813a3295b750a1bc1d1be577352",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/09/velodyne/001192.bin",
+          "sequence": "09",
+          "frame": "001192",
+          "raw_points": 118432,
+          "clipped_points": 118432,
+          "support_points": 67122,
+          "post_query_points": 38956
+        },
+        {
+          "file": "09_001590.npz",
+          "sha256": "0b19c85100adc1f58f3d9178656ef58fc43f02cbdf8c9d0fe2277f2f1f079f94",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/09/velodyne/001590.bin",
+          "sequence": "09",
+          "frame": "001590",
+          "raw_points": 126310,
+          "clipped_points": 126310,
+          "support_points": 89335,
+          "post_query_points": 56915
+        },
+        {
+          "file": "10_000000.npz",
+          "sha256": "ca4b6cf1755c9ede96339d536bce4025a21fdc591e1de63142ac628b1b279a3e",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/10/velodyne/000000.bin",
+          "sequence": "10",
+          "frame": "000000",
+          "raw_points": 121184,
+          "clipped_points": 121184,
+          "support_points": 90208,
+          "post_query_points": 66285
+        },
+        {
+          "file": "10_000300.npz",
+          "sha256": "7f0315c9bb85f90d758653c3edb702fb4626bf7be3311b8b78c445ac7f637412",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/10/velodyne/000300.bin",
+          "sequence": "10",
+          "frame": "000300",
+          "raw_points": 124583,
+          "clipped_points": 124583,
+          "support_points": 73021,
+          "post_query_points": 40615
+        },
+        {
+          "file": "10_000600.npz",
+          "sha256": "060e505e1008103ae6852cc6c1186fbcb4b0f0335fd68ae407433ed8bbab87ba",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/10/velodyne/000600.bin",
+          "sequence": "10",
+          "frame": "000600",
+          "raw_points": 127990,
+          "clipped_points": 127990,
+          "support_points": 63998,
+          "post_query_points": 31802
+        },
+        {
+          "file": "10_000900.npz",
+          "sha256": "14fac0957ecc2e3e7941b732078079aba59aab9e06f7923cd2ffc052e38f7430",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/10/velodyne/000900.bin",
+          "sequence": "10",
+          "frame": "000900",
+          "raw_points": 128309,
+          "clipped_points": 128309,
+          "support_points": 73384,
+          "post_query_points": 38918
+        },
+        {
+          "file": "10_001200.npz",
+          "sha256": "b57acc5fdddb6e77a72c474f4910bc58f5afb6d5a7b8e9c39c2e70078b9f46d9",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/10/velodyne/001200.bin",
+          "sequence": "10",
+          "frame": "001200",
+          "raw_points": 127770,
+          "clipped_points": 127770,
+          "support_points": 77153,
+          "post_query_points": 40561
+        },
+        {
+          "file": "11_000000.npz",
+          "sha256": "79d788156ffa1c9fd57cae1347255031fc43d7e5873c75d7f3a74c598f32eafc",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/11/velodyne/000000.bin",
+          "sequence": "11",
+          "frame": "000000",
+          "raw_points": 127405,
+          "clipped_points": 127405,
+          "support_points": 79847,
+          "post_query_points": 45341
+        },
+        {
+          "file": "11_000230.npz",
+          "sha256": "4aea17ed7a7125eb7f46231bafa2b85215362af816554793a5409cd4a0769bcd",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/11/velodyne/000230.bin",
+          "sequence": "11",
+          "frame": "000230",
+          "raw_points": 124745,
+          "clipped_points": 124745,
+          "support_points": 81479,
+          "post_query_points": 44943
+        },
+        {
+          "file": "11_000460.npz",
+          "sha256": "68ab3f3d688c414e9a1ffb91c2ef62e93c31177c594545430a0eb9d54ac770f0",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/11/velodyne/000460.bin",
+          "sequence": "11",
+          "frame": "000460",
+          "raw_points": 125030,
+          "clipped_points": 125030,
+          "support_points": 83695,
+          "post_query_points": 50579
+        },
+        {
+          "file": "11_000690.npz",
+          "sha256": "0271f862cc0dfc8daf8f85bd67fb6bf4e12979648b84ff68f436307f36f80b41",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/11/velodyne/000690.bin",
+          "sequence": "11",
+          "frame": "000690",
+          "raw_points": 126869,
+          "clipped_points": 126869,
+          "support_points": 73784,
+          "post_query_points": 41490
+        },
+        {
+          "file": "11_000920.npz",
+          "sha256": "568f89b5949f08f52266fc7d2ec139676174cc44ea1736b71b7a506d1f01610d",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/11/velodyne/000920.bin",
+          "sequence": "11",
+          "frame": "000920",
+          "raw_points": 121776,
+          "clipped_points": 121776,
+          "support_points": 84910,
+          "post_query_points": 56789
+        },
+        {
+          "file": "12_000000.npz",
+          "sha256": "7cfdf12be07bed670b8d1676867e77847f495700b0d9a6c0dbfd82322e38133a",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/12/velodyne/000000.bin",
+          "sequence": "12",
+          "frame": "000000",
+          "raw_points": 114763,
+          "clipped_points": 114763,
+          "support_points": 85925,
+          "post_query_points": 59082
+        },
+        {
+          "file": "12_000265.npz",
+          "sha256": "11f5671d08c93a1ddf519e135e8162919553ebeb8d444e9bf93c9e6f3dec8efc",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/12/velodyne/000265.bin",
+          "sequence": "12",
+          "frame": "000265",
+          "raw_points": 126548,
+          "clipped_points": 126548,
+          "support_points": 96442,
+          "post_query_points": 63626
+        },
+        {
+          "file": "12_000530.npz",
+          "sha256": "c532a1e26510c5cbfc57d6a7676cfdf5efffe475294ad898a21f119c3e198006",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/12/velodyne/000530.bin",
+          "sequence": "12",
+          "frame": "000530",
+          "raw_points": 123325,
+          "clipped_points": 123325,
+          "support_points": 93649,
+          "post_query_points": 64463
+        },
+        {
+          "file": "12_000795.npz",
+          "sha256": "7937ba76d4b6aaa75ced968262b5a87b68041d629680b932f1a33ac98ab7a5f8",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/12/velodyne/000795.bin",
+          "sequence": "12",
+          "frame": "000795",
+          "raw_points": 112939,
+          "clipped_points": 112939,
+          "support_points": 84353,
+          "post_query_points": 60997
+        },
+        {
+          "file": "12_001060.npz",
+          "sha256": "b7a32188d41e7c5bbeb2537b0985f9c1597a2846d9b766ee05297f3239b1690b",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/12/velodyne/001060.bin",
+          "sequence": "12",
+          "frame": "001060",
+          "raw_points": 121368,
+          "clipped_points": 121368,
+          "support_points": 86336,
+          "post_query_points": 58878
+        },
+        {
+          "file": "13_000000.npz",
+          "sha256": "67b7076e0e13ee83d42bf579101551d6c6a3a82835e3c84ff8159068e0309c47",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/13/velodyne/000000.bin",
+          "sequence": "13",
+          "frame": "000000",
+          "raw_points": 122785,
+          "clipped_points": 122785,
+          "support_points": 73382,
+          "post_query_points": 40637
+        },
+        {
+          "file": "13_000820.npz",
+          "sha256": "fa418a642660b91b8fa2f238660aceeed33720a92f2da759976f815b7d505129",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/13/velodyne/000820.bin",
+          "sequence": "13",
+          "frame": "000820",
+          "raw_points": 111781,
+          "clipped_points": 111781,
+          "support_points": 68956,
+          "post_query_points": 40556
+        },
+        {
+          "file": "13_001640.npz",
+          "sha256": "3284cb64f3dab209d6de9f8890139d6773d40ea47708696bbf1b9f0fb419b935",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/13/velodyne/001640.bin",
+          "sequence": "13",
+          "frame": "001640",
+          "raw_points": 108480,
+          "clipped_points": 108480,
+          "support_points": 73313,
+          "post_query_points": 47292
+        },
+        {
+          "file": "13_002460.npz",
+          "sha256": "5eb022e19d987601030e2027cacfa78d1eda0ebcc72b17d16d2e65707ae90666",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/13/velodyne/002460.bin",
+          "sequence": "13",
+          "frame": "002460",
+          "raw_points": 124013,
+          "clipped_points": 124013,
+          "support_points": 67234,
+          "post_query_points": 34462
+        },
+        {
+          "file": "13_003280.npz",
+          "sha256": "cac30dc25b7cf5450ed3154c6cd649b4d1e903e13c221cc18da9d12f83355979",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/13/velodyne/003280.bin",
+          "sequence": "13",
+          "frame": "003280",
+          "raw_points": 113942,
+          "clipped_points": 113942,
+          "support_points": 71164,
+          "post_query_points": 40471
+        },
+        {
+          "file": "14_000000.npz",
+          "sha256": "040d7c3c5202c02ea9442e5fb571e0bdb1b8419d40da2b72190e867bbf5a7c41",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/14/velodyne/000000.bin",
+          "sequence": "14",
+          "frame": "000000",
+          "raw_points": 120066,
+          "clipped_points": 120066,
+          "support_points": 86822,
+          "post_query_points": 56515
+        },
+        {
+          "file": "14_000157.npz",
+          "sha256": "3532df0245e96fb6393d45f575834427a9b234b6760282fea13dcbc5ca4d9bcc",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/14/velodyne/000157.bin",
+          "sequence": "14",
+          "frame": "000157",
+          "raw_points": 128085,
+          "clipped_points": 128085,
+          "support_points": 80907,
+          "post_query_points": 48209
+        },
+        {
+          "file": "14_000315.npz",
+          "sha256": "0694d9d59d95d3bcf4713b6f291baab44d4a376b639579ea199d2e7582d3af9a",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/14/velodyne/000315.bin",
+          "sequence": "14",
+          "frame": "000315",
+          "raw_points": 127603,
+          "clipped_points": 127603,
+          "support_points": 90008,
+          "post_query_points": 54549
+        },
+        {
+          "file": "14_000472.npz",
+          "sha256": "29c97d978019b117513569b9a18ba56d1fdbf889ce9ca4de181cb4e2f793534e",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/14/velodyne/000472.bin",
+          "sequence": "14",
+          "frame": "000472",
+          "raw_points": 128151,
+          "clipped_points": 128151,
+          "support_points": 71871,
+          "post_query_points": 43004
+        },
+        {
+          "file": "14_000630.npz",
+          "sha256": "43ee39efe3980fe893dbe7a7fde444bf6a2532af8602960458e4f26b37b86b01",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/14/velodyne/000630.bin",
+          "sequence": "14",
+          "frame": "000630",
+          "raw_points": 120662,
+          "clipped_points": 120662,
+          "support_points": 86049,
+          "post_query_points": 55907
+        },
+        {
+          "file": "15_000000.npz",
+          "sha256": "1ec565f1544b1d3392ab6c8662569a5f96843e286770d9f8c0d210c94b2c8715",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/15/velodyne/000000.bin",
+          "sequence": "15",
+          "frame": "000000",
+          "raw_points": 126229,
+          "clipped_points": 126229,
+          "support_points": 80328,
+          "post_query_points": 43856
+        },
+        {
+          "file": "15_000475.npz",
+          "sha256": "8c059380eb8c5b79ba3deed5e3931c5cd6480cb03df70c425472f86351e039c4",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/15/velodyne/000475.bin",
+          "sequence": "15",
+          "frame": "000475",
+          "raw_points": 117791,
+          "clipped_points": 117791,
+          "support_points": 71164,
+          "post_query_points": 42044
+        },
+        {
+          "file": "15_000950.npz",
+          "sha256": "d21cf69c3f2b039e2ff21e906a3a3bf0f420aaf1edb208a381bac4c87fc48213",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/15/velodyne/000950.bin",
+          "sequence": "15",
+          "frame": "000950",
+          "raw_points": 124803,
+          "clipped_points": 124803,
+          "support_points": 82581,
+          "post_query_points": 51342
+        },
+        {
+          "file": "15_001425.npz",
+          "sha256": "9cbce09bb165babdea359001ff042615e96d36c7ed2feab7965879d641bb7f70",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/15/velodyne/001425.bin",
+          "sequence": "15",
+          "frame": "001425",
+          "raw_points": 125881,
+          "clipped_points": 125881,
+          "support_points": 83862,
+          "post_query_points": 49366
+        },
+        {
+          "file": "15_001900.npz",
+          "sha256": "0bf7f7fd3320953fc75d180ba19a660db073bc053f9fdf04ed52049d51468aa3",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/15/velodyne/001900.bin",
+          "sequence": "15",
+          "frame": "001900",
+          "raw_points": 118892,
+          "clipped_points": 118892,
+          "support_points": 71946,
+          "post_query_points": 40379
+        },
+        {
+          "file": "16_000000.npz",
+          "sha256": "f94508fb78e34c8c8f1a2399193c1f1c7bda707e77f8e5e8506a22001e5b2db6",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/16/velodyne/000000.bin",
+          "sequence": "16",
+          "frame": "000000",
+          "raw_points": 126849,
+          "clipped_points": 126849,
+          "support_points": 85964,
+          "post_query_points": 50537
+        },
+        {
+          "file": "16_000432.npz",
+          "sha256": "c96d0a3324a0bf5a294b64dc8ded610b18029f00ddc8395f916ab10a44f127f0",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/16/velodyne/000432.bin",
+          "sequence": "16",
+          "frame": "000432",
+          "raw_points": 123959,
+          "clipped_points": 123959,
+          "support_points": 88034,
+          "post_query_points": 60079
+        },
+        {
+          "file": "16_000865.npz",
+          "sha256": "189d5aa7e30ef424f087e0a14b65e652eb19e34913efa7b14903afda3d8fcb7e",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/16/velodyne/000865.bin",
+          "sequence": "16",
+          "frame": "000865",
+          "raw_points": 125719,
+          "clipped_points": 125719,
+          "support_points": 82610,
+          "post_query_points": 50186
+        },
+        {
+          "file": "16_001297.npz",
+          "sha256": "6eb4f293d42415d5c273b761416d5ff6fd6e91df92d75b4259d34a0c294503ec",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/16/velodyne/001297.bin",
+          "sequence": "16",
+          "frame": "001297",
+          "raw_points": 125338,
+          "clipped_points": 125338,
+          "support_points": 86129,
+          "post_query_points": 54987
+        },
+        {
+          "file": "16_001730.npz",
+          "sha256": "72773c7b70e728659c674ad8fbda13078b21f141c544f1d97dcfc72fa71ad051",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/16/velodyne/001730.bin",
+          "sequence": "16",
+          "frame": "001730",
+          "raw_points": 120320,
+          "clipped_points": 120320,
+          "support_points": 76678,
+          "post_query_points": 44748
+        },
+        {
+          "file": "17_000000.npz",
+          "sha256": "734e0d049b5d3b69155b1c994ae481967f7b27bad401a28def5f0e859a186802",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/17/velodyne/000000.bin",
+          "sequence": "17",
+          "frame": "000000",
+          "raw_points": 117912,
+          "clipped_points": 117912,
+          "support_points": 89978,
+          "post_query_points": 64587
+        },
+        {
+          "file": "17_000122.npz",
+          "sha256": "57c7378951423331c2c5f64a0b07c66064512fd26690840d8cf8e516f5eff21c",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/17/velodyne/000122.bin",
+          "sequence": "17",
+          "frame": "000122",
+          "raw_points": 121046,
+          "clipped_points": 121046,
+          "support_points": 92615,
+          "post_query_points": 64981
+        },
+        {
+          "file": "17_000245.npz",
+          "sha256": "5e7122f67bb10210541e04529b9d9d428aea1a7745e7ed830ecd5ff5f834473f",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/17/velodyne/000245.bin",
+          "sequence": "17",
+          "frame": "000245",
+          "raw_points": 116803,
+          "clipped_points": 116803,
+          "support_points": 89968,
+          "post_query_points": 64067
+        },
+        {
+          "file": "17_000367.npz",
+          "sha256": "3161b075b4b709ff46e3fe61ddb766a923dd8b073a5b901b2d1555d1693bdc37",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/17/velodyne/000367.bin",
+          "sequence": "17",
+          "frame": "000367",
+          "raw_points": 111955,
+          "clipped_points": 111955,
+          "support_points": 80576,
+          "post_query_points": 57003
+        },
+        {
+          "file": "17_000490.npz",
+          "sha256": "8320bd4cfe2e8ee700e2bbc6a41a0588f34b514a243174a8e1ab532a70bf4d53",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/17/velodyne/000490.bin",
+          "sequence": "17",
+          "frame": "000490",
+          "raw_points": 108272,
+          "clipped_points": 108272,
+          "support_points": 72303,
+          "post_query_points": 48205
+        },
+        {
+          "file": "18_000000.npz",
+          "sha256": "b262c981cb8b0aa3cd84e47d747a310e6a059096c4a35edf04e10951ae178810",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/18/velodyne/000000.bin",
+          "sequence": "18",
+          "frame": "000000",
+          "raw_points": 124764,
+          "clipped_points": 124764,
+          "support_points": 71341,
+          "post_query_points": 36537
+        },
+        {
+          "file": "18_000450.npz",
+          "sha256": "b6a46e16a3b6361a4faeda6f7c7d40f24d82804aaaee822a70cfb51e7d52155b",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/18/velodyne/000450.bin",
+          "sequence": "18",
+          "frame": "000450",
+          "raw_points": 110399,
+          "clipped_points": 110399,
+          "support_points": 59751,
+          "post_query_points": 29243
+        },
+        {
+          "file": "18_000900.npz",
+          "sha256": "b560515239f099b391ae11214c7411adf0dff8078fb5729baf89e2b0f4e64b8f",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/18/velodyne/000900.bin",
+          "sequence": "18",
+          "frame": "000900",
+          "raw_points": 122081,
+          "clipped_points": 122081,
+          "support_points": 70526,
+          "post_query_points": 36499
+        },
+        {
+          "file": "18_001350.npz",
+          "sha256": "cc9493cc411d803a25d5428ace7806b755f4b3818f761c79f3038957370d03f9",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/18/velodyne/001350.bin",
+          "sequence": "18",
+          "frame": "001350",
+          "raw_points": 117500,
+          "clipped_points": 117500,
+          "support_points": 59993,
+          "post_query_points": 28356
+        },
+        {
+          "file": "18_001800.npz",
+          "sha256": "662190c78ebee53a713205777ce46259097972f7a1dcae8ffc8f47341b3eb64c",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/18/velodyne/001800.bin",
+          "sequence": "18",
+          "frame": "001800",
+          "raw_points": 115380,
+          "clipped_points": 115380,
+          "support_points": 64571,
+          "post_query_points": 34072
+        },
+        {
+          "file": "19_000000.npz",
+          "sha256": "d4f838c60050bcb130e6d99d60308d308dee4fd577df8e002bbdfe1c50b31761",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/19/velodyne/000000.bin",
+          "sequence": "19",
+          "frame": "000000",
+          "raw_points": 122995,
+          "clipped_points": 122995,
+          "support_points": 85766,
+          "post_query_points": 58189
+        },
+        {
+          "file": "19_001245.npz",
+          "sha256": "2017c0803a64a319ed74cba4206712581141cb9821b0ce084f7ab89fd0d2cd1b",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/19/velodyne/001245.bin",
+          "sequence": "19",
+          "frame": "001245",
+          "raw_points": 124907,
+          "clipped_points": 124907,
+          "support_points": 85816,
+          "post_query_points": 53708
+        },
+        {
+          "file": "19_002490.npz",
+          "sha256": "4fb66df72dca84addb78bf5303061f82c2cb29747ce2a84bccc1c3ffb3ffa7a7",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/19/velodyne/002490.bin",
+          "sequence": "19",
+          "frame": "002490",
+          "raw_points": 115604,
+          "clipped_points": 115604,
+          "support_points": 53279,
+          "post_query_points": 24433
+        },
+        {
+          "file": "19_003735.npz",
+          "sha256": "8e3746a57f4a092a38af57d9d43851764cd93503a106f5037b39c4325096e4f8",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/19/velodyne/003735.bin",
+          "sequence": "19",
+          "frame": "003735",
+          "raw_points": 121165,
+          "clipped_points": 121165,
+          "support_points": 76825,
+          "post_query_points": 44638
+        },
+        {
+          "file": "19_004980.npz",
+          "sha256": "8a89e2007c68b97e4abc3af334071153bc6c41844fda26160996402e511c2d6c",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/19/velodyne/004980.bin",
+          "sequence": "19",
+          "frame": "004980",
+          "raw_points": 121187,
+          "clipped_points": 121187,
+          "support_points": 75035,
+          "post_query_points": 43484
+        },
+        {
+          "file": "20_000000.npz",
+          "sha256": "d0f5a94acd989e638410d3c4f6dd4176e5881d139a8fec0918de4c8ee0673595",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/20/velodyne/000000.bin",
+          "sequence": "20",
+          "frame": "000000",
+          "raw_points": 116179,
+          "clipped_points": 116179,
+          "support_points": 81723,
+          "post_query_points": 51507
+        },
+        {
+          "file": "20_000207.npz",
+          "sha256": "829cca0989116aeb4d6a73d8e4da5e5b092dea6bcfed6a23b22cd56f4926f053",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/20/velodyne/000207.bin",
+          "sequence": "20",
+          "frame": "000207",
+          "raw_points": 119906,
+          "clipped_points": 119906,
+          "support_points": 83021,
+          "post_query_points": 49793
+        },
+        {
+          "file": "20_000415.npz",
+          "sha256": "eacf858e9cfc6f3990c4b8bbd86b3e62280da0957d5830de0f10130ffd212661",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/20/velodyne/000415.bin",
+          "sequence": "20",
+          "frame": "000415",
+          "raw_points": 117925,
+          "clipped_points": 117925,
+          "support_points": 84406,
+          "post_query_points": 52824
+        },
+        {
+          "file": "20_000622.npz",
+          "sha256": "50e6cc0d0e37b86870b395d52c7ebd48c68ddc4a578c819cc9c0b893073c3b46",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/20/velodyne/000622.bin",
+          "sequence": "20",
+          "frame": "000622",
+          "raw_points": 119728,
+          "clipped_points": 119728,
+          "support_points": 82836,
+          "post_query_points": 51850
+        },
+        {
+          "file": "20_000830.npz",
+          "sha256": "ac5fab81b38444f1a81a086b5cf6d44a92b4c4f3e5bbc36397bbe98a371a55c3",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/20/velodyne/000830.bin",
+          "sequence": "20",
+          "frame": "000830",
+          "raw_points": 123807,
+          "clipped_points": 123807,
+          "support_points": 86010,
+          "post_query_points": 58444
+        },
+        {
+          "file": "21_000000.npz",
+          "sha256": "723c14440dffb4aa0aa22b1cc34f14d463b322d6ac5fbd8ad074665b23adeca2",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/21/velodyne/000000.bin",
+          "sequence": "21",
+          "frame": "000000",
+          "raw_points": 122629,
+          "clipped_points": 122629,
+          "support_points": 88454,
+          "post_query_points": 58907
+        },
+        {
+          "file": "21_000680.npz",
+          "sha256": "8023a99665e8e2d3aab3305a56bb397239889d08f7cfc7adad85ed960de4acf9",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/21/velodyne/000680.bin",
+          "sequence": "21",
+          "frame": "000680",
+          "raw_points": 123113,
+          "clipped_points": 123113,
+          "support_points": 88676,
+          "post_query_points": 58306
+        },
+        {
+          "file": "21_001360.npz",
+          "sha256": "6a2a2d0f606d2fa8a8eeb96fdf3a2651b949a9e1950bdf2d7d3b238e442e84ca",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/21/velodyne/001360.bin",
+          "sequence": "21",
+          "frame": "001360",
+          "raw_points": 122975,
+          "clipped_points": 122975,
+          "support_points": 88550,
+          "post_query_points": 58207
+        },
+        {
+          "file": "21_002040.npz",
+          "sha256": "faf281838ea7e5e3ec4a4232a1c50e23a723f188bad66328688efb668ab358ef",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/21/velodyne/002040.bin",
+          "sequence": "21",
+          "frame": "002040",
+          "raw_points": 120586,
+          "clipped_points": 120586,
+          "support_points": 80258,
+          "post_query_points": 50795
+        },
+        {
+          "file": "21_002720.npz",
+          "sha256": "a409d642348896497a71cc376c4efae83a48368d8f08a7d7620859630648d68a",
+          "source": "/data2/Dataset/Lidar/SemanticKITTI/dataset/sequences/21/velodyne/002720.bin",
+          "sequence": "21",
+          "frame": "002720",
+          "raw_points": 120883,
+          "clipped_points": 120883,
+          "support_points": 86731,
+          "post_query_points": 56835
+        }
+      ]
+    }
+  },
+  "samples": [
+    {
+      "sample": "00_000000.npz",
+      "points": 83889,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 522.5279693491757,
+            "median_ms": 518.7784100417048,
+            "p95_ms": 529.823656193912,
+            "std_ms": 7.362379884730828
+          },
+          "model": {
+            "mean_ms": 17.58862724304199,
+            "median_ms": 17.528752326965332,
+            "p95_ms": 18.108415603637695,
+            "std_ms": 0.20827911111569813
+          },
+          "end_to_end": {
+            "mean_ms": 540.1165965922177,
+            "median_ms": 536.3625384215266,
+            "p95_ms": 547.402664296329,
+            "std_ms": 7.382402773422377
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 15.552606868743897,
+            "median_ms": 15.550607681274414,
+            "p95_ms": 15.614175796508789,
+            "std_ms": 0.07197696715814535
+          },
+          "model": {
+            "mean_ms": 16.980211194356283,
+            "median_ms": 16.933887481689453,
+            "p95_ms": 17.30143928527832,
+            "std_ms": 0.17706347668559924
+          },
+          "end_to_end": {
+            "mean_ms": 32.53281806310018,
+            "median_ms": 32.482272148132324,
+            "p95_ms": 32.900991439819336,
+            "std_ms": 0.19500954283445127
+          }
+        }
+      }
+    },
+    {
+      "sample": "01_000000.npz",
+      "points": 90407,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 651.3787268350521,
+            "median_ms": 649.5329330209643,
+            "p95_ms": 661.7770218290389,
+            "std_ms": 4.076633449929659
+          },
+          "model": {
+            "mean_ms": 18.280878766377768,
+            "median_ms": 18.215888023376465,
+            "p95_ms": 18.829120635986328,
+            "std_ms": 0.1884092699862537
+          },
+          "end_to_end": {
+            "mean_ms": 669.6596056014299,
+            "median_ms": 667.8067243341357,
+            "p95_ms": 680.1167015470564,
+            "std_ms": 4.1490109363328935
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.138731670379638,
+            "median_ms": 16.069583892822266,
+            "p95_ms": 16.83443260192871,
+            "std_ms": 0.28536934702601413
+          },
+          "model": {
+            "mean_ms": 17.7582249323527,
+            "median_ms": 17.76700782775879,
+            "p95_ms": 17.81350326538086,
+            "std_ms": 0.09332641938956417
+          },
+          "end_to_end": {
+            "mean_ms": 33.89695660273234,
+            "median_ms": 33.8406400680542,
+            "p95_ms": 34.63462448120117,
+            "std_ms": 0.3603462861696843
+          }
+        }
+      }
+    },
+    {
+      "sample": "02_000000.npz",
+      "points": 87126,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 583.9688352930049,
+            "median_ms": 581.8578654434532,
+            "p95_ms": 594.9590071104467,
+            "std_ms": 4.288054091676896
+          },
+          "model": {
+            "mean_ms": 17.479227765401205,
+            "median_ms": 17.45035171508789,
+            "p95_ms": 17.605472564697266,
+            "std_ms": 0.08088004082323745
+          },
+          "end_to_end": {
+            "mean_ms": 601.4480630584061,
+            "median_ms": 599.3508578445762,
+            "p95_ms": 612.5309427641332,
+            "std_ms": 4.322947872914806
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 18.10230280558268,
+            "median_ms": 15.81393575668335,
+            "p95_ms": 21.953535079956055,
+            "std_ms": 2.9340131081638474
+          },
+          "model": {
+            "mean_ms": 19.58075205485026,
+            "median_ms": 17.084864616394043,
+            "p95_ms": 23.979007720947266,
+            "std_ms": 3.306875752409093
+          },
+          "end_to_end": {
+            "mean_ms": 37.68305486043294,
+            "median_ms": 32.88212776184082,
+            "p95_ms": 45.9048957824707,
+            "std_ms": 6.23231493294389
+          }
+        }
+      }
+    },
+    {
+      "sample": "03_000000.npz",
+      "points": 82134,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 505.67674202223617,
+            "median_ms": 503.130465047434,
+            "p95_ms": 513.148037251085,
+            "std_ms": 5.747715367893343
+          },
+          "model": {
+            "mean_ms": 17.287549591064455,
+            "median_ms": 17.2620792388916,
+            "p95_ms": 17.389568328857422,
+            "std_ms": 0.1328934500511115
+          },
+          "end_to_end": {
+            "mean_ms": 522.9642916133006,
+            "median_ms": 520.5005622748286,
+            "p95_ms": 530.435972508043,
+            "std_ms": 5.777247520952243
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.353806972503662,
+            "median_ms": 15.518720149993896,
+            "p95_ms": 21.784576416015625,
+            "std_ms": 2.1304164740411613
+          },
+          "model": {
+            "mean_ms": 17.56587003072103,
+            "median_ms": 16.779232025146484,
+            "p95_ms": 23.764192581176758,
+            "std_ms": 2.1213575900134143
+          },
+          "end_to_end": {
+            "mean_ms": 33.91967700322469,
+            "median_ms": 32.28959941864014,
+            "p95_ms": 45.530399322509766,
+            "std_ms": 4.196641456263847
+          }
+        }
+      }
+    },
+    {
+      "sample": "04_000000.npz",
+      "points": 87339,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 579.7555561953535,
+            "median_ms": 577.6184189599007,
+            "p95_ms": 590.5521186068654,
+            "std_ms": 4.318380198691669
+          },
+          "model": {
+            "mean_ms": 17.503574244181316,
+            "median_ms": 17.462255477905273,
+            "p95_ms": 17.634048461914062,
+            "std_ms": 0.1642944866776535
+          },
+          "end_to_end": {
+            "mean_ms": 597.2591304395348,
+            "median_ms": 595.0847465787083,
+            "p95_ms": 608.1861670687795,
+            "std_ms": 4.363173165452281
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 15.77979834874471,
+            "median_ms": 15.77457571029663,
+            "p95_ms": 15.81875228881836,
+            "std_ms": 0.03645769833163001
+          },
+          "model": {
+            "mean_ms": 17.161268170674642,
+            "median_ms": 17.16423988342285,
+            "p95_ms": 17.271808624267578,
+            "std_ms": 0.1007024896011571
+          },
+          "end_to_end": {
+            "mean_ms": 32.94106651941935,
+            "median_ms": 32.94579219818115,
+            "p95_ms": 33.14883232116699,
+            "std_ms": 0.11656763762803349
+          }
+        }
+      }
+    },
+    {
+      "sample": "05_000000.npz",
+      "points": 82873,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 510.98211441809934,
+            "median_ms": 510.8207599259913,
+            "p95_ms": 512.2930225916207,
+            "std_ms": 0.6661115660554244
+          },
+          "model": {
+            "mean_ms": 17.348879941304524,
+            "median_ms": 17.263535499572754,
+            "p95_ms": 18.04902458190918,
+            "std_ms": 0.2470290674525105
+          },
+          "end_to_end": {
+            "mean_ms": 528.3309943594038,
+            "median_ms": 528.3885923977941,
+            "p95_ms": 529.7354984357953,
+            "std_ms": 0.6628073933582018
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 17.743378130594888,
+            "median_ms": 15.492640018463135,
+            "p95_ms": 21.66886329650879,
+            "std_ms": 2.9745899817540016
+          },
+          "model": {
+            "mean_ms": 19.29801387786865,
+            "median_ms": 16.830592155456543,
+            "p95_ms": 23.830528259277344,
+            "std_ms": 3.2804081302949193
+          },
+          "end_to_end": {
+            "mean_ms": 37.04139200846354,
+            "median_ms": 32.323551177978516,
+            "p95_ms": 45.48508834838867,
+            "std_ms": 6.24590628909617
+          }
+        }
+      }
+    },
+    {
+      "sample": "06_000000.npz",
+      "points": 87410,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 579.4121076352894,
+            "median_ms": 575.753141194582,
+            "p95_ms": 586.7443340830505,
+            "std_ms": 5.68393867951641
+          },
+          "model": {
+            "mean_ms": 17.60241724650065,
+            "median_ms": 17.590784072875977,
+            "p95_ms": 17.785856246948242,
+            "std_ms": 0.09222452674465209
+          },
+          "end_to_end": {
+            "mean_ms": 597.0145248817901,
+            "median_ms": 593.2876212894917,
+            "p95_ms": 604.3800133280456,
+            "std_ms": 5.746109376785259
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.933380349477133,
+            "median_ms": 15.696799755096436,
+            "p95_ms": 21.86956787109375,
+            "std_ms": 2.4738023568607557
+          },
+          "model": {
+            "mean_ms": 18.288644218444823,
+            "median_ms": 17.05681610107422,
+            "p95_ms": 23.922687530517578,
+            "std_ms": 2.5703189262647497
+          },
+          "end_to_end": {
+            "mean_ms": 35.222024567921956,
+            "median_ms": 32.74900770187378,
+            "p95_ms": 45.7840633392334,
+            "std_ms": 4.994620889947268
+          }
+        }
+      }
+    },
+    {
+      "sample": "07_000000.npz",
+      "points": 74104,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 441.36271403792006,
+            "median_ms": 439.83676307834685,
+            "p95_ms": 450.16408897936344,
+            "std_ms": 4.109640752494245
+          },
+          "model": {
+            "mean_ms": 17.157574399312338,
+            "median_ms": 17.133296012878418,
+            "p95_ms": 17.34272003173828,
+            "std_ms": 0.08848154856858025
+          },
+          "end_to_end": {
+            "mean_ms": 458.52028843723235,
+            "median_ms": 456.9463784042746,
+            "p95_ms": 467.41976906359196,
+            "std_ms": 4.1809612240119725
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 17.78051414489746,
+            "median_ms": 15.285408020019531,
+            "p95_ms": 21.572608947753906,
+            "std_ms": 3.0778664970167378
+          },
+          "model": {
+            "mean_ms": 19.64964485168457,
+            "median_ms": 16.81920051574707,
+            "p95_ms": 23.92188835144043,
+            "std_ms": 3.499497691900449
+          },
+          "end_to_end": {
+            "mean_ms": 37.43015899658203,
+            "median_ms": 32.09096002578735,
+            "p95_ms": 45.494497299194336,
+            "std_ms": 6.575725755138001
+          }
+        }
+      }
+    },
+    {
+      "sample": "08_000000.npz",
+      "points": 88110,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 620.7689929443101,
+            "median_ms": 619.2120786290616,
+            "p95_ms": 627.9992288909853,
+            "std_ms": 3.714627995026692
+          },
+          "model": {
+            "mean_ms": 17.64650033315023,
+            "median_ms": 17.62559986114502,
+            "p95_ms": 17.755136489868164,
+            "std_ms": 0.06662925814598292
+          },
+          "end_to_end": {
+            "mean_ms": 638.4154932774603,
+            "median_ms": 636.8018861394376,
+            "p95_ms": 645.9131807647645,
+            "std_ms": 3.759425070156524
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 15.879866695404052,
+            "median_ms": 15.874063968658447,
+            "p95_ms": 15.90982437133789,
+            "std_ms": 0.02225956029430041
+          },
+          "model": {
+            "mean_ms": 17.254152488708495,
+            "median_ms": 17.234943389892578,
+            "p95_ms": 17.269887924194336,
+            "std_ms": 0.1422041644130181
+          },
+          "end_to_end": {
+            "mean_ms": 33.134019184112546,
+            "median_ms": 33.111504554748535,
+            "p95_ms": 33.2325439453125,
+            "std_ms": 0.14629945341720996
+          }
+        }
+      }
+    },
+    {
+      "sample": "09_000000.npz",
+      "points": 91186,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 617.2626656480134,
+            "median_ms": 615.2966960798949,
+            "p95_ms": 625.319582875818,
+            "std_ms": 5.734624077925919
+          },
+          "model": {
+            "mean_ms": 17.630859883626304,
+            "median_ms": 17.613264083862305,
+            "p95_ms": 17.730560302734375,
+            "std_ms": 0.05808257188302397
+          },
+          "end_to_end": {
+            "mean_ms": 634.8935255316396,
+            "median_ms": 632.917576206848,
+            "p95_ms": 643.0501431785524,
+            "std_ms": 5.777142982728105
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.172080039978027,
+            "median_ms": 15.770624160766602,
+            "p95_ms": 21.464128494262695,
+            "std_ms": 1.475892302120258
+          },
+          "model": {
+            "mean_ms": 17.30637543996175,
+            "median_ms": 17.076207160949707,
+            "p95_ms": 17.126367568969727,
+            "std_ms": 1.2251322988659004
+          },
+          "end_to_end": {
+            "mean_ms": 33.478455479939775,
+            "median_ms": 32.84771203994751,
+            "p95_ms": 38.59049606323242,
+            "std_ms": 2.5117616521087234
+          }
+        }
+      }
+    },
+    {
+      "sample": "10_000000.npz",
+      "points": 90208,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 677.058702489982,
+            "median_ms": 674.6802660636604,
+            "p95_ms": 691.6929981671274,
+            "std_ms": 5.264357164507976
+          },
+          "model": {
+            "mean_ms": 17.874514071146645,
+            "median_ms": 17.86148738861084,
+            "p95_ms": 18.042879104614258,
+            "std_ms": 0.07065856379901868
+          },
+          "end_to_end": {
+            "mean_ms": 694.9332165611287,
+            "median_ms": 692.5572106055915,
+            "p95_ms": 709.7358772717416,
+            "std_ms": 5.297537041410599
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.204696655273438,
+            "median_ms": 16.159343719482422,
+            "p95_ms": 16.22015953063965,
+            "std_ms": 0.33253466321941927
+          },
+          "model": {
+            "mean_ms": 17.47875951131185,
+            "median_ms": 17.502144813537598,
+            "p95_ms": 17.571840286254883,
+            "std_ms": 0.07962970516112806
+          },
+          "end_to_end": {
+            "mean_ms": 33.68345616658529,
+            "median_ms": 33.64151954650879,
+            "p95_ms": 33.84515190124512,
+            "std_ms": 0.34446620373637477
+          }
+        }
+      }
+    },
+    {
+      "sample": "11_000000.npz",
+      "points": 79847,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 476.83101492002606,
+            "median_ms": 476.75620089285076,
+            "p95_ms": 482.3676310479641,
+            "std_ms": 2.5989746263603126
+          },
+          "model": {
+            "mean_ms": 17.19000962575277,
+            "median_ms": 17.181967735290527,
+            "p95_ms": 17.287168502807617,
+            "std_ms": 0.052930195878906384
+          },
+          "end_to_end": {
+            "mean_ms": 494.02102454577886,
+            "median_ms": 493.93012057058513,
+            "p95_ms": 499.56878384947777,
+            "std_ms": 2.6084801748185646
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 15.433115736643474,
+            "median_ms": 15.428607940673828,
+            "p95_ms": 15.498271942138672,
+            "std_ms": 0.024184205156005195
+          },
+          "model": {
+            "mean_ms": 16.851528358459472,
+            "median_ms": 16.81766414642334,
+            "p95_ms": 16.929983139038086,
+            "std_ms": 0.14318433460762922
+          },
+          "end_to_end": {
+            "mean_ms": 32.28464409510295,
+            "median_ms": 32.23683166503906,
+            "p95_ms": 32.37119960784912,
+            "std_ms": 0.14714385787173073
+          }
+        }
+      }
+    },
+    {
+      "sample": "12_000000.npz",
+      "points": 85925,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 594.0506491344422,
+            "median_ms": 593.0785487871617,
+            "p95_ms": 599.3553921580315,
+            "std_ms": 3.163724260508281
+          },
+          "model": {
+            "mean_ms": 17.514343579610188,
+            "median_ms": 17.509696006774902,
+            "p95_ms": 17.572511672973633,
+            "std_ms": 0.06302137968638255
+          },
+          "end_to_end": {
+            "mean_ms": 611.5649927140524,
+            "median_ms": 610.533781407401,
+            "p95_ms": 616.9057289958,
+            "std_ms": 3.2061477221906953
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 17.079529507954916,
+            "median_ms": 15.873167991638184,
+            "p95_ms": 22.021120071411133,
+            "std_ms": 2.421960939930705
+          },
+          "model": {
+            "mean_ms": 18.18416093190511,
+            "median_ms": 17.02604866027832,
+            "p95_ms": 23.921663284301758,
+            "std_ms": 2.568582196189769
+          },
+          "end_to_end": {
+            "mean_ms": 35.26369043986003,
+            "median_ms": 32.90054368972778,
+            "p95_ms": 45.97350311279297,
+            "std_ms": 4.878514493254127
+          }
+        }
+      }
+    },
+    {
+      "sample": "13_000000.npz",
+      "points": 73382,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 434.062625747174,
+            "median_ms": 433.2883453462273,
+            "p95_ms": 441.50815811008215,
+            "std_ms": 2.7048648328123437
+          },
+          "model": {
+            "mean_ms": 17.11236152648926,
+            "median_ms": 17.099247932434082,
+            "p95_ms": 17.22368049621582,
+            "std_ms": 0.05038773771815241
+          },
+          "end_to_end": {
+            "mean_ms": 451.1749872736633,
+            "median_ms": 450.37266541458666,
+            "p95_ms": 458.73183860629797,
+            "std_ms": 2.735177228395948
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 15.356465021769205,
+            "median_ms": 15.353807926177979,
+            "p95_ms": 15.40937614440918,
+            "std_ms": 0.024306424549954922
+          },
+          "model": {
+            "mean_ms": 16.796726608276366,
+            "median_ms": 16.762911796569824,
+            "p95_ms": 16.92959976196289,
+            "std_ms": 0.16628353243910224
+          },
+          "end_to_end": {
+            "mean_ms": 32.153191630045576,
+            "median_ms": 32.11577558517456,
+            "p95_ms": 32.29574394226074,
+            "std_ms": 0.16843610956595637
+          }
+        }
+      }
+    },
+    {
+      "sample": "14_000000.npz",
+      "points": 86822,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 575.1192380984625,
+            "median_ms": 574.5390828233212,
+            "p95_ms": 578.9256482385099,
+            "std_ms": 1.7309742492921334
+          },
+          "model": {
+            "mean_ms": 17.392678451538085,
+            "median_ms": 17.390080451965332,
+            "p95_ms": 17.473535537719727,
+            "std_ms": 0.03902831328015054
+          },
+          "end_to_end": {
+            "mean_ms": 592.5119165500005,
+            "median_ms": 591.911242781207,
+            "p95_ms": 596.2507043145597,
+            "std_ms": 1.7472042602035456
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 15.879113578796387,
+            "median_ms": 15.848943710327148,
+            "p95_ms": 15.994879722595215,
+            "std_ms": 0.13460650772378122
+          },
+          "model": {
+            "mean_ms": 16.953248087565104,
+            "median_ms": 16.944640159606934,
+            "p95_ms": 17.027360916137695,
+            "std_ms": 0.03525105997593396
+          },
+          "end_to_end": {
+            "mean_ms": 32.83236166636149,
+            "median_ms": 32.802159786224365,
+            "p95_ms": 32.9403190612793,
+            "std_ms": 0.13456191717008198
+          }
+        }
+      }
+    },
+    {
+      "sample": "15_000000.npz",
+      "points": 80328,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 488.55325602926314,
+            "median_ms": 487.01258981600404,
+            "p95_ms": 498.11283499002457,
+            "std_ms": 3.9023257819781736
+          },
+          "model": {
+            "mean_ms": 17.13159154256185,
+            "median_ms": 17.114656448364258,
+            "p95_ms": 17.229503631591797,
+            "std_ms": 0.04721133662212108
+          },
+          "end_to_end": {
+            "mean_ms": 505.684847571825,
+            "median_ms": 504.1164621151984,
+            "p95_ms": 515.3889313340187,
+            "std_ms": 3.930287331384489
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 17.45386028289795,
+            "median_ms": 15.578671932220459,
+            "p95_ms": 21.887935638427734,
+            "std_ms": 2.884346487290543
+          },
+          "model": {
+            "mean_ms": 18.989728101094563,
+            "median_ms": 16.88059139251709,
+            "p95_ms": 23.980863571166992,
+            "std_ms": 3.2399405043703946
+          },
+          "end_to_end": {
+            "mean_ms": 36.44358838399251,
+            "median_ms": 32.44542360305786,
+            "p95_ms": 45.86505699157715,
+            "std_ms": 6.124129388933619
+          }
+        }
+      }
+    },
+    {
+      "sample": "16_000000.npz",
+      "points": 85964,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 507.0888247806579,
+            "median_ms": 506.3819696661085,
+            "p95_ms": 512.3611302115023,
+            "std_ms": 2.372985468082017
+          },
+          "model": {
+            "mean_ms": 17.23066126505534,
+            "median_ms": 17.19654369354248,
+            "p95_ms": 17.586143493652344,
+            "std_ms": 0.15681480887947458
+          },
+          "end_to_end": {
+            "mean_ms": 524.3194860457132,
+            "median_ms": 523.6146368924528,
+            "p95_ms": 529.587881539017,
+            "std_ms": 2.424418450670272
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 15.687643750508625,
+            "median_ms": 15.47219181060791,
+            "p95_ms": 15.662015914916992,
+            "std_ms": 1.1155575518287617
+          },
+          "model": {
+            "mean_ms": 16.968058649698893,
+            "median_ms": 16.905728340148926,
+            "p95_ms": 16.942079544067383,
+            "std_ms": 0.3385583721143334
+          },
+          "end_to_end": {
+            "mean_ms": 32.65570240020752,
+            "median_ms": 32.3798394203186,
+            "p95_ms": 32.602943420410156,
+            "std_ms": 1.453661966983397
+          }
+        }
+      }
+    },
+    {
+      "sample": "17_000000.npz",
+      "points": 89978,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 626.8368255191793,
+            "median_ms": 625.5819906946272,
+            "p95_ms": 638.6230569332838,
+            "std_ms": 3.988642413231064
+          },
+          "model": {
+            "mean_ms": 17.9380438486735,
+            "median_ms": 17.959424018859863,
+            "p95_ms": 18.080768585205078,
+            "std_ms": 0.10403194945554568
+          },
+          "end_to_end": {
+            "mean_ms": 644.7748693678528,
+            "median_ms": 643.5041675120592,
+            "p95_ms": 656.5256486386061,
+            "std_ms": 4.0047216523379445
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.00232006708781,
+            "median_ms": 15.947855949401855,
+            "p95_ms": 16.274784088134766,
+            "std_ms": 0.2278653365402873
+          },
+          "model": {
+            "mean_ms": 17.3529151280721,
+            "median_ms": 17.39508819580078,
+            "p95_ms": 17.464479446411133,
+            "std_ms": 0.09735094141189159
+          },
+          "end_to_end": {
+            "mean_ms": 33.35523519515991,
+            "median_ms": 33.347440242767334,
+            "p95_ms": 33.58652877807617,
+            "std_ms": 0.2380878191497014
+          }
+        }
+      }
+    },
+    {
+      "sample": "18_000000.npz",
+      "points": 71341,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 393.94437374236685,
+            "median_ms": 393.71951250359416,
+            "p95_ms": 394.6931641548872,
+            "std_ms": 0.4632279477841101
+          },
+          "model": {
+            "mean_ms": 16.967075220743816,
+            "median_ms": 16.941072463989258,
+            "p95_ms": 17.017759323120117,
+            "std_ms": 0.14052702520352015
+          },
+          "end_to_end": {
+            "mean_ms": 410.9114489631107,
+            "median_ms": 410.70006481185555,
+            "p95_ms": 411.8387822024524,
+            "std_ms": 0.48873462549305524
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.538053480784097,
+            "median_ms": 15.28273630142212,
+            "p95_ms": 21.587968826293945,
+            "std_ms": 2.520029696301777
+          },
+          "model": {
+            "mean_ms": 17.968468157450356,
+            "median_ms": 16.753104209899902,
+            "p95_ms": 23.794815063476562,
+            "std_ms": 2.626378027033199
+          },
+          "end_to_end": {
+            "mean_ms": 34.50652163823445,
+            "median_ms": 32.0305438041687,
+            "p95_ms": 45.4138240814209,
+            "std_ms": 5.059982342024973
+          }
+        }
+      }
+    },
+    {
+      "sample": "19_000000.npz",
+      "points": 85766,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 550.2681420805553,
+            "median_ms": 550.1080465037376,
+            "p95_ms": 551.2837450951338,
+            "std_ms": 1.4185789850935189
+          },
+          "model": {
+            "mean_ms": 17.48080202738444,
+            "median_ms": 17.458352088928223,
+            "p95_ms": 17.58742332458496,
+            "std_ms": 0.14008741922980153
+          },
+          "end_to_end": {
+            "mean_ms": 567.7489441079398,
+            "median_ms": 567.5923925694078,
+            "p95_ms": 568.7736647576094,
+            "std_ms": 1.4384671748361615
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 16.710725243886312,
+            "median_ms": 15.655200004577637,
+            "p95_ms": 21.808319091796875,
+            "std_ms": 2.2782540908129247
+          },
+          "model": {
+            "mean_ms": 18.181603050231935,
+            "median_ms": 17.035264015197754,
+            "p95_ms": 23.92969512939453,
+            "std_ms": 2.571600276284761
+          },
+          "end_to_end": {
+            "mean_ms": 34.89232829411824,
+            "median_ms": 32.69486331939697,
+            "p95_ms": 45.752159118652344,
+            "std_ms": 4.84612711809922
+          }
+        }
+      }
+    },
+    {
+      "sample": "20_000000.npz",
+      "points": 81723,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 516.7798632134994,
+            "median_ms": 516.7149610351771,
+            "p95_ms": 518.2281648740172,
+            "std_ms": 1.3193817093498146
+          },
+          "model": {
+            "mean_ms": 17.269510396321614,
+            "median_ms": 17.210880279541016,
+            "p95_ms": 17.944576263427734,
+            "std_ms": 0.21974091162172957
+          },
+          "end_to_end": {
+            "mean_ms": 534.049373609821,
+            "median_ms": 533.9560393933207,
+            "p95_ms": 535.4262449368834,
+            "std_ms": 1.312994958391125
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 18.0411200205485,
+            "median_ms": 15.603151798248291,
+            "p95_ms": 21.771583557128906,
+            "std_ms": 3.0256963131542935
+          },
+          "model": {
+            "mean_ms": 19.699807993570964,
+            "median_ms": 16.90828800201416,
+            "p95_ms": 23.9400634765625,
+            "std_ms": 3.450948824970951
+          },
+          "end_to_end": {
+            "mean_ms": 37.74092801411947,
+            "median_ms": 32.49659204483032,
+            "p95_ms": 45.67449760437012,
+            "std_ms": 6.475985474120082
+          }
+        }
+      }
+    },
+    {
+      "sample": "21_000000.npz",
+      "points": 88454,
+      "backends": {
+        "cpu_kdtree": {
+          "hierarchy": {
+            "mean_ms": 572.6247907926639,
+            "median_ms": 572.1782171167433,
+            "p95_ms": 574.8702399432659,
+            "std_ms": 2.5214288643643585
+          },
+          "model": {
+            "mean_ms": 17.49243621826172,
+            "median_ms": 17.468287467956543,
+            "p95_ms": 17.589439392089844,
+            "std_ms": 0.1559290166643872
+          },
+          "end_to_end": {
+            "mean_ms": 590.1172270109256,
+            "median_ms": 589.719485571608,
+            "p95_ms": 592.2946231067181,
+            "std_ms": 2.537093667328167
+          }
+        },
+        "flashknn": {
+          "hierarchy": {
+            "mean_ms": 18.24459835688273,
+            "median_ms": 15.772575855255127,
+            "p95_ms": 21.87993621826172,
+            "std_ms": 2.967562384634476
+          },
+          "model": {
+            "mean_ms": 19.8580041885376,
+            "median_ms": 17.138272285461426,
+            "p95_ms": 24.009471893310547,
+            "std_ms": 3.371257730204778
+          },
+          "end_to_end": {
+            "mean_ms": 38.10260254542033,
+            "median_ms": 32.915184020996094,
+            "p95_ms": 45.86163139343262,
+            "std_ms": 6.331739361659587
+          }
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "cpu_kdtree": {
+      "hierarchy": {
+        "mean_ms": 546.6506695875785,
+        "median_ms": 561.4464664366096,
+        "p95_ms": 651.3787268350521,
+        "std_ms": 71.83055039373514
+      },
+      "model": {
+        "mean_ms": 17.460005326704547,
+        "median_ms": 17.480014896392824,
+        "p95_ms": 17.9380438486735,
+        "std_ms": 0.29796555866905133
+      },
+      "end_to_end": {
+        "mean_ms": 564.1106749142831,
+        "median_ms": 578.9330855594327,
+        "p95_ms": 669.6596056014299,
+        "std_ms": 72.0961523981431
+      },
+      "single_sample_throughput_hz": 1.7727017843651878
+    },
+    "flashknn": {
+      "hierarchy": {
+        "mean_ms": 16.593986714969983,
+        "median_ms": 16.27925181388855,
+        "p95_ms": 18.10230280558268,
+        "std_ms": 0.9131177187331226
+      },
+      "model": {
+        "mean_ms": 18.005734819354434,
+        "median_ms": 17.662047481536867,
+        "p95_ms": 19.699807993570964,
+        "std_ms": 1.0229667114718275
+      },
+      "end_to_end": {
+        "mean_ms": 34.599721534324416,
+        "median_ms": 33.90831680297852,
+        "p95_ms": 37.74092801411947,
+        "std_ms": 1.9301546439941213
+      },
+      "single_sample_throughput_hz": 28.90196671114699
+    }
+  }
+}

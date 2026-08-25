@@ -4,16 +4,18 @@
 
 ## 使用建议
 
-论文主实验和复现检查应首先使用 `l20_complete_20260807/`。SemanticKITTI query 为六个k、1320条、IVF匹配alpha=4的正式结果；S3DIS fixed-size 的全部 k=8/16/24/32/48/64 已用 pre-branchless production SMPS/generated-bitonic build 按统一3次 warm-up/10次记录覆盖 FlashKNN 和同轮 cudaKDTree；full-room 的272个完整房间以及 DeLA S3DIS 的68个 paired backend 也使用该 build 补跑。提交`49ecd907`进一步将compare-and-swap改为branchless select，新的k=32 NCU证据位于`l20_branchless_sort_ncu_20260824/`，但canonical query/network latency尚未补跑或覆盖。历史 FLANN/nanoflann/FAISS 与其他不调用 FlashKNN 的网络字段保持不变。S3DIS fixed-250k 显存结果位于 `l20_s3dis_memory_k32_20260819/`，当前保留/删除清单见 `results/RESULT_SELECTION.md`。
+论文主实验和复现检查应首先使用 `l20_stale_candidate_fix_complete_20260824/`。该目录以提交 `2a697272` 为唯一 production 基线，完整覆盖 S3DIS fixed 972条、full-room 272条、SemanticKITTI 1320条、S3DIS/LiDAR 网络矩阵及162条 memory 记录，并通过完整 coverage validator；历史 FLANN/nanoflann 与不受影响的 ball query 经过深比较后保留。当前源码的最终 k=32 NCU 位于 `l20_stale_candidate_fix_ncu_20260825/`。旧 `l20_complete_20260807/` 与 `l20_branchless_sort_ncu_20260824/` 分别保留为修复前 canonical 和 branchless 但尚未修复 stale-candidate 的中间参考，不能再作为最终 production 结果源。
 
 ## 目录来源、目的与覆盖关系
 
 | 目录 | 结果来源与实验目的 | 覆盖关系与使用状态 |
 | --- | --- | --- |
-| `l20_complete_20260807/` | 正式汇总。S3DIS fixed-size query 包含81个房间、pre/post、k=8/16/24/32/48/64，共972条；全部 FlashKNN 与 cudaKDTree 使用最终 production generated-bitonic build 的统一3/10配对结果，其余方法保留原正式计时。S3DIS full 使用0.02 m体素化后的272个完整房间、pre、k=32，共272条，并已用同一最终 build 覆盖 FlashKNN/cudaKDTree；ball query 共486条；SemanticKITTI 使用22个 sequence 各5帧、pre/post、六个k，共1320条，IVF 显式匹配 FlashKNN `alpha=4` recall；网络结果包含5个 S3DIS 模型各68个 Area 5 房间，其中 DeLA 已使用最终 build 的10/30 paired backend，以及完整 LiDAR 网络矩阵。`system.json` 保存统一环境。 | **最终 canonical query/network 主结果。** query、ball query 和网络 coverage validator 全部通过；NCU 独立保存在 `l20_ncu/`。 |
+| `l20_stale_candidate_fix_complete_20260824/` | 使用提交 `2a697272` 和 sm_89 扩展 `95c5566b...` 完整重跑受 stale-candidate 修复影响的 query、network 和 memory；重复索引只在固定候选区域少于k时作为中心点补位，recall 使用 duplicate-safe set 口径。 | **最终 canonical query/network/memory 主结果。** S3DIS 972/272、SemanticKITTI 1320、网络 68/22 和 memory 162 coverage 全部通过；直接 refresh 与合并后 canonical JSON 同时保留。 |
+| `l20_stale_candidate_fix_ncu_20260825/` | 当前 `2a697272` 扩展的同协议 k=32 cudaKDTree/SMPS/GMSS NCU，包含 report、raw/source CSV、源码/扩展/报告哈希。 | **最终当前代码 NCU。** SMPS 为31.33 threads/instruction、96.996% uniform、1.393 ms和58 regs；对同轮 cudaKDTree 为3.21x并减少80.39% DRAM sectors。 |
+| `l20_complete_20260807/` | 原正式汇总。S3DIS fixed-size query 包含81个房间、pre/post、k=8/16/24/32/48/64，共972条；full 使用0.02 m体素化后的272个完整房间；另含ball query、SemanticKITTI 1320条和完整网络矩阵。 | **已被当前 production 结果替代。** 仅用于新旧逐协议差异与历史第三方基线 provenance，不再作为论文最终 FlashKNN 数据源。 |
 | `l20_s3dis_final_kernel_refresh_20260819/` | 使用提交 `2dd4049f` 的最终 production SMPS/generated-bitonic kernel，在物理 GPU 0 上补跑 S3DIS fixed-size 972条、full-room 272条和 DeLA Area 5 paired backend 68条；query 为3/10，DeLA 为10/30，alpha=4。管理员开放 performance counter 后，又在提交 `19c9079f` 的相同 production 源码上完成 k=32 cudaKDTree/SMPS/GMSS NCU profile。 | **已汇入 canonical。** fixed/full 和 DeLA 汇入 `l20_complete_20260807/`，NCU 汇入 `l20_ncu/`；这是最终 S3DIS 路径的直接 raw 来源。 |
 | `l20_ncu/` | S3DIS 250k pre-query、k=32、seed=47 的 pre-branchless kernel NCU 结果，包含 cudaKDTree、FlashKNN-SMPS 和 FlashKNN-GMSS 的 report、raw CSV、launch/occupancy/I/O/thread 指标与源码/GPU provenance。 | **保留为修复前A/B参照。** 该SMPS对应23.13 threads/instruction和1.655 ms，不再代表提交`49ecd907`后的当前源码。 |
-| `l20_branchless_sort_ncu_20260824/` | 使用提交`49ecd907`的无分支compare-and-swap，在相同L20、S3DIS 250k pre-query、k=32、seed=47协议下重新profile cudaKDTree、FlashKNN-SMPS和GMSS，并导出SMPS CUDA/SASS source view。 | **当前代码的最终NCU，latency补跑待定。** SMPS恢复到31.39 threads/instruction和97.00% uniform branch targets，duration为1.483 ms；现有canonical query/network JSON尚未覆盖。 |
+| `l20_branchless_sort_ncu_20260824/` | 使用提交`49ecd907`的无分支compare-and-swap，在相同L20、S3DIS 250k pre-query、k=32、seed=47协议下重新profile cudaKDTree、FlashKNN-SMPS和GMSS，并导出SMPS CUDA/SASS source view。 | **保留为 stale-candidate 修复前的中间参考。** 该目录证明branchless select恢复线程同步性，但不包含提交`2a697272`的upper-scratch清理，最终引用应改用`l20_stale_candidate_fix_ncu_20260825/`。 |
 | `l20_s3dis_memory_k32_20260819/` | 在空闲物理 GPU 0 上使用与主表相同的81个 S3DIS deterministic 250k crop，测量 pre/post、k=32 下 FlashKNN、cudaKDTree、FAISS GPU Flat 和逐房间 matched-recall IVF 的 method-owned peak incremental GPU allocation。 | **最终 memory 结果。** 共162条唯一记录并通过 validator；这是新增显存 footprint，不覆盖或修改任何既有 latency。 |
 | `l20_semantickitti_six_k_alpha4_20260818/` | 使用最终 build 从空文件运行110帧、pre/post、k=8/16/24/32/48/64，共1320条；每条包含四个 FlashKNN alpha 和全部基线，FAISS IVF 匹配 `alpha=4` recall，参数为3次 warmup、10次记录。 | **已替换旧660条文件并汇入最终目录。** 这是最终 SemanticKITTI query 的直接来源，且已通过严格 coverage validation。 |
 | `l20_lidar_network_alpha4_20260809/` | 在同型号、同驱动、同显存的另一张 L20 上以论文默认 `alpha=4` 重跑 DeLA/DeepLA 的22帧正式 CPU KDTree/FlashKNN 配对实验，参数为10次 warmup、30次记录；`co_tenant_audit.txt` 保存物理卡、驻留但无 SM 活动的服务及进程级采样。 | **已替换原 `alpha=8` 结果并汇入最终目录。** 两个 JSON 的 `metadata.timing_overrides` 指向定向复测来源。 |
@@ -74,4 +76,4 @@
 
 ## 重建汇总
 
-在仓库根目录运行 `python analysis/analyze_results.py --results results/L20/l20_complete_20260807 --output-dir analysis/output/l20_complete_20260807` 可重新生成 Excel、Markdown 摘要和论文图；运行 `python scripts/validate_result_coverage.py --run-dir results/L20/l20_complete_20260807` 可重新执行完整性校验。
+在仓库根目录运行 `python analysis/analyze_results.py --results results/L20/l20_stale_candidate_fix_complete_20260824 --output-dir analysis/output/l20_stale_candidate_fix_complete_20260824` 可重新生成 Excel、Markdown 摘要和论文图；运行 `python scripts/validate_result_coverage.py --run-dir results/L20/l20_stale_candidate_fix_complete_20260824` 可重新执行完整性校验。

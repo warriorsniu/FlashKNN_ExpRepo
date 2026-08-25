@@ -1,0 +1,15 @@
+s3dis_sample_part_refresh.json OK 972 keys
+s3dis_full_k32_refresh.json OK 272 keys
+semantickitti_refresh.json OK 1320 keys 110 frames
+lidar pre k=8: flash_a4=0.471 ms cukd=0.472 ms speedup=1.002 recall=0.947413
+lidar pre k=16: flash_a4=0.481 ms cukd=0.695 ms speedup=1.444 recall=0.872428
+lidar pre k=24: flash_a4=0.525 ms cukd=0.906 ms speedup=1.728 recall=0.804586
+lidar pre k=32: flash_a4=0.534 ms cukd=1.116 ms speedup=2.088 recall=0.752533
+lidar pre k=48: flash_a4=0.828 ms cukd=1.585 ms speedup=1.914 recall=0.670160
+lidar pre k=64: flash_a4=0.884 ms cukd=2.032 ms speedup=2.298 recall=0.604077
+lidar post k=8: flash_a4=0.479 ms cukd=0.464 ms speedup=0.968 recall=0.919450
+lidar post k=16: flash_a4=0.484 ms cukd=0.667 ms speedup=1.376 recall=0.820577
+lidar post k=24: flash_a4=0.505 ms cukd=0.847 ms speedup=1.678 recall=0.739241
+lidar post k=32: flash_a4=0.508 ms cukd=1.026 ms speedup=2.019 recall=0.678272
+lidar post k=48: flash_a4=0.638 ms cukd=1.399 ms speedup=2.191 recall=0.585955
+lidar post k=64: flash_a4=0.660 ms cukd=1.779 ms speedup=2.695 recall=0.516150

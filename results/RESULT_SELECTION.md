@@ -8,10 +8,12 @@ not a supported paper result, even if it exists in an older Git revision.
 
 | Directory | Status | Intended use |
 | --- | --- | --- |
-| `L20/l20_complete_20260807/` | Final canonical query/network | Main query/network result pack with final-kernel S3DIS refresh. |
+| `L20/l20_stale_candidate_fix_complete_20260824/` | Final canonical query/network/memory | Current `2a697272` result pack: S3DIS 972/272, SemanticKITTI 1320, complete network matrix, memory 162 and unchanged ball-query baseline; full validator passed. |
+| `L20/l20_stale_candidate_fix_ncu_20260825/` | Final current-source NCU | Current extension k=32 cudaKDTree/SMPS/GMSS reports with source/extension/report hashes; SMPS 31.33 threads/instruction, 96.996% uniform and 1.393 ms. |
+| `L20/l20_complete_20260807/` | Superseded canonical reference | Pre-stale-candidate-fix canonical pack retained only for paired latency diffs and preserved third-party baseline provenance. |
 | `L20/l20_s3dis_final_kernel_refresh_20260819/` | Final raw refresh | Direct source for final-kernel S3DIS fixed/full query and DeLA hierarchy results. |
 | `L20/l20_ncu/` | Retained pre-branchless NCU reference | k=32 cudaKDTree/SMPS/GMSS reports used as the strict before-fix reference; not current source. |
-| `L20/l20_branchless_sort_ncu_20260824/` | Current branchless NCU; latency refresh pending | Commit `49ecd907` k=32 reports, raw/source CSV, SASS branch accounting and provenance; canonical latency JSON is intentionally unchanged pending rerun selection. |
+| `L20/l20_branchless_sort_ncu_20260824/` | Superseded intermediate NCU | Commit `49ecd907` branchless evidence before upper-scratch stale-candidate repair; retained for A/B comparison only. |
 | `L20/l20_s3dis_memory_k32_20260819/` | Final memory result | Same 81 fixed-250k crops, pre/post, k=32; FlashKNN/cudaKDTree/FAISS Flat/matched IVF peak incremental allocation with room SD/95% CI. |
 | `L20/l20_semantickitti_six_k_alpha4_20260818/` | Final | Direct source for the canonical six-k SemanticKITTI query result. |
 | `L20/l20_bitonic_generated_validation/` | Final algorithm, 5/20 protocol | Direct source for S3DIS k=24/32/48 optimized-kernel paired timings. |
@@ -21,9 +23,9 @@ not a supported paper result, even if it exists in an older Git revision.
 | `L20/l20_ball_query_20260807/` | Final independent baseline | Ball-query comparison and one-room radius sweep. |
 | `L20/l20_arkade_20260807/` | Final independent baseline | Arkade/TrueKNN RT-core comparison. |
 
-The canonical L20 fixed-size and full-room query files now use the verified final production kernel and unified 3 warm-up/10-repeat protocol for FlashKNN and paired cudaKDTree. Historical FLANN-CUDA, nanoflann and FAISS fields were preserved unchanged. `network/dela_s3dis.json` is the final 68-room, 10/30 paired CPU-KDTree/FlashKNN refresh. The raw source files retain complete hashes and co-tenant provenance in `L20/l20_s3dis_final_kernel_refresh_20260819/`.
+The canonical L20 fixed-size, full-room and SemanticKITTI query files now use the verified `2a697272` production kernel and unified 3 warm-up/10-repeat protocol. Historical FLANN-CUDA/nanoflann fields and the kernel-independent ball query were preserved with stable deep hashes; all network files were refreshed with 10/30 timing. Direct current-build outputs, canonical merged files, build/GPU audit and validator output are in `L20/l20_stale_candidate_fix_complete_20260824/`.
 
-The administrator subsequently enabled performance-counter access and all three final-kernel NCU profiles completed on physical GPU 0. `L20/l20_ncu/` is the canonical copy and `L20/l20_s3dis_final_kernel_refresh_20260819/ncu/microarch/` is the direct raw location. The old pre-final reports and standalone cudaKDTree I/O report are superseded; the retained profiles include raw CSV, complete requested metrics, source hashes and GPU provenance.
+The administrator enabled performance-counter access and all three current-source NCU profiles completed on physical GPU 0. `L20/l20_stale_candidate_fix_ncu_20260825/` is the final canonical NCU directory; it contains raw/source CSV, inspectable reports, complete requested metrics, production source hashes, extension hash and GPU provenance. `L20/l20_ncu/` and `L20/l20_branchless_sort_ncu_20260824/` remain only as pre-branchless and pre-correctness-fix A/B references.
 
 ## Retained RTX 3090 results
 

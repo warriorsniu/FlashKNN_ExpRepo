@@ -140,6 +140,12 @@ def main() -> None:
     args = arguments()
     profile_dir = args.profile_dir.resolve()
     repo = args.repo.resolve()
+    extension_candidates = sorted((repo / "FlashKNN/functions").glob("CuFun*.so"))
+    if len(extension_candidates) != 1:
+        raise SystemExit(
+            f"Expected exactly one built FlashKNN extension, got {extension_candidates}"
+        )
+    extension = extension_candidates[0]
     profiles: dict[str, object] = {}
     for backend in BACKENDS:
         stem = f"{backend}_k32"
@@ -159,6 +165,11 @@ def main() -> None:
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_commit": args.source_commit,
         "production_source_sha256": source_hashes(repo),
+        "extension": {
+            **artifact_identity(extension),
+            "relative_path": str(extension.relative_to(repo)),
+            "torch_cuda_arch_list": "8.9",
+        },
         "gpu": {
             "physical_index": args.physical_gpu,
             "uuid": args.gpu_uuid,

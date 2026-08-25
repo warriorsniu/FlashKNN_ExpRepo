@@ -1,0 +1,655 @@
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/DeLA/utils/cutils/__init__.py:172: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  def forward(ctx, feature: torch.Tensor, knn: torch.Tensor, training: bool=True) -> torch.Tensor:
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/DeLA/utils/cutils/__init__.py:200: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad: torch.Tensor):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/DeLA/S3DIS/benchmark_latency.py:290: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast():
+Area_5/WC_1 {'cpu_kdtree': 475.318, 'flashknn': 36.127}
+Area_5/WC_2 {'cpu_kdtree': 433.324, 'flashknn': 35.939}
+Area_5/conferenceRoom_1 {'cpu_kdtree': 701.495, 'flashknn': 36.334}
+Area_5/conferenceRoom_2 {'cpu_kdtree': 1305.597, 'flashknn': 38.094}
+Area_5/conferenceRoom_3 {'cpu_kdtree': 1002.49, 'flashknn': 37.239}
+Area_5/hallway_1 {'cpu_kdtree': 2322.529, 'flashknn': 44.57}
+Area_5/hallway_10 {'cpu_kdtree': 841.632, 'flashknn': 41.435}
+Area_5/hallway_11 {'cpu_kdtree': 545.004, 'flashknn': 41.059}
+Area_5/hallway_12 {'cpu_kdtree': 526.488, 'flashknn': 41.107}
+Area_5/hallway_13 {'cpu_kdtree': 855.867, 'flashknn': 41.414}
+Area_5/hallway_14 {'cpu_kdtree': 482.389, 'flashknn': 45.056}
+Area_5/hallway_15 {'cpu_kdtree': 865.375, 'flashknn': 41.492}
+Area_5/hallway_2 {'cpu_kdtree': 3096.7, 'flashknn': 58.788}
+Area_5/hallway_3 {'cpu_kdtree': 871.477, 'flashknn': 42.363}
+Area_5/hallway_4 {'cpu_kdtree': 672.427, 'flashknn': 41.524}
+Area_5/hallway_5 {'cpu_kdtree': 1978.193, 'flashknn': 45.833}
+Area_5/hallway_6 {'cpu_kdtree': 714.846, 'flashknn': 35.853}
+Area_5/hallway_7 {'cpu_kdtree': 814.166, 'flashknn': 36.057}
+Area_5/hallway_8 {'cpu_kdtree': 328.599, 'flashknn': 35.283}
+Area_5/hallway_9 {'cpu_kdtree': 828.867, 'flashknn': 36.308}
+Area_5/lobby_1 {'cpu_kdtree': 762.486, 'flashknn': 36.192}
+Area_5/office_1 {'cpu_kdtree': 531.974, 'flashknn': 35.639}
+Area_5/office_10 {'cpu_kdtree': 493.48, 'flashknn': 35.676}
+Area_5/office_11 {'cpu_kdtree': 569.908, 'flashknn': 35.767}
+Area_5/office_12 {'cpu_kdtree': 554.89, 'flashknn': 35.752}
+Area_5/office_13 {'cpu_kdtree': 680.51, 'flashknn': 35.963}
+Area_5/office_14 {'cpu_kdtree': 798.235, 'flashknn': 36.225}
+Area_5/office_15 {'cpu_kdtree': 875.82, 'flashknn': 36.574}
+Area_5/office_16 {'cpu_kdtree': 490.492, 'flashknn': 35.657}
+Area_5/office_17 {'cpu_kdtree': 650.563, 'flashknn': 36.113}
+Area_5/office_18 {'cpu_kdtree': 863.912, 'flashknn': 36.211}
+Area_5/office_19 {'cpu_kdtree': 1074.859, 'flashknn': 37.158}
+Area_5/office_2 {'cpu_kdtree': 573.456, 'flashknn': 35.695}
+Area_5/office_20 {'cpu_kdtree': 333.495, 'flashknn': 35.308}
+Area_5/office_21 {'cpu_kdtree': 1362.337, 'flashknn': 37.893}
+Area_5/office_22 {'cpu_kdtree': 514.132, 'flashknn': 35.687}
+Area_5/office_23 {'cpu_kdtree': 584.681, 'flashknn': 35.761}
+Area_5/office_24 {'cpu_kdtree': 1117.792, 'flashknn': 37.474}
+Area_5/office_25 {'cpu_kdtree': 442.36, 'flashknn': 35.612}
+Area_5/office_26 {'cpu_kdtree': 494.586, 'flashknn': 35.67}
+Area_5/office_27 {'cpu_kdtree': 514.557, 'flashknn': 35.63}
+Area_5/office_28 {'cpu_kdtree': 507.003, 'flashknn': 35.69}
+Area_5/office_29 {'cpu_kdtree': 1108.086, 'flashknn': 37.222}
+Area_5/office_3 {'cpu_kdtree': 497.538, 'flashknn': 35.62}
+Area_5/office_30 {'cpu_kdtree': 308.772, 'flashknn': 35.402}
+Area_5/office_31 {'cpu_kdtree': 543.626, 'flashknn': 35.69}
+Area_5/office_32 {'cpu_kdtree': 537.615, 'flashknn': 35.747}
+Area_5/office_33 {'cpu_kdtree': 554.289, 'flashknn': 35.633}
+Area_5/office_34 {'cpu_kdtree': 584.081, 'flashknn': 36.066}
+Area_5/office_35 {'cpu_kdtree': 606.776, 'flashknn': 35.845}
+Area_5/office_36 {'cpu_kdtree': 824.572, 'flashknn': 36.204}
+Area_5/office_37 {'cpu_kdtree': 1786.141, 'flashknn': 40.772}
+Area_5/office_38 {'cpu_kdtree': 1923.591, 'flashknn': 41.922}
+Area_5/office_39 {'cpu_kdtree': 628.557, 'flashknn': 36.167}
+Area_5/office_4 {'cpu_kdtree': 533.989, 'flashknn': 36.012}
+Area_5/office_40 {'cpu_kdtree': 1709.034, 'flashknn': 40.159}
+Area_5/office_41 {'cpu_kdtree': 947.812, 'flashknn': 36.722}
+Area_5/office_42 {'cpu_kdtree': 552.574, 'flashknn': 35.796}
+Area_5/office_5 {'cpu_kdtree': 497.728, 'flashknn': 35.928}
+Area_5/office_6 {'cpu_kdtree': 486.841, 'flashknn': 35.676}
+Area_5/office_7 {'cpu_kdtree': 540.171, 'flashknn': 35.832}
+Area_5/office_8 {'cpu_kdtree': 581.619, 'flashknn': 36.091}
+Area_5/office_9 {'cpu_kdtree': 512.564, 'flashknn': 35.775}
+Area_5/pantry_1 {'cpu_kdtree': 472.578, 'flashknn': 35.522}
+Area_5/storage_1 {'cpu_kdtree': 426.665, 'flashknn': 35.566}
+Area_5/storage_2 {'cpu_kdtree': 538.539, 'flashknn': 35.964}
+Area_5/storage_3 {'cpu_kdtree': 123.015, 'flashknn': 35.411}
+Area_5/storage_4 {'cpu_kdtree': 450.464, 'flashknn': 36.398}
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:47: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  _TORCH_CUSTOM_FWD = amp.custom_fwd(cast_inputs=torch.float16)
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:97: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:163: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:243: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:332: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:369: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:389: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:412: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/MinkowskiEngine/__init__.py:36: UserWarning: The environment variable `OMP_NUM_THREADS` not set. MinkowskiEngine will automatically set `OMP_NUM_THREADS=16`. If you want to set `OMP_NUM_THREADS` manually, please export it on the command line before running a python script. e.g. `export OMP_NUM_THREADS=12; python your_program.py`. It is recommended to set it below 24.
+  warnings.warn(
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[2026-08-24 22:36:16,783 INFO s3dis.py line 55 1042983] Totally 68 x 1 samples in Area_5 set.
+office_27 N=50644 109.918 ms
+office_9 N=54582 108.904 ms
+office_22 N=54374 111.158 ms
+office_18 N=86400 125.233 ms
+office_19 N=111067 139.377 ms
+office_38 N=206247 197.305 ms
+office_33 N=57958 112.405 ms
+office_24 N=111932 140.064 ms
+office_34 N=61229 115.282 ms
+storage_1 N=46406 108.344 ms
+office_28 N=53061 120.457 ms
+office_35 N=62320 117.690 ms
+WC_1 N=47266 122.655 ms
+office_3 N=52674 111.542 ms
+hallway_10 N=78254 128.658 ms
+conferenceRoom_3 N=101960 135.031 ms
+office_21 N=135799 164.010 ms
+storage_2 N=55977 125.906 ms
+hallway_4 N=66615 119.854 ms
+hallway_9 N=78915 125.738 ms
+hallway_7 N=78480 125.241 ms
+office_20 N=35720 126.321 ms
+hallway_1 N=224474 208.335 ms
+office_30 N=32953 124.744 ms
+office_29 N=112341 140.848 ms
+hallway_14 N=49520 112.161 ms
+office_4 N=56215 112.897 ms
+office_41 N=95073 131.279 ms
+office_5 N=51468 108.840 ms
+office_15 N=89084 128.231 ms
+office_11 N=60355 114.355 ms
+office_42 N=58451 113.403 ms
+WC_2 N=42735 108.263 ms
+hallway_8 N=33601 125.385 ms
+lobby_1 N=72377 119.707 ms
+office_2 N=59729 113.968 ms
+hallway_2 N=289399 251.233 ms
+conferenceRoom_1 N=69161 117.770 ms
+hallway_6 N=71486 123.544 ms
+conferenceRoom_2 N=131302 150.390 ms
+office_17 N=65981 116.743 ms
+office_10 N=52591 111.252 ms
+office_26 N=51596 110.989 ms
+hallway_12 N=51615 110.771 ms
+office_7 N=57966 113.539 ms
+office_1 N=56824 112.954 ms
+storage_3 N=13083 124.374 ms
+office_8 N=61885 115.287 ms
+hallway_11 N=51793 110.519 ms
+hallway_3 N=82834 127.358 ms
+office_32 N=55351 112.011 ms
+office_23 N=61483 114.952 ms
+office_14 N=83973 125.370 ms
+office_25 N=43556 105.363 ms
+office_12 N=59100 113.573 ms
+office_36 N=82942 124.882 ms
+pantry_1 N=47373 108.779 ms
+office_6 N=53206 111.332 ms
+office_13 N=71582 119.086 ms
+hallway_15 N=86955 130.198 ms
+office_39 N=66167 116.366 ms
+storage_4 N=47899 109.301 ms
+office_31 N=56267 112.650 ms
+office_37 N=190634 186.983 ms
+hallway_5 N=182972 182.384 ms
+hallway_13 N=84831 128.463 ms
+office_40 N=176707 178.375 ms
+office_16 N=50382 110.267 ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:47: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  _TORCH_CUSTOM_FWD = amp.custom_fwd(cast_inputs=torch.float16)
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:97: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:163: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:243: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:332: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:369: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:389: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:412: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/MinkowskiEngine/__init__.py:36: UserWarning: The environment variable `OMP_NUM_THREADS` not set. MinkowskiEngine will automatically set `OMP_NUM_THREADS=16`. If you want to set `OMP_NUM_THREADS` manually, please export it on the command line before running a python script. e.g. `export OMP_NUM_THREADS=12; python your_program.py`. It is recommended to set it below 24.
+  warnings.warn(
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[2026-08-24 22:47:07,461 INFO s3dis.py line 55 1047897] Totally 68 x 1 samples in Area_5 set.
+office_27 N=50644 84.517 ms
+office_9 N=54582 83.346 ms
+office_22 N=54374 83.366 ms
+office_18 N=86400 84.873 ms
+office_19 N=111067 86.768 ms
+office_38 N=206247 108.534 ms
+office_33 N=57958 95.783 ms
+office_24 N=111932 88.402 ms
+office_34 N=61229 87.417 ms
+storage_1 N=46406 95.267 ms
+office_28 N=53061 95.877 ms
+office_35 N=62320 84.522 ms
+WC_1 N=47266 84.094 ms
+office_3 N=52674 84.230 ms
+hallway_10 N=78254 85.400 ms
+conferenceRoom_3 N=101960 86.634 ms
+office_21 N=135799 89.091 ms
+storage_2 N=55977 84.364 ms
+hallway_4 N=66615 84.737 ms
+hallway_9 N=78915 85.705 ms
+hallway_7 N=78480 85.342 ms
+office_20 N=35720 83.232 ms
+hallway_1 N=224474 94.861 ms
+office_30 N=32953 83.617 ms
+office_29 N=112341 89.307 ms
+hallway_14 N=49520 95.237 ms
+office_4 N=56215 95.538 ms
+office_41 N=95073 86.032 ms
+office_5 N=51468 84.062 ms
+office_15 N=89084 86.001 ms
+office_11 N=60355 95.839 ms
+office_42 N=58451 95.999 ms
+WC_2 N=42735 94.694 ms
+hallway_8 N=33601 94.322 ms
+lobby_1 N=72377 84.647 ms
+office_2 N=59729 84.718 ms
+hallway_2 N=289399 98.058 ms
+conferenceRoom_1 N=69161 84.577 ms
+hallway_6 N=71486 84.616 ms
+conferenceRoom_2 N=131302 88.297 ms
+office_17 N=65981 84.381 ms
+office_10 N=52591 83.927 ms
+office_26 N=51596 83.880 ms
+hallway_12 N=51615 83.752 ms
+office_7 N=57966 83.913 ms
+office_1 N=56824 84.328 ms
+storage_3 N=13083 82.202 ms
+office_8 N=61885 84.328 ms
+hallway_11 N=51793 84.230 ms
+hallway_3 N=82834 85.375 ms
+office_32 N=55351 83.926 ms
+office_23 N=61483 84.296 ms
+office_14 N=83973 85.418 ms
+office_25 N=43556 83.568 ms
+office_12 N=59100 84.395 ms
+office_36 N=82942 85.168 ms
+pantry_1 N=47373 83.483 ms
+office_6 N=53206 83.919 ms
+office_13 N=71582 84.764 ms
+hallway_15 N=86955 85.415 ms
+office_39 N=66167 84.606 ms
+storage_4 N=47899 83.723 ms
+office_31 N=56267 83.835 ms
+office_37 N=190634 95.066 ms
+hallway_5 N=182972 90.087 ms
+hallway_13 N=84831 85.271 ms
+office_40 N=176707 93.835 ms
+office_16 N=50382 83.683 ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:47: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  _TORCH_CUSTOM_FWD = amp.custom_fwd(cast_inputs=torch.float16)
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:97: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:163: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:243: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:332: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:369: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:389: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:412: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/MinkowskiEngine/__init__.py:36: UserWarning: The environment variable `OMP_NUM_THREADS` not set. MinkowskiEngine will automatically set `OMP_NUM_THREADS=16`. If you want to set `OMP_NUM_THREADS` manually, please export it on the command line before running a python script. e.g. `export OMP_NUM_THREADS=12; python your_program.py`. It is recommended to set it below 24.
+  warnings.warn(
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[2026-08-24 23:02:31,217 INFO s3dis.py line 55 1055263] Totally 68 x 1 samples in Area_5 set.
+office_27 N=50644 43.116 ms
+office_9 N=54582 43.053 ms
+office_22 N=54374 38.384 ms
+office_18 N=86400 39.763 ms
+office_19 N=111067 41.703 ms
+office_38 N=206247 53.380 ms
+office_33 N=57958 38.509 ms
+office_24 N=111932 42.315 ms
+office_34 N=61229 38.775 ms
+storage_1 N=46406 42.508 ms
+office_28 N=53061 38.391 ms
+office_35 N=62320 38.785 ms
+WC_1 N=47266 37.670 ms
+office_3 N=52674 38.305 ms
+hallway_10 N=78254 39.024 ms
+conferenceRoom_3 N=101960 40.898 ms
+office_21 N=135799 42.997 ms
+storage_2 N=55977 38.688 ms
+hallway_4 N=66615 38.499 ms
+hallway_9 N=78915 39.259 ms
+hallway_7 N=78480 39.387 ms
+office_20 N=35720 37.637 ms
+hallway_1 N=224474 52.433 ms
+office_30 N=32953 37.466 ms
+office_29 N=112341 42.114 ms
+hallway_14 N=49520 37.866 ms
+office_4 N=56215 38.618 ms
+office_41 N=95073 43.662 ms
+office_5 N=51468 41.288 ms
+office_15 N=89084 40.804 ms
+office_11 N=60355 39.068 ms
+office_42 N=58451 39.095 ms
+WC_2 N=42735 37.892 ms
+hallway_8 N=33601 37.783 ms
+lobby_1 N=72377 39.755 ms
+office_2 N=59729 38.999 ms
+hallway_2 N=289399 55.550 ms
+conferenceRoom_1 N=69161 41.380 ms
+hallway_6 N=71486 38.814 ms
+conferenceRoom_2 N=131302 43.370 ms
+office_17 N=65981 39.488 ms
+office_10 N=52591 38.684 ms
+office_26 N=51596 38.572 ms
+hallway_12 N=51615 40.725 ms
+office_7 N=57966 39.193 ms
+office_1 N=56824 38.885 ms
+storage_3 N=13083 37.573 ms
+office_8 N=61885 39.511 ms
+hallway_11 N=51793 38.125 ms
+hallway_3 N=82834 39.706 ms
+office_32 N=55351 38.881 ms
+office_23 N=61483 39.161 ms
+office_14 N=83973 40.826 ms
+office_25 N=43556 38.394 ms
+office_12 N=59100 39.883 ms
+office_36 N=82942 40.020 ms
+pantry_1 N=47373 38.011 ms
+office_6 N=53206 38.797 ms
+office_13 N=71582 39.672 ms
+hallway_15 N=86955 40.157 ms
+office_39 N=66167 39.574 ms
+storage_4 N=47899 38.705 ms
+office_31 N=56267 38.914 ms
+office_37 N=190634 50.976 ms
+hallway_5 N=182972 47.407 ms
+hallway_13 N=84831 39.835 ms
+office_40 N=176707 48.995 ms
+office_16 N=50382 38.381 ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:47: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  _TORCH_CUSTOM_FWD = amp.custom_fwd(cast_inputs=torch.float16)
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:97: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:163: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:243: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:332: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:369: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:389: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:412: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/MinkowskiEngine/__init__.py:36: UserWarning: The environment variable `OMP_NUM_THREADS` not set. MinkowskiEngine will automatically set `OMP_NUM_THREADS=16`. If you want to set `OMP_NUM_THREADS` manually, please export it on the command line before running a python script. e.g. `export OMP_NUM_THREADS=12; python your_program.py`. It is recommended to set it below 24.
+  warnings.warn(
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[2026-08-24 23:08:31,134 INFO s3dis.py line 55 1058018] Totally 68 x 1 samples in Area_5 set.
+office_27 N=50644 82.830 ms
+office_9 N=54582 91.710 ms
+office_22 N=54374 90.562 ms
+office_18 N=86400 107.152 ms
+office_19 N=111067 126.650 ms
+office_38 N=206247 215.438 ms
+office_33 N=57958 93.556 ms
+office_24 N=111932 130.865 ms
+office_34 N=61229 95.856 ms
+storage_1 N=46406 84.352 ms
+office_28 N=53061 89.555 ms
+office_35 N=62320 96.477 ms
+WC_1 N=47266 84.699 ms
+office_3 N=52674 89.208 ms
+hallway_10 N=78254 102.968 ms
+conferenceRoom_3 N=101960 122.006 ms
+office_21 N=135799 147.689 ms
+storage_2 N=55977 91.270 ms
+hallway_4 N=66615 96.167 ms
+hallway_9 N=78915 100.292 ms
+hallway_7 N=78480 100.307 ms
+office_20 N=35720 73.395 ms
+hallway_1 N=224474 224.572 ms
+office_30 N=32953 71.060 ms
+office_29 N=112341 129.993 ms
+hallway_14 N=49520 83.358 ms
+office_4 N=56215 88.826 ms
+office_41 N=95073 113.606 ms
+office_5 N=51468 85.668 ms
+office_15 N=89084 109.088 ms
+office_11 N=60355 93.135 ms
+office_42 N=58451 91.604 ms
+WC_2 N=42735 78.470 ms
+hallway_8 N=33601 72.248 ms
+lobby_1 N=72377 103.475 ms
+office_2 N=59729 92.168 ms
+hallway_2 N=289399 268.959 ms
+conferenceRoom_1 N=69161 98.719 ms
+hallway_6 N=71486 99.988 ms
+conferenceRoom_2 N=131302 141.642 ms
+office_17 N=65981 98.447 ms
+office_10 N=52591 86.702 ms
+office_26 N=51596 85.926 ms
+hallway_12 N=51615 85.170 ms
+office_7 N=57966 91.061 ms
+office_1 N=56824 90.036 ms
+storage_3 N=13083 56.313 ms
+office_8 N=61885 94.318 ms
+hallway_11 N=51793 85.348 ms
+hallway_3 N=82834 101.526 ms
+office_32 N=55351 85.988 ms
+office_23 N=61483 94.730 ms
+office_14 N=83973 106.426 ms
+office_25 N=43556 79.963 ms
+office_12 N=59100 92.166 ms
+office_36 N=82942 102.935 ms
+pantry_1 N=47373 82.585 ms
+office_6 N=53206 87.055 ms
+office_13 N=71582 104.512 ms
+hallway_15 N=86955 107.811 ms
+office_39 N=66167 97.282 ms
+storage_4 N=47899 82.614 ms
+office_31 N=56267 88.965 ms
+office_37 N=190634 196.142 ms
+hallway_5 N=182972 184.660 ms
+hallway_13 N=84831 104.020 ms
+office_40 N=176707 184.091 ms
+office_16 N=50382 83.720 ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/DeLA/utils/cutils/__init__.py:172: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  def forward(ctx, feature: torch.Tensor, knn: torch.Tensor, training: bool=True) -> torch.Tensor:
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/DeLA/utils/cutils/__init__.py:200: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad: torch.Tensor):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/Networks/benchmark_semantickitti_network.py:217: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast():
+[1/22] 00_000000.npz N=83889 cpu_kdtree=540.117ms flashknn=32.533ms
+[2/22] 01_000000.npz N=90407 cpu_kdtree=669.660ms flashknn=33.897ms
+[3/22] 02_000000.npz N=87126 cpu_kdtree=601.448ms flashknn=37.683ms
+[4/22] 03_000000.npz N=82134 cpu_kdtree=522.964ms flashknn=33.920ms
+[5/22] 04_000000.npz N=87339 cpu_kdtree=597.259ms flashknn=32.941ms
+[6/22] 05_000000.npz N=82873 cpu_kdtree=528.331ms flashknn=37.041ms
+[7/22] 06_000000.npz N=87410 cpu_kdtree=597.015ms flashknn=35.222ms
+[8/22] 07_000000.npz N=74104 cpu_kdtree=458.520ms flashknn=37.430ms
+[9/22] 08_000000.npz N=88110 cpu_kdtree=638.415ms flashknn=33.134ms
+[10/22] 09_000000.npz N=91186 cpu_kdtree=634.894ms flashknn=33.478ms
+[11/22] 10_000000.npz N=90208 cpu_kdtree=694.933ms flashknn=33.683ms
+[12/22] 11_000000.npz N=79847 cpu_kdtree=494.021ms flashknn=32.285ms
+[13/22] 12_000000.npz N=85925 cpu_kdtree=611.565ms flashknn=35.264ms
+[14/22] 13_000000.npz N=73382 cpu_kdtree=451.175ms flashknn=32.153ms
+[15/22] 14_000000.npz N=86822 cpu_kdtree=592.512ms flashknn=32.832ms
+[16/22] 15_000000.npz N=80328 cpu_kdtree=505.685ms flashknn=36.444ms
+[17/22] 16_000000.npz N=85964 cpu_kdtree=524.319ms flashknn=32.656ms
+[18/22] 17_000000.npz N=89978 cpu_kdtree=644.775ms flashknn=33.355ms
+[19/22] 18_000000.npz N=71341 cpu_kdtree=410.911ms flashknn=34.507ms
+[20/22] 19_000000.npz N=85766 cpu_kdtree=567.749ms flashknn=34.892ms
+[21/22] 20_000000.npz N=81723 cpu_kdtree=534.049ms flashknn=37.741ms
+[22/22] 21_000000.npz N=88454 cpu_kdtree=590.117ms flashknn=38.103ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/DeepLA-Net/utils/cutils/__init__.py:171: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  def forward(ctx, feature: torch.Tensor, knn: torch.Tensor, training: bool=True) -> torch.Tensor:
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/DeepLA-Net/utils/cutils/__init__.py:199: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad: torch.Tensor):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/Networks/benchmark_semantickitti_network.py:217: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast():
+[1/22] 00_000000.npz N=83889 cpu_kdtree=543.963ms flashknn=39.740ms
+[2/22] 01_000000.npz N=90407 cpu_kdtree=680.238ms flashknn=40.792ms
+[3/22] 02_000000.npz N=87126 cpu_kdtree=608.118ms flashknn=40.900ms
+[4/22] 03_000000.npz N=82134 cpu_kdtree=528.753ms flashknn=43.382ms
+[5/22] 04_000000.npz N=87339 cpu_kdtree=606.134ms flashknn=44.660ms
+[6/22] 05_000000.npz N=82873 cpu_kdtree=538.739ms flashknn=41.379ms
+[7/22] 06_000000.npz N=87410 cpu_kdtree=596.821ms flashknn=39.998ms
+[8/22] 07_000000.npz N=74104 cpu_kdtree=464.074ms flashknn=39.461ms
+[9/22] 08_000000.npz N=88110 cpu_kdtree=649.472ms flashknn=42.361ms
+[10/22] 09_000000.npz N=91186 cpu_kdtree=640.156ms flashknn=40.239ms
+[11/22] 10_000000.npz N=90208 cpu_kdtree=706.286ms flashknn=43.152ms
+[12/22] 11_000000.npz N=79847 cpu_kdtree=505.855ms flashknn=43.161ms
+[13/22] 12_000000.npz N=85925 cpu_kdtree=618.583ms flashknn=40.092ms
+[14/22] 13_000000.npz N=73382 cpu_kdtree=458.858ms flashknn=39.581ms
+[15/22] 14_000000.npz N=86822 cpu_kdtree=606.249ms flashknn=42.859ms
+[16/22] 15_000000.npz N=80328 cpu_kdtree=512.573ms flashknn=40.891ms
+[17/22] 16_000000.npz N=85964 cpu_kdtree=532.129ms flashknn=41.457ms
+[18/22] 17_000000.npz N=89978 cpu_kdtree=652.511ms flashknn=40.313ms
+[19/22] 18_000000.npz N=71341 cpu_kdtree=418.260ms flashknn=42.459ms
+[20/22] 19_000000.npz N=85766 cpu_kdtree=577.096ms flashknn=39.911ms
+[21/22] 20_000000.npz N=81723 cpu_kdtree=540.843ms flashknn=44.563ms
+[22/22] 21_000000.npz N=88454 cpu_kdtree=596.009ms flashknn=40.050ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:47: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  _TORCH_CUSTOM_FWD = amp.custom_fwd(cast_inputs=torch.float16)
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:97: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:163: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:243: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:332: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:369: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:389: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:412: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/MinkowskiEngine/__init__.py:36: UserWarning: The environment variable `OMP_NUM_THREADS` not set. MinkowskiEngine will automatically set `OMP_NUM_THREADS=16`. If you want to set `OMP_NUM_THREADS` manually, please export it on the command line before running a python script. e.g. `export OMP_NUM_THREADS=12; python your_program.py`. It is recommended to set it below 24.
+  warnings.warn(
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[1/22] 00_000000.npz N=83889 network=129.882ms
+[2/22] 01_000000.npz N=90407 network=155.255ms
+[3/22] 02_000000.npz N=87126 network=138.971ms
+[4/22] 03_000000.npz N=82134 network=131.568ms
+[5/22] 04_000000.npz N=87339 network=144.626ms
+[6/22] 05_000000.npz N=82873 network=127.815ms
+[7/22] 06_000000.npz N=87410 network=138.062ms
+[8/22] 07_000000.npz N=74104 network=128.431ms
+[9/22] 08_000000.npz N=88110 network=143.846ms
+[10/22] 09_000000.npz N=91186 network=134.885ms
+[11/22] 10_000000.npz N=90208 network=151.747ms
+[12/22] 11_000000.npz N=79847 network=126.809ms
+[13/22] 12_000000.npz N=85925 network=137.800ms
+[14/22] 13_000000.npz N=73382 network=128.144ms
+[15/22] 14_000000.npz N=86822 network=131.755ms
+[16/22] 15_000000.npz N=80328 network=129.593ms
+[17/22] 16_000000.npz N=85964 network=131.218ms
+[18/22] 17_000000.npz N=89978 network=149.179ms
+[19/22] 18_000000.npz N=71341 network=132.790ms
+[20/22] 19_000000.npz N=85766 network=138.661ms
+[21/22] 20_000000.npz N=81723 network=128.915ms
+[22/22] 21_000000.npz N=88454 network=136.876ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:47: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  _TORCH_CUSTOM_FWD = amp.custom_fwd(cast_inputs=torch.float16)
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:97: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:163: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:243: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:332: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:369: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:389: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:412: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/MinkowskiEngine/__init__.py:36: UserWarning: The environment variable `OMP_NUM_THREADS` not set. MinkowskiEngine will automatically set `OMP_NUM_THREADS=16`. If you want to set `OMP_NUM_THREADS` manually, please export it on the command line before running a python script. e.g. `export OMP_NUM_THREADS=12; python your_program.py`. It is recommended to set it below 24.
+  warnings.warn(
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[1/22] 00_000000.npz N=83889 network=105.702ms
+[2/22] 01_000000.npz N=90407 network=145.084ms
+[3/22] 02_000000.npz N=87126 network=120.501ms
+[4/22] 03_000000.npz N=82134 network=101.041ms
+[5/22] 04_000000.npz N=87339 network=129.451ms
+[6/22] 05_000000.npz N=82873 network=105.716ms
+[7/22] 06_000000.npz N=87410 network=119.127ms
+[8/22] 07_000000.npz N=74104 network=98.165ms
+[9/22] 08_000000.npz N=88110 network=128.355ms
+[10/22] 09_000000.npz N=91186 network=115.041ms
+[11/22] 10_000000.npz N=90208 network=137.420ms
+[12/22] 11_000000.npz N=79847 network=99.064ms
+[13/22] 12_000000.npz N=85925 network=121.992ms
+[14/22] 13_000000.npz N=73382 network=97.866ms
+[15/22] 14_000000.npz N=86822 network=110.010ms
+[16/22] 15_000000.npz N=80328 network=98.565ms
+[17/22] 16_000000.npz N=85964 network=102.685ms
+[18/22] 17_000000.npz N=89978 network=136.995ms
+[19/22] 18_000000.npz N=71341 network=95.408ms
+[20/22] 19_000000.npz N=85766 network=121.766ms
+[21/22] 20_000000.npz N=81723 network=104.147ms
+[22/22] 21_000000.npz N=88454 network=118.265ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:47: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  _TORCH_CUSTOM_FWD = amp.custom_fwd(cast_inputs=torch.float16)
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:97: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:163: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:243: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:332: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:369: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:389: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:412: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/MinkowskiEngine/__init__.py:36: UserWarning: The environment variable `OMP_NUM_THREADS` not set. MinkowskiEngine will automatically set `OMP_NUM_THREADS=16`. If you want to set `OMP_NUM_THREADS` manually, please export it on the command line before running a python script. e.g. `export OMP_NUM_THREADS=12; python your_program.py`. It is recommended to set it below 24.
+  warnings.warn(
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[1/22] 00_000000.npz N=83889 network=43.663ms
+[2/22] 01_000000.npz N=90407 network=51.558ms
+[3/22] 02_000000.npz N=87126 network=46.811ms
+[4/22] 03_000000.npz N=82134 network=42.206ms
+[5/22] 04_000000.npz N=87339 network=48.027ms
+[6/22] 05_000000.npz N=82873 network=43.138ms
+[7/22] 06_000000.npz N=87410 network=46.207ms
+[8/22] 07_000000.npz N=74104 network=40.851ms
+[9/22] 08_000000.npz N=88110 network=48.599ms
+[10/22] 09_000000.npz N=91186 network=46.701ms
+[11/22] 10_000000.npz N=90208 network=51.016ms
+[12/22] 11_000000.npz N=79847 network=41.541ms
+[13/22] 12_000000.npz N=85925 network=45.590ms
+[14/22] 13_000000.npz N=73382 network=41.190ms
+[15/22] 14_000000.npz N=86822 network=44.084ms
+[16/22] 15_000000.npz N=80328 network=41.824ms
+[17/22] 16_000000.npz N=85964 network=42.307ms
+[18/22] 17_000000.npz N=89978 network=49.179ms
+[19/22] 18_000000.npz N=71341 network=39.277ms
+[20/22] 19_000000.npz N=85766 network=45.620ms
+[21/22] 20_000000.npz N=81723 network=43.206ms
+[22/22] 21_000000.npz N=88454 network=45.722ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:47: FutureWarning: `torch.cuda.amp.custom_fwd(args...)` is deprecated. Please use `torch.amp.custom_fwd(args..., device_type='cuda')` instead.
+  _TORCH_CUSTOM_FWD = amp.custom_fwd(cast_inputs=torch.float16)
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:97: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:163: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:243: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:332: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:369: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:389: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/spconv/pytorch/functional.py:412: FutureWarning: `torch.cuda.amp.custom_bwd(args...)` is deprecated. Please use `torch.amp.custom_bwd(args..., device_type='cuda')` instead.
+  def backward(ctx, grad_output):
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/MinkowskiEngine/__init__.py:36: UserWarning: The environment variable `OMP_NUM_THREADS` not set. MinkowskiEngine will automatically set `OMP_NUM_THREADS=16`. If you want to set `OMP_NUM_THREADS` manually, please export it on the command line before running a python script. e.g. `export OMP_NUM_THREADS=12; python your_program.py`. It is recommended to set it below 24.
+  warnings.warn(
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+[1/22] 00_000000.npz N=83889 network=101.934ms
+[2/22] 01_000000.npz N=90407 network=108.676ms
+[3/22] 02_000000.npz N=87126 network=104.549ms
+[4/22] 03_000000.npz N=82134 network=100.661ms
+[5/22] 04_000000.npz N=87339 network=104.049ms
+[6/22] 05_000000.npz N=82873 network=100.164ms
+[7/22] 06_000000.npz N=87410 network=103.843ms
+[8/22] 07_000000.npz N=74104 network=97.526ms
+[9/22] 08_000000.npz N=88110 network=105.956ms
+[10/22] 09_000000.npz N=91186 network=108.961ms
+[11/22] 10_000000.npz N=90208 network=110.609ms
+[12/22] 11_000000.npz N=79847 network=99.047ms
+[13/22] 12_000000.npz N=85925 network=104.421ms
+[14/22] 13_000000.npz N=73382 network=98.754ms
+[15/22] 14_000000.npz N=86822 network=104.493ms
+[16/22] 15_000000.npz N=80328 network=100.140ms
+[17/22] 16_000000.npz N=85964 network=103.151ms
+[18/22] 17_000000.npz N=89978 network=108.423ms
+[19/22] 18_000000.npz N=71341 network=97.177ms
+[20/22] 19_000000.npz N=85766 network=102.014ms
+[21/22] 20_000000.npz N=81723 network=101.130ms
+[22/22] 21_000000.npz N=88454 network=105.510ms
+/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/results/L20/l20_stale_candidate_fix_complete_20260824/network

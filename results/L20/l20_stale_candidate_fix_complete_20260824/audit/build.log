@@ -1,0 +1,383 @@
+Using pip 26.2.1 from /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/pip (python 3.10)
+Obtaining file:///home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN
+  Checking if build backend supports build_editable: started
+  Running command Checking if build backend supports build_editable
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Running command Preparing editable metadata (pyproject.toml)
+  running dist_info
+  creating /tmp/pip-modern-metadata-3zf7mp_d/FlashKNN.egg-info
+  writing /tmp/pip-modern-metadata-3zf7mp_d/FlashKNN.egg-info/PKG-INFO
+  writing dependency_links to /tmp/pip-modern-metadata-3zf7mp_d/FlashKNN.egg-info/dependency_links.txt
+  writing requirements to /tmp/pip-modern-metadata-3zf7mp_d/FlashKNN.egg-info/requires.txt
+  writing top-level names to /tmp/pip-modern-metadata-3zf7mp_d/FlashKNN.egg-info/top_level.txt
+  writing manifest file '/tmp/pip-modern-metadata-3zf7mp_d/FlashKNN.egg-info/SOURCES.txt'
+  reading manifest file '/tmp/pip-modern-metadata-3zf7mp_d/FlashKNN.egg-info/SOURCES.txt'
+  adding license file 'LICENSE'
+  writing manifest file '/tmp/pip-modern-metadata-3zf7mp_d/FlashKNN.egg-info/SOURCES.txt'
+  creating '/tmp/pip-modern-metadata-3zf7mp_d/flashknn-1.0.dist-info'
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: FlashKNN
+  Building editable for FlashKNN (pyproject.toml): started
+  Running command Building editable for FlashKNN (pyproject.toml)
+  running editable_wheel
+  creating /tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/FlashKNN.egg-info
+  writing /tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/FlashKNN.egg-info/PKG-INFO
+  writing dependency_links to /tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/FlashKNN.egg-info/dependency_links.txt
+  writing requirements to /tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/FlashKNN.egg-info/requires.txt
+  writing top-level names to /tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/FlashKNN.egg-info/top_level.txt
+  writing manifest file '/tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/FlashKNN.egg-info/SOURCES.txt'
+  reading manifest file '/tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/FlashKNN.egg-info/SOURCES.txt'
+  adding license file 'LICENSE'
+  writing manifest file '/tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/FlashKNN.egg-info/SOURCES.txt'
+  creating '/tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/flashknn-1.0.dist-info'
+  creating /tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/flashknn-1.0.dist-info/WHEEL
+  running build_py
+  running build_ext
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/utils/cpp_extension.py:490: UserWarning: There are no x86_64-linux-gnu-g++ version bounds defined for CUDA version 12.8
+    warnings.warn(f'There are no {compiler_name} version bounds defined for CUDA version {cuda_str_version}')
+  building 'FlashKNN.CuFun' extension
+  creating /tmp/tmpoajkkgmv.build-temp/csrc
+  Emitting ninja build file /tmp/tmpoajkkgmv.build-temp/build.ninja...
+  Compiling objects...
+  Using envvar MAX_JOBS (8) as the number of workers...
+  [1/6] c++ -MMD -MF /tmp/tmpoajkkgmv.build-temp/csrc/api.o.d -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -g -fwrapv -O2 -fPIC -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/usr/local/cuda-12.8/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -c -c /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/api.cpp -o /tmp/tmpoajkkgmv.build-temp/csrc/api.o -g -O3 -mavx2 -funroll-loops -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1016"' -DTORCH_EXTENSION_NAME=CuFun -D_GLIBCXX_USE_CXX11_ABI=1 -std=c++17
+  [2/6] /usr/local/cuda-12.8/bin/nvcc --generate-dependencies-with-compile --dependency-output /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query.o.d -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/usr/local/cuda-12.8/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -c -c /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query.cu -o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query.o -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options ''"'"'-fPIC'"'"'' -O2 -Xptxas -v -lineinfo -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1016"' -DTORCH_EXTENSION_NAME=CuFun -D_GLIBCXX_USE_CXX11_ABI=1 -gencode=arch=compute_89,code=sm_89 -std=c++17
+  ptxas info    : 44 bytes gmem, 352 bytes cmem[4]
+  ptxas info    : Compiling entry function '_ZN3cub17CUB_200700_890_NS11EmptyKernelIvEEvv' for 'sm_89'
+  ptxas info    : Function properties for _ZN3cub17CUB_200700_890_NS11EmptyKernelIvEEvv
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 4 registers, used 0 barriers, 352 bytes cmem[0]
+  ptxas info    : Compile time = 2.219 ms
+  [3/6] /usr/local/cuda-12.8/bin/nvcc --generate-dependencies-with-compile --dependency-output /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_construction.o.d -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/usr/local/cuda-12.8/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -c -c /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_construction.cu -o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_construction.o -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options ''"'"'-fPIC'"'"'' -O2 -Xptxas -v -lineinfo -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1016"' -DTORCH_EXTENSION_NAME=CuFun -D_GLIBCXX_USE_CXX11_ABI=1 -gencode=arch=compute_89,code=sm_89 -std=c++17
+  ptxas info    : 11 bytes gmem, 88 bytes cmem[4]
+  ptxas info    : Compiling entry function '_ZN58_GLOBAL__N__fae68a3e_25_flash_knn_construction_cu_ab5f48ed27morton_neighbor_keys_kernelEPKlS1_Pll' for 'sm_89'
+  ptxas info    : Function properties for _ZN58_GLOBAL__N__fae68a3e_25_flash_knn_construction_cu_ab5f48ed27morton_neighbor_keys_kernelEPKlS1_Pll
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 19 registers, used 0 barriers, 384 bytes cmem[0]
+  ptxas info    : Compile time = 13.272 ms
+  ptxas info    : Compiling entry function '_ZN58_GLOBAL__N__fae68a3e_25_flash_knn_construction_cu_ab5f48ed20morton_encode_kernelEPKlS1_Pll' for 'sm_89'
+  ptxas info    : Function properties for _ZN58_GLOBAL__N__fae68a3e_25_flash_knn_construction_cu_ab5f48ed20morton_encode_kernelEPKlS1_Pll
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 20 registers, used 0 barriers, 384 bytes cmem[0]
+  ptxas info    : Compile time = 8.493 ms
+  [4/6] /usr/local/cuda-12.8/bin/nvcc --generate-dependencies-with-compile --dependency-output /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_GMPS.o.d -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/usr/local/cuda-12.8/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -c -c /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_GMPS.cu -o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_GMPS.o -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options ''"'"'-fPIC'"'"'' -O2 -Xptxas -v -lineinfo -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1016"' -DTORCH_EXTENSION_NAME=CuFun -D_GLIBCXX_USE_CXX11_ABI=1 -gencode=arch=compute_89,code=sm_89 -std=c++17
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_GMPS.cu(388): warning #177-D: variable "dtypesize" was declared but never referenced
+        uint64_t dtypesize = 4;
+                 ^
+
+  Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_GMPS.cu(508): warning #177-D: variable "ArrayLengthPerThread" was declared but never referenced
+        int ArrayLengthPerThread = 2;
+            ^
+
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_GMPS.cu(22): warning #177-D: variable "WARP_SIZE_1" was declared but never referenced
+    constexpr uint64_t WARP_SIZE_1 = WARP_SIZE - 1;
+                       ^
+
+  ptxas info    : 44 bytes gmem, 352 bytes cmem[4]
+  ptxas info    : Compiling entry function '_ZN3cub17CUB_200700_890_NS11EmptyKernelIvEEvv' for 'sm_89'
+  ptxas info    : Function properties for _ZN3cub17CUB_200700_890_NS11EmptyKernelIvEEvv
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 4 registers, used 0 barriers, 352 bytes cmem[0]
+  ptxas info    : Compile time = 2.241 ms
+  ptxas info    : Compiling entry function '_Z26FlashKNN_Query_SMSS_kernelIfLi2ELi3EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z26FlashKNN_Query_SMSS_kernelIfLi2ELi3EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      64 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 64 bytes cumulative stack size, 424 bytes cmem[0]
+  ptxas info    : Compile time = 47.834 ms
+  ptxas info    : Compiling entry function '_Z26FlashKNN_Query_SMSS_kernelIfLi2ELi4EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z26FlashKNN_Query_SMSS_kernelIfLi2ELi4EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      128 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 128 bytes cumulative stack size, 424 bytes cmem[0]
+  ptxas info    : Compile time = 46.560 ms
+  ptxas info    : Compiling entry function '_Z26FlashKNN_Query_SMSS_kernelIfLi2ELi5EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z26FlashKNN_Query_SMSS_kernelIfLi2ELi5EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      256 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 256 bytes cumulative stack size, 424 bytes cmem[0]
+  ptxas info    : Compile time = 48.191 ms
+  ptxas info    : Compiling entry function '_Z26FlashKNN_Query_SMSS_kernelIfLi2ELi6EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z26FlashKNN_Query_SMSS_kernelIfLi2ELi6EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      512 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 512 bytes cumulative stack size, 424 bytes cmem[0]
+  ptxas info    : Compile time = 51.227 ms
+  ptxas info    : Compiling entry function '_Z26FlashKNN_Query_GMPS_kernelIfLi2ELi3EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z26FlashKNN_Query_GMPS_kernelIfLi2ELi3EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 48 registers, used 0 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 52.299 ms
+  ptxas info    : Compiling entry function '_Z26FlashKNN_Query_GMPS_kernelIfLi2ELi4EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z26FlashKNN_Query_GMPS_kernelIfLi2ELi4EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 0 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 65.943 ms
+  ptxas info    : Compiling entry function '_Z26FlashKNN_Query_GMPS_kernelIfLi2ELi5EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z26FlashKNN_Query_GMPS_kernelIfLi2ELi5EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 56 registers, used 0 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 84.972 ms
+  ptxas info    : Compiling entry function '_Z26FlashKNN_Query_GMPS_kernelIfLi4ELi5EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z26FlashKNN_Query_GMPS_kernelIfLi4ELi5EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 47 registers, used 0 barriers, 424 bytes cmem[0], 8 bytes cmem[2]
+  ptxas info    : Compile time = 65.541 ms
+  [5/6] /usr/local/cuda-12.8/bin/nvcc --generate-dependencies-with-compile --dependency-output /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_global_memory.o.d -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/usr/local/cuda-12.8/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -c -c /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_global_memory.cu -o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_global_memory.o -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options ''"'"'-fPIC'"'"'' -O2 -Xptxas -v -lineinfo -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1016"' -DTORCH_EXTENSION_NAME=CuFun -D_GLIBCXX_USE_CXX11_ABI=1 -gencode=arch=compute_89,code=sm_89 -std=c++17
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_global_memory.cu(109): warning #177-D: variable "dtypesize" was declared but never referenced
+        uint64_t dtypesize = 4;
+                 ^
+
+  Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_global_memory.cu(110): warning #177-D: variable "max_point_num_loaded" was declared but never referenced
+        const uint64_t max_point_num_loaded = 256;
+                       ^
+
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_global_memory.cu(18): warning #177-D: variable "WARP_SIZE_1" was declared but never referenced
+    constexpr uint64_t WARP_SIZE_1 = WARP_SIZE - 1;
+                       ^
+
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_global_memory.cu(21): warning #177-D: variable "MaxArrayIdx" was declared but never referenced
+    constexpr uint64_t MaxArrayIdx = ArraySizePerThread-1;
+                       ^
+
+  ptxas info    : 44 bytes gmem, 352 bytes cmem[4]
+  ptxas info    : Compiling entry function '_ZN3cub17CUB_200700_890_NS11EmptyKernelIvEEvv' for 'sm_89'
+  ptxas info    : Function properties for _ZN3cub17CUB_200700_890_NS11EmptyKernelIvEEvv
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 4 registers, used 0 barriers, 352 bytes cmem[0]
+  ptxas info    : Compile time = 2.262 ms
+  ptxas info    : Compiling entry function '_Z24FlashKNN_Query_GM_kernelILi64EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif' for 'sm_89'
+  ptxas info    : Function properties for _Z24FlashKNN_Query_GM_kernelILi64EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif
+      512 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 38 registers, used 0 barriers, 512 bytes cumulative stack size, 448 bytes cmem[0]
+  ptxas info    : Compile time = 180.583 ms
+  ptxas info    : Compiling entry function '_Z24FlashKNN_Query_GM_kernelILi32EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif' for 'sm_89'
+  ptxas info    : Function properties for _Z24FlashKNN_Query_GM_kernelILi32EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif
+      256 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 38 registers, used 0 barriers, 256 bytes cumulative stack size, 448 bytes cmem[0]
+  ptxas info    : Compile time = 152.757 ms
+  ptxas info    : Compiling entry function '_Z24FlashKNN_Query_GM_kernelILi16EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif' for 'sm_89'
+  ptxas info    : Function properties for _Z24FlashKNN_Query_GM_kernelILi16EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif
+      128 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 0 barriers, 128 bytes cumulative stack size, 448 bytes cmem[0]
+  ptxas info    : Compile time = 138.672 ms
+  ptxas info    : Compiling entry function '_Z24FlashKNN_Query_GM_kernelILi8EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif' for 'sm_89'
+  ptxas info    : Function properties for _Z24FlashKNN_Query_GM_kernelILi8EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif
+      64 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 0 barriers, 64 bytes cumulative stack size, 448 bytes cmem[0]
+  ptxas info    : Compile time = 128.739 ms
+  ptxas info    : Compiling entry function '_Z24FlashKNN_Query_GM_kernelILi4EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif' for 'sm_89'
+  ptxas info    : Function properties for _Z24FlashKNN_Query_GM_kernelILi4EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif
+      32 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 24 registers, used 0 barriers, 32 bytes cumulative stack size, 448 bytes cmem[0]
+  ptxas info    : Compile time = 12.067 ms
+  ptxas info    : Compiling entry function '_Z24FlashKNN_Query_GM_kernelILi2EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif' for 'sm_89'
+  ptxas info    : Function properties for _Z24FlashKNN_Query_GM_kernelILi2EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif
+      16 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 22 registers, used 0 barriers, 16 bytes cumulative stack size, 448 bytes cmem[0]
+  ptxas info    : Compile time = 10.743 ms
+  ptxas info    : Compiling entry function '_Z24FlashKNN_Query_GM_kernelILi1EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif' for 'sm_89'
+  ptxas info    : Function properties for _Z24FlashKNN_Query_GM_kernelILi1EEvPiPfPKfS3_PKiS5_S5_S5_S5_S5_iiif
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 0 barriers, 448 bytes cmem[0], 8 bytes cmem[2]
+  ptxas info    : Compile time = 13.749 ms
+  [6/6] /usr/local/cuda-12.8/bin/nvcc --generate-dependencies-with-compile --dependency-output /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_dynamic_load.o.d -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/include/torch/csrc/api/include -I/usr/local/cuda-12.8/include -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -I/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/include -I/usr/include/python3.10 -c -c /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_dynamic_load.cu -o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_dynamic_load.o -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options ''"'"'-fPIC'"'"'' -O2 -Xptxas -v -lineinfo -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1016"' -DTORCH_EXTENSION_NAME=CuFun -D_GLIBCXX_USE_CXX11_ABI=1 -gencode=arch=compute_89,code=sm_89 -std=c++17
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_dynamic_load.cu(21): warning #177-D: variable "WARP_SIZE_1" was declared but never referenced
+    constexpr uint64_t WARP_SIZE_1 = WARP_SIZE - 1;
+                       ^
+
+  Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/FlashKNN/csrc/flash_knn_query_dynamic_load.cu(24): warning #177-D: variable "MaxArrayIdx" was declared but never referenced
+    constexpr uint64_t MaxArrayIdx = ArraySizePerThread-1;
+                       ^
+
+  ptxas info    : 44 bytes gmem, 352 bytes cmem[4]
+  ptxas info    : Compiling entry function '_ZN3cub17CUB_200700_890_NS11EmptyKernelIvEEvv' for 'sm_89'
+  ptxas info    : Function properties for _ZN3cub17CUB_200700_890_NS11EmptyKernelIvEEvv
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 4 registers, used 0 barriers, 352 bytes cmem[0]
+  ptxas info    : Compile time = 2.445 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi8ELi4ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi8ELi4ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      64 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 63 registers, used 1 barriers, 64 bytes cumulative stack size, 424 bytes cmem[0]
+  ptxas info    : Compile time = 100.455 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi4ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi4ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 55 registers, used 1 barriers, 424 bytes cmem[0], 8 bytes cmem[2]
+  ptxas info    : Compile time = 77.262 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi16ELi3ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi16ELi3ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      128 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 72 registers, used 1 barriers, 128 bytes cumulative stack size, 424 bytes cmem[0]
+  ptxas info    : Compile time = 169.450 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi8ELi3ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi8ELi3ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      64 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 63 registers, used 1 barriers, 64 bytes cumulative stack size, 424 bytes cmem[0]
+  ptxas info    : Compile time = 97.860 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi3ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi3ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 55 registers, used 1 barriers, 424 bytes cmem[0], 8 bytes cmem[2]
+  ptxas info    : Compile time = 74.737 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi3ELb0ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi3ELb0ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 37 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 37.654 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi4ELb0ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi4ELb0ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 39 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 46.395 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi5ELb0ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi5ELb0ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 38 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 57.558 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi5ELb0ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi5ELb0ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 424 bytes cmem[0], 8 bytes cmem[2]
+  ptxas info    : Compile time = 52.538 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi3ELb1ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi3ELb1ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 35 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 40.311 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi4ELb1ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi4ELb1ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 33 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 51.148 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi5ELb1ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi5ELb1ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 33 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 67.536 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi5ELb1ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi5ELb1ELb0EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 36 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 43.095 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi3ELb1ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi3ELb1ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 52 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 64.587 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi4ELb1ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi4ELb1ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 55 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 81.116 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi5ELb1ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi5ELb1ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 56 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 104.210 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi5ELb1ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi5ELb1ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 51 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 62.207 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi3ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi3ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 53 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 59.508 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi4ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi4ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 52 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 74.004 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi5ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi2ELi5ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 58 registers, used 1 barriers, 424 bytes cmem[0]
+  ptxas info    : Compile time = 90.705 ms
+  ptxas info    : Compiling entry function '_Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi5ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_' for 'sm_89'
+  ptxas info    : Function properties for _Z34FlashKNN_Query_dynamic_load_kernelIfLi4ELi5ELb0ELb1EEvPiPT_PKS1_PKiS6_S6_iiiiiS1_
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 55 registers, used 1 barriers, 424 bytes cmem[0], 8 bytes cmem[2]
+  ptxas info    : Compile time = 75.114 ms
+  ptxas info    : Compiling entry function '_Z33FlashKNN_Selected_Query_DL_kernelIfLi2ELi3EEvPiPT_PKS1_PKiS6_S6_S6_S6_iiiiif' for 'sm_89'
+  ptxas info    : Function properties for _Z33FlashKNN_Selected_Query_DL_kernelIfLi2ELi3EEvPiPT_PKS1_PKiS6_S6_S6_S6_iiiiif
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 51 registers, used 1 barriers, 440 bytes cmem[0]
+  ptxas info    : Compile time = 60.741 ms
+  ptxas info    : Compiling entry function '_Z33FlashKNN_Selected_Query_DL_kernelIfLi2ELi4EEvPiPT_PKS1_PKiS6_S6_S6_S6_iiiiif' for 'sm_89'
+  ptxas info    : Function properties for _Z33FlashKNN_Selected_Query_DL_kernelIfLi2ELi4EEvPiPT_PKS1_PKiS6_S6_S6_S6_iiiiif
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 52 registers, used 1 barriers, 440 bytes cmem[0]
+  ptxas info    : Compile time = 76.597 ms
+  ptxas info    : Compiling entry function '_Z33FlashKNN_Selected_Query_DL_kernelIfLi2ELi5EEvPiPT_PKS1_PKiS6_S6_S6_S6_iiiiif' for 'sm_89'
+  ptxas info    : Function properties for _Z33FlashKNN_Selected_Query_DL_kernelIfLi2ELi5EEvPiPT_PKS1_PKiS6_S6_S6_S6_iiiiif
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 58 registers, used 1 barriers, 440 bytes cmem[0]
+  ptxas info    : Compile time = 93.007 ms
+  ptxas info    : Compiling entry function '_Z33FlashKNN_Selected_Query_DL_kernelIfLi4ELi5EEvPiPT_PKS1_PKiS6_S6_S6_S6_iiiiif' for 'sm_89'
+  ptxas info    : Function properties for _Z33FlashKNN_Selected_Query_DL_kernelIfLi4ELi5EEvPiPT_PKS1_PKiS6_S6_S6_S6_iiiiif
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 54 registers, used 1 barriers, 440 bytes cmem[0], 8 bytes cmem[2]
+  ptxas info    : Compile time = 75.594 ms
+  ptxas info    : Compiling entry function '_Z29FlashKNN_Back_Query_DL_kernelIfLi2ELi3EEvPiPfPKfS3_PKiS5_S5_S5_iiiiT_' for 'sm_89'
+  ptxas info    : Function properties for _Z29FlashKNN_Back_Query_DL_kernelIfLi2ELi3EEvPiPfPKfS3_PKiS5_S5_S5_iiiiT_
+      64 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 64 bytes cumulative stack size, 436 bytes cmem[0]
+  ptxas info    : Compile time = 68.862 ms
+  ptxas info    : Compiling entry function '_Z29FlashKNN_Back_Query_DL_kernelIfLi2ELi4EEvPiPfPKfS3_PKiS5_S5_S5_iiiiT_' for 'sm_89'
+  ptxas info    : Function properties for _Z29FlashKNN_Back_Query_DL_kernelIfLi2ELi4EEvPiPfPKfS3_PKiS5_S5_S5_iiiiT_
+      128 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 128 bytes cumulative stack size, 436 bytes cmem[0]
+  ptxas info    : Compile time = 68.015 ms
+  ptxas info    : Compiling entry function '_Z29FlashKNN_Back_Query_DL_kernelIfLi2ELi5EEvPiPfPKfS3_PKiS5_S5_S5_iiiiT_' for 'sm_89'
+  ptxas info    : Function properties for _Z29FlashKNN_Back_Query_DL_kernelIfLi2ELi5EEvPiPfPKfS3_PKiS5_S5_S5_iiiiT_
+      256 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 256 bytes cumulative stack size, 436 bytes cmem[0]
+  ptxas info    : Compile time = 67.915 ms
+  ptxas info    : Compiling entry function '_Z29FlashKNN_Back_Query_DL_kernelIfLi4ELi5EEvPiPfPKfS3_PKiS5_S5_S5_iiiiT_' for 'sm_89'
+  ptxas info    : Function properties for _Z29FlashKNN_Back_Query_DL_kernelIfLi4ELi5EEvPiPfPKfS3_PKiS5_S5_S5_iiiiT_
+      256 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 256 bytes cumulative stack size, 436 bytes cmem[0]
+  ptxas info    : Compile time = 67.988 ms
+  ptxas info    : Compiling entry function '_Z37FlashKNN_Nearest_Back_Query_DL_kernelPiPfPKfS2_PKiS4_S4_S4_iii' for 'sm_89'
+  ptxas info    : Function properties for _Z37FlashKNN_Nearest_Back_Query_DL_kernelPiPfPKfS2_PKiS4_S4_S4_iii
+      0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+  ptxas info    : Used 40 registers, used 1 barriers, 428 bytes cmem[0]
+  ptxas info    : Compile time = 71.627 ms
+  creating /tmp/tmptimqtryo.build-lib/FlashKNN
+  x86_64-linux-gnu-g++ -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -g -fwrapv -O2 -shared -Wl,-O1 -Wl,-Bsymbolic-functions /tmp/tmpoajkkgmv.build-temp/csrc/api.o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_construction.o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query.o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_GMPS.o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_dynamic_load.o /tmp/tmpoajkkgmv.build-temp/csrc/flash_knn_query_global_memory.o -L/home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/torch/lib -L/usr/local/cuda-12.8/lib64 -L/usr/lib/x86_64-linux-gnu -lc10 -ltorch -ltorch_cpu -ltorch_python -lcudart -lc10_cuda -ltorch_cuda -o /tmp/tmptimqtryo.build-lib/FlashKNN/CuFun.cpython-310-x86_64-linux-gnu.so
+  copying /tmp/tmptimqtryo.build-lib/FlashKNN/CuFun.cpython-310-x86_64-linux-gnu.so -> functions
+  Editable install will be performed using a meta path finder.
+
+  Options like `package-data`, `include/exclude-package-data` or
+  `packages.find.exclude/include` may have no effect.
+
+  adding '__editable___flashknn_1_0_finder.py'
+  adding '__editable__.flashknn-1.0.pth'
+  creating '/tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e/tmpzaxf0kfw/.tmp-7bgu0co9/flashknn-1.0-0.editable-cp310-cp310-linux_x86_64.whl' and adding '/tmp/tmpp_3z5tc2flashknn-1.0-0.editable-cp310-cp310-linux_x86_64.whl' to it
+  adding 'flashknn-1.0.dist-info/licenses/LICENSE'
+  adding 'flashknn-1.0.dist-info/METADATA'
+  adding 'flashknn-1.0.dist-info/WHEEL'
+  adding 'flashknn-1.0.dist-info/top_level.txt'
+  adding 'flashknn-1.0.dist-info/RECORD'
+  /home/n50058614/workspace/vllm-project/PaperRevise/FlashKNN_ExpRepo/.venv/lib/python3.10/site-packages/setuptools/command/editable_wheel.py:352: InformationOnly: Editable installation.
+  !!
+
+          ********************************************************************************
+          Please be careful with folders in your working directory with the same
+          name as your package as they may take precedence during imports.
+          ********************************************************************************
+
+  !!
+    with strategy, WheelFile(wheel_path, "w") as wheel_obj:
+  Building editable for FlashKNN (pyproject.toml): finished with status 'done'
+  Created wheel for FlashKNN: filename=flashknn-1.0-0.editable-cp310-cp310-linux_x86_64.whl size=3556 sha256=0964d79c6dd25810017c397ee32373d219819d24d00643df702eefad364d2fab
+  Stored in directory: /tmp/pip-ephem-wheel-cache-g2cqzwjd/wheels/bb/29/24/d9e17bb820dfc4a613cac5a9f45b3d612f0cdb470b4088f61e
+Successfully built FlashKNN
+Installing collected packages: FlashKNN
+Successfully installed FlashKNN-1.0

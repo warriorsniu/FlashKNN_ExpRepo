@@ -1,0 +1,9 @@
+memory coverage OK: 162 records
+pre flashknn 290.584 MiB
+pre cuda_kdtree 82.562 MiB
+pre faiss_flat 1632.320 MiB
+pre faiss_ivf 1635.107 MiB
+post flashknn 121.123 MiB
+post cuda_kdtree 37.729 MiB
+post faiss_flat 1564.240 MiB
+post faiss_ivf 1567.009 MiB
