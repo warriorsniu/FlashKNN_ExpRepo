@@ -10,7 +10,7 @@
 - S3DIS full-point：272 个 0.02 m 体素化完整房间、pre、k=32，共 272 条。只包含 FlashKNN、cudaKDTree、FLANN-CUDA 和 nanoflann；由于完整点云上 brute-force 复杂度和内存成本过高，该组明确跳过 FAISS Flat/IVF。
 - S3DIS ball query：81 个房间、pre/post、k=24/32/48，共 486 条。
 - S3DIS memory：与主表相同的81个250k crop、pre/post、k=32，共162条；比较FlashKNN、cudaKDTree、FAISS GPU Flat和逐房间matched-recall IVF。
-- SemanticKITTI query：canonical 文件已由2026-08-18正式结果替换，覆盖110帧、pre/post、k=8/16/24/32/48/64，共1320条，FlashKNN alpha=4/8/16/32，FAISS IVF逐条匹配alpha=4。
+- SemanticKITTI query：论文默认结果为2026-08-25的 alpha=8 定向刷新，覆盖110帧、pre/post、k=8/16/24/32/48/64，共1320条；FAISS IVF逐条按当前 alpha=8 recall 重新校准。此前的四-alpha/alpha=4-IVF 文件仅作为历史 operating point 保留。
 - 网络：S3DIS Area 5 的 DeLA、PTv3、OctFormer、SPUNet、MinkUNet34C 各 68 个房间；SemanticKITTI 的 DeLA/DeepLA 分别比较 CPU KDTree 与 FlashKNN hierarchy，并包含 PTv3、OctFormer、SPUNet、MinkUNet34C，各 22 帧、10 次 warm-up、30 次记录。
 
 `python scripts/validate_result_coverage.py --run-dir results/RTX3090/rtx3090_complete_20260808` 的结构覆盖检查已通过；该检查只证明样本/方法字段齐全，不会把上述旧 FlashKNN 时间认证为最终算法结果。六k SemanticKITTI 文件独立检查为1320条唯一记录、全部方法/alpha完整且IVF target无误，并已逐字节写入 canonical；两处SHA256均为 `ddd31c113d4e6e6326aafd83713b9f5ec0972e1f0de05fdf6084b6955aaa4594`。
@@ -22,10 +22,10 @@
 | S3DIS 250k, pre, k=32 | 2.409 ms | 13.334 ms | 5.54x | 0.999901 |
 | S3DIS 250k, post, k=32 | 1.541 ms | 6.212 ms | 4.03x | 0.999853 |
 | S3DIS full, pre, k=32 | 2.536 ms | 10.151 ms | 4.00x | 0.999914 |
-| SemanticKITTI, pre, k=24, alpha=4 | 1.392 ms | 4.325 ms | 3.11x | 0.981446 |
-| SemanticKITTI, post, k=24, alpha=4 | 1.402 ms | 3.661 ms | 2.61x | 0.978889 |
+| SemanticKITTI, pre, k=24, alpha=8 | 1.643 ms | 4.411 ms | 2.68x | 0.94052 |
+| SemanticKITTI, post, k=24, alpha=8 | 1.470 ms | 3.754 ms | 2.55x | 0.91266 |
 
-表中前三个 S3DIS 行来自2026-08-19最终 kernel 3/10补跑；后两个 SemanticKITTI 行来自最终六k文件，均可引用。
+表中前三个 S3DIS 行来自当前 production kernel 的校正结果；后两个 SemanticKITTI 行来自2026-08-25 alpha=8论文默认结果。
 
 ## S3DIS fixed-250k 显存占用
 
@@ -60,7 +60,7 @@ canonical采用本次最终实现数字，不回退选择旧批次的更快结�
 FlashKNN和同轮cudaKDTree字段，FLANN、nanoflann、FAISS保持原值；metadata中的
 `timing_overrides`记录未变基线哈希、源码/扩展哈希、GPU UUID及production flags。
 
-SemanticKITTI 使用 alpha=4 作为代表性效率设置，是因为多种子网络实验已在 matched training/evaluation 协议下验证 alpha=4 相对 alpha=8 未显示系统性精度下降。该结论不表示可以把使用 alpha=8 训练的 checkpoint 在推理时直接切换为 alpha=4 而完全没有影响。
+SemanticKITTI 的论文默认设置为 alpha=8，以提高稀疏 LiDAR 场景下较大 k 的查询 recall。alpha=4 保留为经 matched training/evaluation 验证的更快 operating point；训练与评估必须使用一致的 alpha。
 
 ## SemanticKITTI 网络延迟
 
@@ -68,16 +68,16 @@ SemanticKITTI 使用 alpha=4 作为代表性效率设置，是因为多种子网
 
 | 模型 | 后端 | End-to-end / forward（ms） | 同模型端到端加速 |
 | --- | --- | ---: | ---: |
-| DeLA | CPU KDTree | 374.350 | 1.00x |
-| DeLA | FlashKNN (alpha=4) | 27.275 | 13.72x |
-| DeepLA | CPU KDTree | 378.660 | 1.00x |
-| DeepLA | FlashKNN (alpha=4) | 33.184 | 11.41x |
+| DeLA | CPU KDTree | 373.090 | 1.00x |
+| DeLA | FlashKNN (alpha=8) | 29.586 | 12.61x |
+| DeepLA | CPU KDTree | 380.863 | 1.00x |
+| DeepLA | FlashKNN (alpha=8) | 35.146 | 10.84x |
 | SPUNet | Native forward | 55.169 | — |
 | MinkUNet34C | Native forward | 79.310 | — |
 | PTv3 | Native forward | 106.882 | — |
 | OctFormer | Native forward | 114.828 | — |
 
-早期仅 FlashKNN hierarchy、alpha=8 CPU/Flash 配对、smoke/probe 和其他被最终 v2 取代的目录已在2026-08-19筛选中删除。canonical run 只保留 alpha=4 配对结果，避免重复计数或 operating point 混淆。完整保留/删除规则见 `results/RESULT_SELECTION.md`。
+旧 alpha=4 网络配对、smoke/probe 和其他被最终结果取代的目录不用于论文默认表格。当前 alpha=8 配对结果独立保存在 `rtx3090_lidar_network_alpha8_final_20260825/`；完整保留/删除规则见 `results/RESULT_SELECTION.md`。
 
 ## 最终排序逻辑设计消融
 
@@ -91,16 +91,24 @@ SemanticKITTI 使用 alpha=4 作为代表性效率设置，是因为多种子网
 分析与两张最终 PDF/SVG 位于
 `analysis/output/rtx3090_ablation_final_20260810/`。
 
-| k | SMPS | SMSS | GMPS | CandidateSM | NoSkip | CandidateSM+NoSkip |
-|---:|---:|---:|---:|---:|---:|---:|
-| 8 | 0.794 | 0.995 | 0.970 | 1.015 | 0.974 | 1.866 |
-| 32 | 1.712 | 3.816 | 2.100 | 2.706 | 1.755 | 3.246 |
-| 64 | 2.860 | 10.929 | 3.315 | 5.344 | 2.699 | 5.920 |
+| k | SMPS | SMSS | GMPS | GMSS | CandidateSM | NoSkip | CandidateSM+NoSkip |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 8 | 0.794 | 0.995 | 0.970 | **0.721** | 1.015 | 0.974 | 1.866 |
+| 32 | **1.712** | 3.816 | 2.100 | 3.785 | 2.706 | 1.755 | 3.246 |
+| 64 | **2.860** | 10.929 | 3.315 | 10.250 | 5.344 | 2.699 | 5.920 |
 
-表中为 query mean（ms）。SMPS 在全部 k 上快于 GMPS/SMSS；register candidate 在全部
-k 上快于 shared candidate。Skip 对小 k 有明显收益，但约从 k=40 开始，register NoSkip
-略快，说明此时 skip 的线程通信成本超过被跳过排序带来的收益。六变体在每个 k 下的 recall
-一致到汇总精度。
+表中为 query mean（ms）。GMSS 完整曲线来自同一物理 GPU 上的定向补测，同样覆盖
+81 房间、八个 k 和 5/20 协议；其余六变体仍来自原始正式 JSON，两者只在分析阶段
+合并。k=8 时 GMSS 比 SMPS 快 9.3%，而从 k=16 开始 SMPS 最快；其相对 GMSS 的
+加速在 k=64 时达到 3.58x。六变体在每个 k 下的 recall 一致到汇总精度。
+
+## Fixed-grid execution diagnostic
+
+`rtx3090_torch_knnquery_gmss_k16_20260820/` 使用与主表相同的 81 个 S3DIS
+pre-250k crop、alpha=4、k=16 和 3/10 协议。生产 SMPS、GMSS、上游
+`torch_knnquery` 核心 kernel 和完整 ray-oriented API 的 query 均值分别为
+1.063、1.371、2.540 和 6.498 ms。完整接口还包含 ray masking/compaction，因而
+核心与完整接口分别报告。
 
 ## 线程分组策略消融
 

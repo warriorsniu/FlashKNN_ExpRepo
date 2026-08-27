@@ -45,6 +45,13 @@ FIELDS = (
     "launch__waves_per_multiprocessor",
 )
 
+DERIVED_FIELDS = {
+    "Block Size",
+    "Grid Size",
+    "Device",
+    "CC",
+}
+
 
 def arguments() -> argparse.Namespace:
     """Parse the profile directory and immutable source/GPU identity."""
@@ -109,11 +116,23 @@ def artifact_identity(path: Path) -> dict[str, object]:
     }
 
 
+def unique_extension(repo: Path, pattern: str) -> dict[str, object]:
+    """Record the unique in-tree extension selected by an editable install."""
+    matches = sorted(repo.glob(pattern))
+    if len(matches) != 1:
+        raise SystemExit(
+            f"Expected one extension for {pattern}, found {len(matches)}: {matches}"
+        )
+    identity = artifact_identity(matches[0])
+    identity["path"] = matches[0].relative_to(repo).as_posix()
+    return identity
+
+
 def profile_summary(path: Path) -> list[dict[str, object]]:
     """Extract required launch and metric values from every profiled kernel row."""
     header, units, rows = raw_rows(path)
     positions = {name: position for position, name in enumerate(header)}
-    required = set(FIELDS)
+    required = set(FIELDS) - DERIVED_FIELDS
     missing = required - set(positions)
     if missing:
         raise SystemExit(f"NCU CSV {path.name} misses columns: {sorted(missing)}")
@@ -131,8 +150,42 @@ def profile_summary(path: Path) -> list[dict[str, object]]:
                 "value": value,
                 "unit": units[position],
             } if units[position] else value
+        # CUDA 11.8-era NCU raw exports do not include the four presentation
+        # aliases emitted by newer releases. Reconstruct them from the stable
+        # launch/device attributes so cu118 and cu128 reports share one schema.
+        if "Block Size" not in positions:
+            values["Block Size"] = "({}, {}, {})".format(*(
+                int(float(row[positions[f"launch__block_dim_{axis}"]]))
+                for axis in "xyz"
+            ))
+        if "Grid Size" not in positions:
+            values["Grid Size"] = "({}, {}, {})".format(*(
+                int(float(row[positions[f"launch__grid_dim_{axis}"]]))
+                for axis in "xyz"
+            ))
+        if "Device" not in positions:
+            values["Device"] = row[positions["device__attribute_device_index"]]
+        if "CC" not in positions:
+            values["CC"] = "{}.{}".format(
+                row[positions["device__attribute_compute_capability_major"]],
+                row[positions["device__attribute_compute_capability_minor"]],
+            )
         summaries.append(values)
     return summaries
+
+
+def device_identity(path: Path) -> tuple[str, str]:
+    """Read the device name and compute capability from an NCU raw CSV."""
+    header, _, rows = raw_rows(path)
+    positions = {name: position for position, name in enumerate(header)}
+    row = rows[0]
+    return (
+        row[positions["device__attribute_display_name"]],
+        "{}.{}".format(
+            row[positions["device__attribute_compute_capability_major"]],
+            row[positions["device__attribute_compute_capability_minor"]],
+        ),
+    )
 
 
 def main() -> None:
@@ -140,12 +193,6 @@ def main() -> None:
     args = arguments()
     profile_dir = args.profile_dir.resolve()
     repo = args.repo.resolve()
-    extension_candidates = sorted((repo / "FlashKNN/functions").glob("CuFun*.so"))
-    if len(extension_candidates) != 1:
-        raise SystemExit(
-            f"Expected exactly one built FlashKNN extension, got {extension_candidates}"
-        )
-    extension = extension_candidates[0]
     profiles: dict[str, object] = {}
     for backend in BACKENDS:
         stem = f"{backend}_k32"
@@ -161,20 +208,26 @@ def main() -> None:
             "raw_csv": artifact_identity(raw_csv),
             "kernels": profile_summary(raw_csv),
         }
+    gpu_name, compute_capability = device_identity(
+        profile_dir / "flash-smps_k32_raw.csv"
+    )
     payload = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_commit": args.source_commit,
         "production_source_sha256": source_hashes(repo),
-        "extension": {
-            **artifact_identity(extension),
-            "relative_path": str(extension.relative_to(repo)),
-            "torch_cuda_arch_list": "8.9",
+        "extensions": {
+            "flashknn": unique_extension(
+                repo, "FlashKNN/functions/CuFun*.so"
+            ),
+            "cuda_kdtree": unique_extension(
+                repo, "Query/ThirdParty/cudaKDTree/build/lib.*/Cukd/CuFun*.so"
+            ),
         },
         "gpu": {
             "physical_index": args.physical_gpu,
             "uuid": args.gpu_uuid,
-            "name": "NVIDIA L20",
-            "compute_capability": "8.9",
+            "name": gpu_name,
+            "compute_capability": compute_capability,
         },
         "dataset": "S3DIS",
         "crop_points": 250000,

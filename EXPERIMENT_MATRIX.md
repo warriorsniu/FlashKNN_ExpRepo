@@ -28,11 +28,26 @@ the paper. `run_all.sh` is not successful unless
 - FAISS Flat/IVF-Flat are evaluated in the fixed-size 250,000-point table; exact Flat is intentionally not extended to the million-point scaling sweep.
 - Output figures preserve per-room voxelized point counts on the x-axis.
 
+## Direct fixed-grid execution diagnostic
+
+- Purpose: isolate the execution boundary against upstream `torch_knnquery`,
+  which uses the same fixed 3x3x3 voxel stencil but assigns one CUDA thread to
+  each query and maintains a sequential local top-k buffer.
+- Dataset/crops: the same 81 S3DIS pre-query fixed-250k crops, with 0.02 m
+  initial voxelization, alpha=4, and k=16.
+- Timings: 3 warmups and 10 recorded repetitions. Report both the complete
+  ray-oriented public API and its core query kernel.
+- Internal control: GMSS preserves the FlashKNN voxel graph/layout but uses
+  global-memory support traversal and serial selection, providing the matching
+  internal fixed-grid control.
+- Source: upstream commit `947957e`; the compatibility patch only replaces
+  deprecated PyTorch tensor-type dispatch calls.
+
 ## S3DIS fixed-250k memory footprint
 
 - Dataset/crops: the same 81 S3DIS `sample_part` rooms and deterministic
   250,000-point crops as the main table.
-- Representative configuration: pre/post query, k=32, alpha=4.
+- Representative S3DIS configuration: pre/post query, k=32, alpha=4.
 - RTX 3090 methods: FlashKNN, cudaKDTree, exact FAISS GPU Flat, and the
   canonical per-room matched-recall FAISS GPU IVF-Flat configuration.
 - L20 methods: FlashKNN, cudaKDTree, exact FAISS GPU Flat, and the same
@@ -53,7 +68,9 @@ the paper. `run_all.sh` is not successful unless
 
 - Dataset: the same 81 S3DIS `sample_part`, pre-query, 250,000-point crops.
 - k: 8, 16, 24, 32, 40, 48, 56, 64, matching the historical ablation figures.
-- Memory/sorting variants: SMPS, SMSS, and GMPS.
+- Memory/sorting variants: SMPS, SMSS, GMPS, and GMSS.
+- GMSS was completed in a directed run on the same physical RTX 3090 with the
+  same 81 rooms and 5/20 protocol, and is merged only during analysis.
 - Candidate/skip factorial: register/shared candidate storage with skip enabled/disabled.
 - Every PS variant uses the current generated bitonic top-P network; variants are selected in one build.
 - Formal protocol: 5 warmups and 20 recorded repetitions, single GPU, no co-tenant training.
@@ -87,6 +104,14 @@ the paper. `run_all.sh` is not successful unless
 - Modes: pre/post; `nsample=k=24,32,48`.
 - Radius: one global 90th-percentile exact kth-neighbor distance for each mode and k.
 - Output: query latency, valid-neighbor ratio, insufficient-query ratio, truncation ratio, and set recall against cudaKDTree.
+- Operators: Pointcept `pointops.ball_query` and PyTorch3D 0.7.9
+  `pytorch3d.ops.ball_query`; PyTorch3D is built from official commit
+  `fdaf9bd6fed7977e4c2056e7c77c640781e58fcd`, uses `return_nn=False`, and
+  enables the semantics-preserving cube-rejection option.
+- Completed matched RTX 3090 result: Pointcept is retained in
+  `rtx3090_final_corrected_20260824`; PyTorch3D is in
+  `rtx3090_pytorch3d_ball_query_20260825`. Both cover the same 81 crops and
+  radii with 3 warm-ups/10 repeats; the paired validator passes 486 records.
 
 ## Semantic-boundary accuracy analysis
 
@@ -114,6 +139,24 @@ the paper. `run_all.sh` is not successful unless
 - Modes: pre/post; k: 8, 16, 24, 32, 48, 64, matching the fixed-size S3DIS
   query sweep; FlashKNN alpha: 4, 8, 16, 32.
 - Baselines: cudaKDTree, FLANN-CUDA, CPU nanoflann, FAISS GPU Flat, and
-  FAISS GPU IVF-Flat matched to the paper-default FlashKNN alpha=4 recall.
-- Formal results: L20 and RTX 3090 each contain 1,320 unique sample-mode-k records (110 x 2 x 6), 3 warmups and 10 recorded repetitions; the L20 canonical file passed full coverage validation and the RTX 3090 directed result passed the same SemanticKITTI protocol checks.
-- Network latency: 22 stratified frames, one per sequence. DeLA and DeepLA each compare the paper-compatible CPU KDTree hierarchy against FlashKNN with the paper-default alpha=4; PTv3, OctFormer, SPUNet, and MinkUNet34C measure CUDA-ready network forward latency on the same frames.
+  FAISS GPU IVF-Flat matched to the SemanticKITTI paper-default FlashKNN alpha=8 recall.
+- Formal results: the paper-facing RTX 3090 alpha=8 refresh contains 1,320 unique sample-mode-k records (110 x 2 x 6), 3 warmups and 10 recorded repetitions, with IVF recalibrated to alpha=8. The retained L20 1,320-record file uses the older alpha=4 matched-IVF protocol and is not used for the paper's SemanticKITTI table.
+- Network latency: 22 stratified frames, one per sequence. DeLA and DeepLA each compare the paper-compatible CPU KDTree hierarchy against FlashKNN with the SemanticKITTI paper-default alpha=8; PTv3, OctFormer, SPUNet, and MinkUNet34C measure CUDA-ready network forward latency on the same frames.
+
+## Concurrent SemanticKITTI training wall-clock
+
+- Models/backends: DeLA and DeepLA-24 with FlashKNN or nanoflann, seeds 47--49.
+- Training: 100 epochs and 500 steps per epoch; evaluation is excluded.
+- Concurrency: seed 47 uses two jobs per backend launch; seeds 48/49 use four
+  jobs launched together. Results are paired only within the same recorded
+  concurrency regime and are not presented as isolated-GPU throughput.
+- Retained evidence: start/end epoch timestamps, total wall-clock, per-epoch
+  and per-step time, and peak memory.
+
+## Final RTX 3090 Nsight Compute profile
+
+- Workload: S3DIS fixed-250k pre-query at k=32.
+- Kernels: production SMPS, GMSS, and cudaKDTree on the same RTX 3090.
+- Retained files: inspectable summary/raw CSV and provenance. Binary `.ncu-rep`
+  files are not required to reproduce the paper table and are omitted from the
+  curated release snapshot.

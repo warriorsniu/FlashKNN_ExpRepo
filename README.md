@@ -188,18 +188,18 @@ EXPREPO_S3DIS_QUERY=/path/to/s3disfull/raw GPU=0 RUN_ID=l20_01 bash run_query.sh
 - 若已准备 LiDAR pack，追加 SemanticKITTI pre/post query，k=8/16/24/32/48/64。
 - Pointcept ball query：S3DIS `sample_part`、pre/post、`nsample=k=24/32/48`，分别使用全局 exact 第 k 邻居距离的 90% 分位半径，并保存 coverage、truncation 和 recall。
 
-S3DIS `sample_part` 和 SemanticKITTI query 均对比 FlashKNN、精确 cudaKDTree、FLANN-CUDA、CPU nanoflann、FAISS GPU Flat 和 matched-recall IVF-Flat；S3DIS `full` 点数缩放实验按论文方法只运行 FlashKNN、cudaKDTree、FLANN-CUDA 和 nanoflann，避免在百万点完整查询上运行复杂度近似二次的 exact FAISS Flat。两套 fixed-size 实验都以论文默认 FlashKNN `alpha=4` recall 校准 IVF：S3DIS 的 `num_down=2` 即 `alpha=4`，SemanticKITTI 通过 `faiss_ivf_match_alpha=4` 显式记录。需要注意，canonical S3DIS 后续只用最终 build 覆盖了 FlashKNN/cudaKDTree timing 与 recall，未重跑未变更的 IVF，因此其 `target_recall` 保留首次正式 alpha=4 校准值，与覆盖后的 FlashKNN recall 可能存在极小差异；新的 SemanticKITTI 文件则逐条严格匹配当前 alpha=4 recall。IVF 在实用范围 `nprobe=1...64` 中选择第一个达到目标的设置；若因等距候选的 ID tie-breaking 始终不能精确达到，则选择 recall 最接近的设置，并保存完整校准轨迹。限制实用范围可避免因等距候选的 ID tie-breaking 无法精确达到目标时，退化为扫描全部 IVF lists 并产生过大显存临时开销。所有 GPU 方法的计时输入已在 GPU，排除文件 I/O、体素化、裁块与 CPU→GPU 传输；FAISS Flat 的 `add` 与 search 分别计时，IVF 原始 JSON 分别保留 training、add 和 search，论文主表的 construction/total 按 `training + add` 计算。nanoflann 严格复用原论文脚本口径：先把输入复制到 CPU，再开始计时，故其 GPU→CPU 传输不在表中。
+S3DIS `sample_part` 和 SemanticKITTI query 均对比 FlashKNN、精确 cudaKDTree、FLANN-CUDA、CPU nanoflann、FAISS GPU Flat 和 matched-recall IVF-Flat；S3DIS `full` 点数缩放实验按论文方法只运行 FlashKNN、cudaKDTree、FLANN-CUDA 和 nanoflann，避免在百万点完整查询上运行复杂度近似二次的 exact FAISS Flat。S3DIS 以论文默认 FlashKNN `alpha=4` recall 校准 IVF（`num_down=2`）；SemanticKITTI 则以 LiDAR 默认 `alpha=8` 校准，并通过 `faiss_ivf_match_alpha=8` 显式记录。需要注意，canonical S3DIS 后续只用最终 build 覆盖了 FlashKNN/cudaKDTree timing 与 recall，未重跑未变更的 IVF，因此其 `target_recall` 保留首次正式 alpha=4 校准值，与覆盖后的 FlashKNN recall 可能存在极小差异；新的 SemanticKITTI 文件逐条严格匹配当前 alpha=8 recall。IVF 在实用范围 `nprobe=1...64` 中选择第一个达到目标的设置；若因等距候选的 ID tie-breaking 始终不能精确达到，则选择 recall 最接近的设置，并保存完整校准轨迹。限制实用范围可避免因等距候选的 ID tie-breaking 无法精确达到目标时，退化为扫描全部 IVF lists 并产生过大显存临时开销。所有 GPU 方法的计时输入已在 GPU，排除文件 I/O、体素化、裁块与 CPU→GPU 传输；FAISS Flat 的 `add` 与 search 分别计时，IVF 原始 JSON 分别保留 training、add 和 search，论文主表的 construction/total 按 `training + add` 计算。nanoflann 严格复用原论文脚本口径：先把输入复制到 CPU，再开始计时，故其 GPU→CPU 传输不在表中。
 
-SemanticKITTI 的论文代表性 FlashKNN operating point 使用 `alpha=4`：matched
-training/evaluation 实验未观察到它相对 `alpha=8` 的系统性网络精度下降。L20 与 RTX 3090
-的2026-08-18正式结果已经在同轮实验中以 `alpha=4` recall 重新校准 IVF；旧的
-`alpha=8` matched-recall 或仅含三个 k 的结果已删除，不能从历史提交恢复后改写标签使用。
+SemanticKITTI 的论文代表性 FlashKNN operating point 使用 `alpha=8`，与主要的 matched
+training/evaluation checkpoint 保持一致，并提高稀疏 LiDAR 场景的大 (k) recall。2026-08-18
+的 `alpha=4` matched-IVF 目录保留为历史/快速 operating point 证据，不得改写标签后作为
+`alpha=8` 结果使用；论文表格使用 2026-08-25 以后按 `alpha=8` 重新校准的结果。
 
 `run_network_latency.sh` 测试：
 
 - DeLA S3DIS：CPU KDTree 预处理 + 网络，以及 FlashKNN GPU 预处理 + 网络；
 - PTv3、OctFormer、SpUNet、MinkUNet34C：4 cm 体素后的网络 forward；
-- SemanticKITTI：DeLA / DeepLA 使用 `alpha=4`，分别采用 CPU KDTree 与 FlashKNN 构建四层 hierarchy，并记录 preprocessing、network 和 end-to-end；PTv3、OctFormer、SPUNet、MinkUNet34C 在相同 LiDAR 帧上记录 CUDA-ready network forward。
+- SemanticKITTI：DeLA / DeepLA 使用 `alpha=8`，分别采用 CPU KDTree 与 FlashKNN 构建四层 hierarchy，并记录 preprocessing、network 和 end-to-end；PTv3、OctFormer、SPUNet、MinkUNet34C 在相同 LiDAR 帧上记录 CUDA-ready network forward。
 
 正式参数为 10 次 warmup、30 次记录；S3DIS 使用与论文一致的
 Area 5 全部 68 个验证房间，
@@ -312,7 +312,21 @@ pre/post、`k=8,16,24,32,48,64`、FlashKNN `alpha=4,8,16,32` 和全部基线，�
 参数为3次warm-up/10次记录，FAISS IVF target逐条等于同配置FlashKNN `alpha=4` recall。
 RTX 3090 任务正常以退出码0完成，结果检查为1320条唯一记录且无方法、alpha或target缺失。
 
-LiDAR 网络实验统一使用 pack 中已经按 0.06 m 体素化的 XYZ 与 remission。DeLA/DeepLA 的 CPU 层次计时沿用论文口径，不计 CPU→GPU 传输；FlashKNN 层次默认使用论文设置 `alpha=4` 并在 GPU 上计时，两者的 model forward 均使用 CUDA event。可用 `LIDAR_ALPHA` 显式覆盖探索性实验，但正式 coverage validator 只接受 `alpha=4`。四个 Pointcept 模型采用随机初始化，仅比较执行形状与 latency：SPUNet/MinkUNet 使用 SemanticKITTI 配置，PTv3 使用 NuScenes backbone 并适配为4输入通道和19类，同时沿用 S3DIS 基线的 non-FlashAttention 128-point patch fallback；OctFormer 适配为4输入通道、19类和覆盖 LiDAR 空间范围的12层 octree，并因 efficiency pack 不含 normal 而输入零 normal。网络权重未经训练，因此这些结果不能解释精度。
+### 2026-08-25 SemanticKITTI 论文默认 alpha=8 刷新
+
+论文默认 LiDAR operating point 已改为 `alpha=8`。RTX 3090 的定向正式结果位于
+`results/RTX3090/rtx3090_semantickitti_alpha8_ivf_20260825/`：110 帧、pre/post、
+`k=8,16,24,32,48,64`、3/10 协议，FlashKNN 仅运行 `alpha=8`，并在同一轮重跑
+cudaKDTree、FAISS Flat 和逐配置重新校准的 IVF。结果包含1320条唯一记录，IVF target
+逐条与当前 FlashKNN recall 完全一致。对应的 DeLA/DeepLA 网络延迟位于
+`results/RTX3090/rtx3090_lidar_network_alpha8_final_20260825/`，覆盖22个分层帧、
+10/30 协议和配对的 CPU-KDTree/FlashKNN hierarchy。旧 `alpha=4` 目录仅作为更快
+operating point 和历史证据保留，不再向论文默认表格供数。当前 production kernel 对
+DeLA/DeepLA 三个论文 seed 的 sequence-08 兼容性复核位于
+`results/RTX3090/rtx3090_semantickitti_checkpoint_alpha8_final_20260825/`；聚合 mIoU
+分别为 65.455±0.394 和 65.992±0.473，与历史数值仅有约千分之一百分点的舍入变化。
+
+LiDAR 网络实验统一使用 pack 中已经按 0.06 m 体素化的 XYZ 与 remission。DeLA/DeepLA 的 CPU 层次计时沿用论文口径，不计 CPU→GPU 传输；FlashKNN 层次默认使用论文设置 `alpha=8` 并在 GPU 上计时，两者的 model forward 均使用 CUDA event。可用 `LIDAR_ALPHA` 显式覆盖探索性实验，但正式 coverage validator 只接受 `alpha=8`。四个 Pointcept 模型采用随机初始化，仅比较执行形状与 latency：SPUNet/MinkUNet 使用 SemanticKITTI 配置，PTv3 使用 NuScenes backbone 并适配为4输入通道和19类，同时沿用 S3DIS 基线的 non-FlashAttention 128-point patch fallback；OctFormer 适配为4输入通道、19类和覆盖 LiDAR 空间范围的12层 octree，并因 efficiency pack 不含 normal 而输入零 normal。网络权重未经训练，因此这些结果不能解释精度。
 
 同一个 JSON 文件内的全部方法和样本必须来自同一物理 GPU。若主机有多张型号、显存和 driver 完全相同的 L20，不同且互不直接求加速比的 JSON 文件可以分配到不同物理卡并行补跑；覆盖检查比较 GPU platform signature，而每个文件继续保存实际 UUID。不能在同一张论文对比表内部混用不同 UUID 的记录，也不能混合不同型号或 driver。
 

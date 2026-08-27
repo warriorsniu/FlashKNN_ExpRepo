@@ -9,6 +9,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import t as student_t
@@ -88,6 +89,22 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     payload = json.loads(args.result.read_text(encoding="utf-8"))
+    font_root = Path("/data/nyc/fonts")
+    font_paths = [font_root / name for name in (
+        "TIMES.TTF", "TIMESBD.TTF", "TIMESI.TTF", "TIMESBI.TTF"
+    )]
+    missing = [path for path in font_paths if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(f"Missing Times New Roman fonts: {missing}")
+    for font_path in font_paths:
+        fm.fontManager.addfont(font_path)
+    font_name = fm.FontProperties(fname=font_paths[0]).get_name()
+    plt.rcParams.update({
+        "font.family": font_name,
+        "font.serif": [font_name],
+        "mathtext.fontset": "stix",
+        "pdf.fonttype": 42,
+    })
     rows = aggregate(payload)
     if not rows:
         raise SystemExit("No thread-grouping records found")

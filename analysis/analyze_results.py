@@ -7,8 +7,27 @@ import argparse
 import json
 from pathlib import Path
 
+import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 import pandas as pd
+
+
+def configure_paper_fonts() -> None:
+    font_root = Path("/data/nyc/fonts")
+    font_paths = [font_root / name for name in (
+        "TIMES.TTF", "TIMESBD.TTF", "TIMESI.TTF", "TIMESBI.TTF"
+    )]
+    missing = [path for path in font_paths if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(f"Missing Times New Roman fonts: {missing}")
+    for font_path in font_paths:
+        fm.fontManager.addfont(font_path)
+    font_name = fm.FontProperties(fname=font_paths[0]).get_name()
+    plt.rcParams.update({
+        "font.family": font_name,
+        "font.serif": [font_name],
+        "mathtext.fontset": "stix",
+    })
 
 
 def arguments():
@@ -124,6 +143,7 @@ def network_rows(path, payload):
 
 
 def main():
+    configure_paper_fonts()
     args = arguments(); args.output_dir.mkdir(parents=True, exist_ok=True)
     query, network = [], []
     for path in sorted(args.results.rglob("*.json")):
@@ -145,10 +165,9 @@ def main():
             query_ms=("query_ms", "mean"), total_ms=("total_ms", "mean"),
             recall=("recall", "mean")).reset_index()
 
-        # Paper operating point for SemanticKITTI. Accuracy experiments use
-        # matched training/evaluation and found no systematic degradation at
-        # alpha=4 relative to alpha=8, so report alpha=4 against the exact CUDA
-        # k-d tree. Keep the full alpha sweep in main_table.
+        # Paper operating point for SemanticKITTI. Use alpha=8 to align the
+        # operator and network tables with the matched LiDAR checkpoints while
+        # retaining the full alpha sweep in main_table.
         semantic = main_table[
             (main_table.dataset == "SemanticKITTI") &
             (main_table.scope == "full") &
@@ -156,7 +175,7 @@ def main():
         ]
         representative_rows = []
         for (gpu_name, mode), subset in semantic.groupby(["gpu", "mode"]):
-            flash = subset[(subset.method == "flashknn") & (subset.alpha == 4)]
+            flash = subset[(subset.method == "flashknn") & (subset.alpha == 8)]
             exact = subset[subset.method.isin(["cuda_kdtree", "cukd"])]
             if flash.empty or exact.empty:
                 continue
@@ -166,7 +185,7 @@ def main():
                 "dataset": "SemanticKITTI",
                 "mode": mode,
                 "k": 24,
-                "alpha": 4,
+                "alpha": 8,
                 "samples": int(flash_row["samples"]),
                 "flashknn_total_ms": flash_row["total_ms"],
                 "flashknn_recall": flash_row["recall"],
@@ -233,12 +252,22 @@ def main():
         ):
             plt.figure(figsize=(7.2, 4.4))
             speedup_column = metric.replace("_ms", "_speedup_vs_nanoflann")
+            display_names = {
+                "flashknn": "FlashKNN",
+                "cuda_kdtree": "cudaKDTree",
+                "cukd": "cudaKDTree",
+                "flann_cuda": "FLANN-CUDA",
+                "nanoflann": "nanoflann",
+                "faiss_ivf": "FAISS IVF",
+                "faiss_flat": "FAISS Flat",
+            }
             for (gpu_name, method), subset in scaling_table.groupby(["gpu", "method"]):
                 subset = subset.sort_values("num_support")
                 if not subset.empty:
                     plt.plot(subset.num_support, subset[speedup_column], marker="o",
-                             markersize=3, linewidth=1, label=f"{method} ({gpu_name})")
-            plt.xlabel("Voxelized point number"); plt.ylabel(ylabel); plt.legend(fontsize=7)
+                             markersize=3, linewidth=1,
+                             label=display_names.get(method, method))
+            plt.xlabel("Voxelized point count"); plt.ylabel(ylabel); plt.legend(fontsize=7)
             plt.tight_layout(); plt.savefig(args.output_dir / filename, dpi=220); plt.close()
     network_table = pd.DataFrame()
     network_efficiency = pd.DataFrame()
@@ -277,7 +306,7 @@ def main():
         if not main_table.empty: main_table.to_excel(writer, sheet_name="query_main_table", index=False)
         if not semantickitti_representative.empty:
             semantickitti_representative.to_excel(
-                writer, sheet_name="semkitti_alpha4", index=False
+                writer, sheet_name="semkitti_alpha8", index=False
             )
         if not paper_query_table.empty:
             paper_query_table.to_excel(writer, sheet_name="paper_query_table", index=False)
@@ -291,7 +320,7 @@ def main():
     report = ["# Benchmark summary", "", f"Workbook: `{workbook.name}`", ""]
     if not semantickitti_representative.empty:
         report += [
-            "## SemanticKITTI representative operating point (alpha=4, k=24)",
+            "## SemanticKITTI representative operating point (alpha=8, k=24)",
             "",
             semantickitti_representative.to_markdown(index=False),
             "",

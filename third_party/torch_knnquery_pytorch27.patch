@@ -1,0 +1,49 @@
+diff --git a/src/knnquery.cu b/src/knnquery.cu
+index 72f9742..d378148 100644
+--- a/src/knnquery.cu
++++ b/src/knnquery.cu
+@@ -335,7 +335,7 @@ void find_occupied_voxels(
+
+   int units = B*N;
+
+-  AT_DISPATCH_FLOATING_TYPES(points.type(), "claim_occ_kernel", [&] {
++  AT_DISPATCH_FLOATING_TYPES(points.scalar_type(), "claim_occ_kernel", [&] {
+     claim_occ_kernel<scalar_t><<<BLOCKS(units), THREADS>>>(
+       points.data<scalar_t>(),
+       actual_num_points_per_batch.data<int>(),
+@@ -417,7 +417,7 @@ void assign_points_to_occ_voxels(
+
+   int units = B*N;
+
+-  AT_DISPATCH_FLOATING_TYPES(points.type(), "fill_occ2pnts_kernel", [&] {
++  AT_DISPATCH_FLOATING_TYPES(points.scalar_type(), "fill_occ2pnts_kernel", [&] {
+     fill_occ2pnts_kernel<scalar_t><<<BLOCKS(units), THREADS>>>(
+       points.data<scalar_t>(),
+       actual_num_points_per_batch.data<int>(),
+@@ -458,7 +458,7 @@ void create_raypos_mask(
+
+   int units = B * R * D;
+
+-  AT_DISPATCH_FLOATING_TYPES(raypos_tensor.type(), "mask_raypos_kernel", [&] {
++  AT_DISPATCH_FLOATING_TYPES(raypos_tensor.scalar_type(), "mask_raypos_kernel", [&] {
+     mask_raypos_kernel<scalar_t><<<BLOCKS(units), THREADS>>>(
+       raypos_tensor.data<scalar_t>(),
+       coor_occ_tensor.data<int>(),
+@@ -491,7 +491,7 @@ void get_shadingloc(
+
+   int units = R_valid * total_samples_per_ray;
+
+-  AT_DISPATCH_FLOATING_TYPES(raypos_tensor.type(), "get_shadingloc_kernel", [&] {
++  AT_DISPATCH_FLOATING_TYPES(raypos_tensor.scalar_type(), "get_shadingloc_kernel", [&] {
+     get_shadingloc_kernel<scalar_t><<<BLOCKS(units), THREADS>>>(
+       raypos_tensor.data<scalar_t>(),
+       raypos_mask_tensor.data<int>(),
+@@ -541,7 +541,7 @@ void query_along_ray(
+
+   int units = R_valid * samples_per_ray;
+
+-  AT_DISPATCH_FLOATING_TYPES(points.type(), "query_along_ray_kernel", [&] {
++  AT_DISPATCH_FLOATING_TYPES(points.scalar_type(), "query_along_ray_kernel", [&] {
+     query_along_ray_kernel<scalar_t><<<BLOCKS(units), THREADS>>>(
+       points.data<scalar_t>(),
+       ray_to_batch_indices.data<int>(),

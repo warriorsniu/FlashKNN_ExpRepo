@@ -185,8 +185,8 @@ def main() -> None:
     lidar_path = query_dir / "semantickitti.json"
     lidar_payload = load(lidar_path)
     gpu_platforms.add(require_unified_environment(lidar_path, lidar_payload))
-    if int(lidar_payload.get("metadata", {}).get("faiss_ivf_match_alpha", -1)) != 4:
-        raise SystemExit("SemanticKITTI FAISS IVF must match FlashKNN alpha=4 recall")
+    if int(lidar_payload.get("metadata", {}).get("faiss_ivf_match_alpha", -1)) != 8:
+        raise SystemExit("SemanticKITTI FAISS IVF must match FlashKNN alpha=8 recall")
     lidar = lidar_payload.get("samples", [])
     expected_lidar_records = 12 if args.smoke else 110 * 2 * 6
     if len(lidar) != expected_lidar_records:
@@ -209,14 +209,14 @@ def main() -> None:
             raise SystemExit(f"SemanticKITTI {record.get('sample')} misses: {sorted(missing)}")
         if {int(item["alpha"]) for item in record["flashknn"]} != {4, 8, 16, 32}:
             raise SystemExit(f"SemanticKITTI {record.get('sample')} misses FlashKNN alpha sweep")
-        alpha4_recall = next(
+        alpha8_recall = next(
             item["recall"]["mean"] for item in record["flashknn"]
-            if int(item["alpha"]) == 4
+            if int(item["alpha"]) == 8
         )
-        if abs(float(record["faiss_ivf"]["target_recall"]) - float(alpha4_recall)) > 1e-8:
+        if abs(float(record["faiss_ivf"]["target_recall"]) - float(alpha8_recall)) > 1e-8:
             raise SystemExit(
                 f"SemanticKITTI {record.get('sample')} {record.get('mode')} "
-                f"k={record.get('k')} IVF target does not match alpha=4 recall"
+                f"k={record.get('k')} IVF target does not match alpha=8 recall"
             )
         for value in [record["exact"], *record["flashknn"],
                       *(record[name] for name in LIDAR_FIELDS - {"exact", "flashknn"})]:
@@ -248,8 +248,8 @@ def main() -> None:
         raise SystemExit("DeLA result must contain both CPU nanoflann and FlashKNN backends")
     for model in ("dela", "deepla"):
         payload = load(network_dir / f"{model}_semantickitti_backends.json")
-        if int(payload.get("metadata", {}).get("alpha", -1)) != 4:
-            raise SystemExit(f"{model} SemanticKITTI must use the paper-default alpha=4 operating point")
+        if int(payload.get("metadata", {}).get("alpha", -1)) != 8:
+            raise SystemExit(f"{model} SemanticKITTI must use the paper-default alpha=8 operating point")
         samples = payload.get("samples", [])
         if not samples or any(
             set(sample.get("backends", {})) != {"cpu_kdtree", "flashknn"}

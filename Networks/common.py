@@ -52,7 +52,9 @@ class Confusion:
 
 
 def load_checkpoint(path: Path, model: torch.nn.Module, optimizer=None) -> dict:
-    payload = torch.load(path, map_location="cpu")
+    # These are project-generated, trusted training checkpoints. PyTorch 2.6+
+    # defaults weights_only to True, which rejects their pathlib metadata.
+    payload = torch.load(path, map_location="cpu", weights_only=False)
     model.load_state_dict(payload["model"] if "model" in payload else payload)
     if optimizer is not None and "optimizer" in payload:
         optimizer.load_state_dict(payload["optimizer"])
@@ -64,4 +66,3 @@ def atomic_json(path: Path, payload: dict) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     temporary.replace(path)
-

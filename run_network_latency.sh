@@ -10,7 +10,7 @@ source "$REPO_DIR/scripts/results_env.sh"
 OUT="$RESULTS_ROOT/$RUN_ID/network"
 mkdir -p "$OUT"
 WARMUPS=10; REPEATS=30; SAMPLES=68; LIDAR_SAMPLES=22
-LIDAR_ALPHA="${LIDAR_ALPHA:-4}"
+LIDAR_ALPHA="${LIDAR_ALPHA:-8}"
 if [[ "${SMOKE:-0}" == "1" ]]; then WARMUPS=1; REPEATS=1; SAMPLES=1; LIDAR_SAMPLES=1; fi
 
 PYTHONPATH="$REPO_DIR/FlashKNN" "$PYTHON_BIN" "$REPO_DIR/DeLA/S3DIS/benchmark_latency.py" \

@@ -38,6 +38,10 @@ VARIANTS: dict[str, dict[str, Any]] = {
         "memory_mode": "GM", "sorting_mode": "PS",
         "candidate_mode": "register", "enable_skip": True,
     },
+    "gmss": {
+        "memory_mode": "GM", "sorting_mode": "SS",
+        "candidate_mode": "register", "enable_skip": True,
+    },
     "candidate_shared": {
         "memory_mode": "SM", "sorting_mode": "PS",
         "candidate_mode": "shared", "enable_skip": True,
@@ -52,6 +56,11 @@ VARIANTS: dict[str, dict[str, Any]] = {
     },
 }
 
+DEFAULT_VARIANTS = (
+    "smps", "smss", "gmps", "candidate_shared", "no_skip",
+    "candidate_shared_no_skip",
+)
+
 
 def arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -64,7 +73,7 @@ def arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--variants", nargs="+", choices=tuple(VARIANTS),
-        default=tuple(VARIANTS),
+        default=DEFAULT_VARIANTS,
     )
     parser.add_argument("--num-down", type=int, default=2)
     parser.add_argument("--voxel-size", type=float, default=0.02)
@@ -175,6 +184,7 @@ def main() -> None:
                     "FlashKNN/csrc/flash_knn_bitonic_top_p.cuh",
                     "FlashKNN/csrc/flash_knn_query_dynamic_load.cu",
                     "FlashKNN/csrc/flash_knn_query_GMPS.cu",
+                    "FlashKNN/csrc/flash_knn_query_global_memory.cu",
                     "FlashKNN/functions/FlashKnnWrapper.py",
                     "Query/benchmark_ablation.py",
                 )
@@ -192,6 +202,13 @@ def main() -> None:
             "k": list(args.k),
             "variants": {name: VARIANTS[name] for name in selected_variants},
             "sorting_revision": "generated_bitonic_top_p",
+            "selection_revision_by_variant": {
+                name: (
+                    "serial_max_heap" if name == "gmss"
+                    else "generated_bitonic_top_p"
+                )
+                for name in selected_variants
+            },
             "timing_boundary": (
                 "CUDA-ready 250k crop; construction and query recorded "
                 "separately; excludes file I/O, voxelization, crop and H2D"

@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--ivf-match-alpha",
         type=int,
-        default=4,
+        default=8,
         help="FlashKNN alpha whose recall is the FAISS IVF calibration target",
     )
     parser.add_argument("--warmups", type=int, default=3)

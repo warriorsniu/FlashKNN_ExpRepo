@@ -39,6 +39,6 @@ if [[ -n "${EXPREPO_SEMANTICKITTI:-}" ]]; then
   PYTHONPATH="$REPO_DIR/FlashKNN" "$PYTHON_BIN" "$REPO_DIR/Query/benchmark_semantickitti.py" \
     --data-dir "$EXPREPO_SEMANTICKITTI" --output "$OUT/semantickitti.json" --gpu "$GPU" \
     --mode pre post --k 8 16 24 32 48 64 --alpha 4 8 16 32 \
-    --ivf-match-alpha 4 "${LIDAR_EXTRA[@]}"
+    --ivf-match-alpha 8 "${LIDAR_EXTRA[@]}"
 fi
 echo "$OUT"
