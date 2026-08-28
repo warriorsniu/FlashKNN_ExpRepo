@@ -8,16 +8,26 @@ Detailed experiment protocols are listed in [EXPERIMENTS.md](EXPERIMENTS.md),
 the retained result sets are documented in [results/README.md](results/README.md),
 and upstream revisions are listed in [SOURCES.md](SOURCES.md).
 
-## Supported environments
+## Requirements
 
-| GPU | Python | PyTorch | CUDA toolkit | CUDA architecture |
-|---|---:|---:|---:|---:|
-| NVIDIA RTX 3090 | 3.10 | 2.7.1+cu118 | 11.8 | sm_86 |
-| NVIDIA L20 | 3.10 | 2.7.1+cu128 | 12.8 | sm_89 |
+FlashKNN is not restricted to a specific NVIDIA GPU model. The installation
+script detects the compute capability of the visible GPU and builds the native
+extensions for that architecture. The selected GPU must be supported by the
+installed NVIDIA driver, CUDA toolkit, PyTorch build, and bundled third-party
+components.
 
-The installation script builds native extensions for the visible GPU. Use the
-matching CUDA toolkit and expose only the GPU on which the experiments will
-run.
+The automated installation has been validated with the following software
+stacks:
+
+| Python | PyTorch | CUDA toolkit |
+|---:|---:|---:|
+| 3.10 | 2.7.1+cu118 | 11.8 |
+| 3.10 | 2.7.1+cu128 | 12.8 |
+
+The retained paper results were measured on an RTX 3090 with CUDA 11.8 and an
+L20 with CUDA 12.8. These are reference reproduction platforms rather than a
+device whitelist; users may run the benchmarks on other compatible GPUs and
+the resulting platform metadata will be recorded separately.
 
 ## Installation
 
@@ -31,14 +41,12 @@ conda activate flashknn-exp
 export CUDA_VISIBLE_DEVICES=0
 ```
 
-If CUDA is not detected automatically, set `CUDA_HOME` before installation:
+If CUDA is not detected automatically, set `CUDA_HOME` to the toolkit selected
+for the environment:
 
 ```bash
-# RTX 3090
-export CUDA_HOME=/usr/local/cuda-11.8
-
-# L20
-# export CUDA_HOME=/usr/local/cuda-12.8
+# Example
+export CUDA_HOME=/usr/local/cuda-12.8
 ```
 
 Install Python dependencies and compile the native extensions:
@@ -118,12 +126,11 @@ is invoked.
 
 ## Results and analysis
 
-Results are written beneath a hardware-specific directory:
+Results are written beneath a directory derived from the detected GPU model:
 
 ```text
 results/
-  L20/<RUN_ID>/
-  RTX3090/<RUN_ID>/
+  <GPU_PLATFORM>/<RUN_ID>/
 ```
 
 The main result packs use the following layout when the corresponding suite is
@@ -141,7 +148,7 @@ Analyze one run explicitly:
 
 ```bash
 python analysis/analyze_results.py \
-  --results results/RTX3090/<RUN_ID> \
+  --results results/<GPU_PLATFORM>/<RUN_ID> \
   --output-dir analysis/output/<RUN_ID>
 ```
 
@@ -149,7 +156,7 @@ Validate a complete run produced by the current `run_all.sh` protocol:
 
 ```bash
 python scripts/validate_result_coverage.py \
-  --run-dir results/RTX3090/<RUN_ID>
+  --run-dir results/<GPU_PLATFORM>/<RUN_ID>
 ```
 
 Use `--smoke` with the validator only for a run produced with `SMOKE=1`.
