@@ -17,8 +17,8 @@ read -r -a METHOD_ARGS <<<"$METHODS_TEXT"
 
 CANONICAL_S3DIS="${CANONICAL_S3DIS:-$RESULTS_ROOT/$(
   case "$PLATFORM_NAME" in
-    RTX3090) echo rtx3090_complete_20260808 ;;
-    L20) echo l20_complete_20260807 ;;
+    RTX3090) echo rtx3090_final_20260825 ;;
+    L20) echo l20_final_20260824 ;;
     *) echo complete ;;
   esac
 )/query/s3dis_sample_part.json}"

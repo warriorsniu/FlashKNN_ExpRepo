@@ -1,6 +1,6 @@
-# RTX 3090 final-kernel NCU refresh
+# RTX 3090 final-kernel NCU profile
 
-This directory contains a clean, single-GPU Nsight Compute refresh of the
+This directory contains a clean, single-GPU Nsight Compute profile of the
 production FlashKNN kernel. The run used physical GPU 0 (RTX 3090, sm86),
 PyTorch 2.7.1+cu118, CUDA 11.8, and Nsight Compute 2022.3. The deterministic
 input is the first valid S3DIS 250k pre-query crop (`Area_1/WC_1`), with
@@ -28,28 +28,14 @@ of threads assigned to the sorting network. NCU-instrumented duration is used
 only for the paired backends in this run and does not replace the formal query
 benchmark latency.
 
-## Cross-platform diagnosis
+## Cross-platform note
 
-The final SMPS source produces 31.38 active threads/instruction and 98.86%
-uniform branch targets on RTX 3090/CUDA 11.8, compared with 23.13 and 67.29%
-on L20/CUDA 12.8. This rules out a change from a 32-lane to a 24-lane logical
-sorting group: both launches use `(32,4,1)` blocks and the `k=32` specialization
-uses a 32-lane sorting network.
-
-Static SASS exported from the two NCU reports contains the same 48 shuffle
-instructions, but the RTX 3090 binary has 10 `BSSY`/`BSYNC` reconvergence pairs
-whereas the L20 binary has 24. The lower L20 aggregate therefore tracks a more
-branch-heavy lowering of the data-dependent compare-exchange code, plus the
-non-sorting control flow in the complete query kernel. It is not evidence that
-eight lanes are missing from the sorting topology or that the query result is
-incorrect.
-
-The historical RTX 3090 value 31.40 is numerically reproduced by the final
-kernel as 31.38, but the refreshed value and provenance should be used whenever
-the paper explicitly claims a final-kernel result. Platform/compiler-specific
-profiling values must remain separated rather than being treated as an
-architecture-independent invariant.
+The final profiles report 31.38 active threads/instruction on RTX 3090 with
+CUDA 11.8 and 31.33 on L20 with CUDA 12.8. Both launches use `(32,4,1)` blocks,
+and the k=32 specialization uses a 32-lane sorting network. Profiling metrics
+remain platform- and compiler-specific and should not be treated as
+architecture-independent invariants.
 
 Machine-readable source, extension, GPU, launch, metric, and artifact hashes
-are stored in `provenance.json`; the original `.ncu-rep`, summary CSV, and raw
-CSV files are retained under `ncu/microarch/`.
+are stored in `provenance.json`; summary and raw profiler CSV files are retained
+under `ncu/microarch/`.
